@@ -10,4 +10,18 @@ object __regendauer__{
     waitForRainToStop()
     }
 
+object __Temperatur__{
+    name = "frost"
+    temperatur = 1.0
+    __
+    getActualTemperature()
+    }
+
+object __Pollenflug__{
+    name = "Pollenbelastung"
+    pollenmenge = 0.0
+    __
+    getActualPollenConcentration()
+    }
+
 @enduml

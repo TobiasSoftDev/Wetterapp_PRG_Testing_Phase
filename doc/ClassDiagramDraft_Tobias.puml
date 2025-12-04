@@ -3,7 +3,7 @@ hide circle
 skinparam classAttributeIconSize 0
 title Klasse
 
-class Regen{
+class Niederschlag{
     - name: String
     - Regenmenge: Int
     + Dauer (name: String, Regenmenge: int)
@@ -13,6 +13,75 @@ class Regen{
     + setRegenmenge(regenmenge: Int)
     + waitForRainToStop()
     - rainHasStopped(): Boolean
+    }
+
+class TagNacht{
+    - name: String
+    - Stunde: Int
+    - Minute: Int
+    + Uhrzeit (name: String, Stunde: Int, Minute: Int)
+    + getName(): String
+    + setName(name: String)
+    + getStunde(): Int
+    + setStunde(stunde: Int)
+    + getMinute(): Int
+    + setMinute(minute: Int)
+    }
+
+class Temperatur{
+    - name: String
+    - temperatur: Real
+    + AktualTemp (name: String, Temperatur: Real)
+    + getName(): String
+    + setName(name: String)
+    + getTemperatur(): Real
+    + setTemperatur(temperatur: Real)
+    }
+
+class Prognose{
+    - name: String
+    - ZeitStunden: Int
+    + WeatherForecast (name: String, ZeitStunden: Int)
+    + getName(): String
+    + setName(name: String)
+    + getZeitStunden(): Int
+    + setZeitStunden(zeitStunden: Int)
+    }
+
+class Trend{
+    - name: String
+    - Stunde: Int
+    - Minute: Int
+    + DiffHistoricWeather (name: String, Stunde: int, Minute: Int)
+    + getName(): String
+    + setName(name: String)
+    + getStunde(): Int
+    + setStunde(stunde: Int)
+    + getMinute(): Int
+    + setMinute(minute: Int)
+    }
+
+class MinMax{
+    - name: String
+    - Max: Real
+    - Min: Real
+    + TagesExtrem (name: String, Max: Real, Min: Real)
+    + getName(): String
+    + setName(name: String)
+    + getMax(): Real
+    + setMax(max: Real)
+    + getMin(): Real
+    + setMin(min: Real)
+    }
+
+class Update{
+    - name: String
+    - Dataset: List
+    + DatenAktualisieren (name: String, Dataset: List)
+    + getName(): String
+    + setName(name: String)
+    + getList(): List
+    + setList(Dataset: List)
     }
 
 @enduml
