@@ -7,13 +7,14 @@ title Klassen
 
 
 
-Manager --> Api
 Api <|-. APIHandler
 UIClass --> Logic
 Logic <|-. Manager
-Manager --> Fileinterface
 Fileinterface <|-. File
+Manager --> Fileinterface
+Manager --> Api
 Manager --> Weather
+Manager --> Location
 
 class Manager {
     apiHandler: Api
@@ -89,5 +90,16 @@ class Weather {
     weatherCode: WeatherCode
 }
 
+class Location {
+    - latitude: Double
+    - longitude: Double
+    - name: String
+    - kanton: String
+    - kreis: String
+    - gemeinde: String
+    - elevation: Double
+    - id: UInt
+    toggleFavorite()
+}
 
 @enduml
