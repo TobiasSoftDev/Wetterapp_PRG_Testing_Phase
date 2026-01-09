@@ -15,7 +15,7 @@ Manager --> Fileinterface
 Manager --> Api
 Manager --> Weather
 Manager --> Location
-
+Weather --> WeatherCode
 class Manager {
     apiHandler: Api
     getPollenDataAt(time: Date)
@@ -101,5 +101,17 @@ class Location {
     - id: UInt
     toggleFavorite()
 }
+
+enum WeatherCode {
+     SONNIG
+     LEICHT_BEWOELKT
+     BEWOELKT
+     NEBEL
+     LEICHTER_REGEN
+     REGEN
+     SCHNEE
+     GEWITTER
+}
+
 
 @enduml

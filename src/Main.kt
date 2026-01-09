@@ -6,7 +6,6 @@
   Beschreibung: Main
 */
 
-
 val LocationList = mutableListOf<Any>()
 val WeatherList = mutableListOf<Any>()
 
@@ -27,5 +26,6 @@ fun main(){
     WeatherList.add(3)
     WeatherList.add(5.0)
     dataFile.readStoredWeather()
+    println(WeatherCode.BEWOELKT)
 
 }
