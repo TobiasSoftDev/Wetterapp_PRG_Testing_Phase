@@ -4,7 +4,7 @@ class Location(
     private val name: String,
     private val kanton: String,
     private val kreis: String,
-    private val gemeinde: Double,
+    private val gemeinde: String,
     private val elevation: Double,
     private val id: UInt
 ) {
