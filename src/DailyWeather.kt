@@ -7,9 +7,4 @@ data class DailyWeather(
     private val temperature2MMax: MutableList<Double>,
     private val weatherCode: MutableList<Int>) {
 
-    fun getToday() : CurrentDayWeather {
-        // Werte des aktuellen Tages entsprechen immer erstem Listeneintrag.
-        return CurrentDayWeather(location, time, temperature2MMin[0], temperature2MMax[0], weatherCode[0])
-    }
-
 }

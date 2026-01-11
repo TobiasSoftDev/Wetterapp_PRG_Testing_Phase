@@ -6,4 +6,8 @@ data class CurrentWeather(
     private val temperature2M: Double,
     private val relativeHumidity2M: Int,
     private val weatherCode: Int
-    )
+    ) {
+    override fun toString(): String {
+        return "CurrentWeather: $temperature2M C, $relativeHumidity2M% Wettercode: $weatherCode"
+    }
+}

@@ -16,6 +16,7 @@ Manager --> Api
 Manager --> Weather
 Manager --> Location
 Weather --> WeatherCode
+
 class Manager {
     apiHandler: Api
     getPollenDataAt(time: Date)
