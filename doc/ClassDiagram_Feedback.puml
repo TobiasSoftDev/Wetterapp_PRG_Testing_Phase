@@ -15,7 +15,9 @@ Manager --> Fileinterface
 Manager --> Api
 Manager --> Weather
 Manager --> Location
-Weather --> WeatherCode
+Manager --> WeatherCode
+Favorites --> Location
+Manager --> Favorites
 
 class Manager {
     apiHandler: Api
@@ -102,6 +104,15 @@ class Location {
     - id: UInt
     toggleFavorite()
 }
+
+object Favorites {
+    - favorites:MutableList<Location>
+    - addFavorites(location: String)
+    - removeFavorites()
+    - showFavorites()
+}
+
+
 
 enum WeatherCode {
      SONNIG
