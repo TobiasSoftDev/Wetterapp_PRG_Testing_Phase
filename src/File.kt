@@ -84,7 +84,6 @@ data class File(
     override fun clearOldData() {
         LocationList.removeAt(1)
         WeatherList.removeAt(1)
-        FileList.removeAt(1)
     }
 
     override fun checkAccuracy() {
