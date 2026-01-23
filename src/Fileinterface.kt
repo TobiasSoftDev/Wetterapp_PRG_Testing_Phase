@@ -7,13 +7,12 @@
 */
 
 interface Fileinterface {
-    fun startFileInterface()
-    fun readStoredWeather()
-    fun readStoredLocation()
-    fun readFileList(): MutableList<File>
-    fun storeWeather(weather: WeatherData) {}
-    fun storeLocation(location: LocationData) {}
-    fun storeFileList(): List<File>
+    fun storeWeatherDataDaily()
+    fun storeWeatherDataHourly(weather: Weather)
+    fun storeWeatherData()            //current weather
+    fun readWeatherDataDaily()
+    fun readWeatherDataHourly()
+    fun readWeatherData()
     fun clearOldData()
     fun checkAccuracy()
 }
