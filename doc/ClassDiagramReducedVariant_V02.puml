@@ -1,0 +1,148 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+title Klassen
+
+
+
+Api <|-. APIHandler
+UIClass --> Logic
+Logic <|-. Manager
+Fileinterface <|-. WeatherList
+Manager --> Fileinterface
+Manager --> Api
+Manager --> Weather
+Weather -> Location
+Weather --> HourlyData
+Weather --> DailyData
+Manager --> WeatherCode
+favorites --> Location
+Manager --> favorites
+
+class Manager {
+    - apiHandler: Api
+    - fetchedWeather: MutableList<Weather>
+    - fetchedLocations: MutableList<Location>
+    - weatherCodes: WeatherCode
+    Manager(apiHandler: API)
+    getCurrentWeather(location: Location): List<Any>
+    getHourlyWeather(location: Location): List<Any>
+    getDailyWeather(location: Location): List<Any>
+    fetchLocations(searchedLocation: String): MutableList<Location>
+    pickLocation(search: String, choice: Int): Location
+    storeWeatherData(weather: Weather): List<Any>
+    readWeatherData()
+    clearOldData()
+    checkAccuracy()
+}
+
+interface Fileinterface {
+    storeWeatherData(weather: Weather)
+    readWeatherDataDaily()
+    clearOldData()
+    checkAccuracy()
+
+}
+
+interface Api {
+     fun fetchWeather(location: Location): Weather?
+     fun fetchLocations(searchText: String): MutableList<Location>
+}
+
+
+interface Logic {
+    getCurrentWeather()
+    getLocation()
+    getForecast()
+    getFavorites()
+    getHistoricWeather()
+}
+
+class UIClass {
+
+}
+
+
+class WeatherList {
+    storeWeatherData(weather: Weather)
+    readWeatherData()
+    clearOldData()
+    checkAccuracy()
+}
+
+
+class APIHandler {
+    fun fetchWeather(location: Location): Weather?
+    fun fetchLocations(searchText: String): MutableList<Location>
+
+}
+
+class Weather {
+    temperature: Double
+    apparentTemperature: Double
+    humidity: Int
+    precipitation: Int
+    windSpeed: Int
+    windDirection: Int
+    weatherCode: Int
+    hourlyList: List<HourlyData>
+    dailyList: List<DailyData>
+}
+
+class HourlyData {
+    times: LocalDateTime
+    temperature2M: Double
+    apparentTemperature2M: Double
+    relativeHumidity2M: Int
+    precipitation: Int
+    windSpeed: Int
+    windDirection: Int
+    freezingLevel: Double
+    weatherCode: Int
+}
+
+class DailyData {
+    time: LocalDateTime
+    temperatureMin: Double
+    temperatureMax: Double
+    apparentTemperatureMin: Double
+    apparentTemperatureMax: Double
+    sunrise: LocalDateTime
+    sunset: LocalDateTime
+    weatherCode: Int
+}
+
+class Location {
+    - latitude: Double
+    - longitude: Double
+    - name: String
+    - kanton: String
+    - kreis: String
+    - gemeinde: String
+    - elevation: Double
+    - id: UInt
+    toggleFavorite()
+}
+
+object favorites {
+    - favorites:MutableList<Location>
+    - addFavorites(location: String)
+    - removeFavorites()
+    - showFavorites()
+}
+
+enum WeatherCode {
+     SONNIG
+     LEICHT_BEWOELKT
+     BEWOELKT
+     NEBEL
+     LEICHTER_REGEN
+     REGEN
+     SCHNEE
+     GEWITTER
+}
+
+
+@enduml
