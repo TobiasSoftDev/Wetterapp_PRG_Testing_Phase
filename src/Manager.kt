@@ -4,7 +4,7 @@ class Manager(
     private val apiHandler: Api) {
     private var fetchedWeather: Weather? = null
     private var fetchedLocations: MutableList<Location> = mutableListOf()
-    private val weatherCodes: WeatherCode = WeatherCode.SONNIG
+//    private val weatherCodes: WeatherCode = WeatherCode.SONNIG
     private var hourlyWeather: MutableList<WeatherList> = mutableListOf()
 
 
