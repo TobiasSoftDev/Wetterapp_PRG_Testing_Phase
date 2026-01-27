@@ -116,7 +116,7 @@ class ApiHandler() : Api {
                     ))
 
                 }
-                result = Weather(temperature, humidity, weatherCode, precipitation, windSpeed, windDirection, apparentTemperature, hourlyList, dailyList)
+                result = Weather(location,temperature, humidity, weatherCode, precipitation, windSpeed, windDirection, apparentTemperature, hourlyList, dailyList)
 
             } else {
                 println("Error: Unable to fetch data from the API")
