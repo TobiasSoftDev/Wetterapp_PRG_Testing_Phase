@@ -129,7 +129,7 @@ class ApiHandler() : Api {
         return result
     }
 
-    override fun fetchLocations(searchText: String) : MutableList<Location> {
+    override fun getLocations(searchText: String) : MutableList<Location> {
         val results = mutableListOf<Location>()
         val text = URLEncoder.encode(searchText, "UTF-8")
         val apiUrl = "https://geocoding-api.open-meteo.com/v1/search?name=$text&count=10&language=de&format=json&countryCode=CH"

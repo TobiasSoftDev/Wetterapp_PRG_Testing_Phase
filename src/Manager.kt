@@ -1,7 +1,5 @@
-import java.time.LocalDateTime
-
-class Manager(
-    private val apiHandler: Api) {
+class Manager() : Logic {
+    private val apiHandler: Api = ApiHandler()
     private var fetchedWeather: Weather? = null
     private var fetchedLocations: MutableList<Location> = mutableListOf()
 //    private val weatherCodes: WeatherCode = WeatherCode.SONNIG
@@ -28,10 +26,9 @@ class Manager(
         return fetchedLocations
     }
 
-    fun pickLocation(search: String, choice: Int): Location {
-        val locations = fetchLocations(search)
-        println(locations[choice])
-        return locations[choice]
+    override fun getCurrentWeather(from: Location): Weather? {
+        fetchedWeather = apiHandler.fetchWeather(from)
+        return fetchedWeather
     }
 
 //    fun storeWeatherData(weather: Weather) : MutableList<Location> {

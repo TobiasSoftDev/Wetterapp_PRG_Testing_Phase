@@ -1,15 +1,39 @@
 data class Weather(
-    private val location: Location ,
-    private val temperature: Double ,
-    private val humidity: Int ,
+    private val location: Location,
+    private val temperature: Double,
+    private val humidity: Int,
     private val weatherCode: WeatherCodes,
-    private val precipitation: Int ,
-    private val windSpeed: Int ,
+    private val precipitation: Int,
+    private val windSpeed: Int,
     private val windDirection: Int,
-    private val apparentTemperature: Double ,
+    private val apparentTemperature: Double,
     private val hourlyList: List<HourlyData>,
     private val dailyList: List<DailyData>) {
 
+    fun getTemperature(): Double = temperature
+    fun getHumidity(): Int = humidity
+    fun getWeatherCode(): WeatherCodes = weatherCode
+    fun getPrecipitation(): Int = precipitation
+    fun getWindSpeed(): Int = windSpeed
+    fun getWindDirection(): Int = windDirection
+    fun getApparentTemperature(): Double = apparentTemperature
+    fun getHourlyList(): List<HourlyData> = hourlyList
+    fun getDailyList(): List<DailyData> = dailyList
+
+    val weatherCodeNumber: Int
+       get() = weatherCode.code
+
+    val weatherCodeDescription: String
+        get() = weatherCode.description
+
+    val weatherCodeIcon: String
+        get() = weatherCode.icon
+
+
+
+
+
+    fun getCurrentWeatherDataAll() : List<Any> = listOf(temperature, apparentTemperature, humidity, precipitation, windSpeed, windDirection, "${weatherCodeNumber} ${weatherCodeDescription} ${weatherCodeIcon}")
     val weatherCodeNumber: Int
        get() = weatherCode.code
 
