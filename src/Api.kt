@@ -1,7 +1,5 @@
-import kotlin.Double
-
 interface Api {
     fun fetchWeather(location: Location): Weather?
-    fun fetchLocations(searchText: String): MutableList<Location>
+    fun getLocations(searchText: String): MutableList<Location>
 
 }

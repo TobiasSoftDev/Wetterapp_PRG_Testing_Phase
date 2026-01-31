@@ -1,3 +1,5 @@
+import javafx.application.Application
+
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
@@ -8,9 +10,13 @@
 
 
 fun main(){
-    val myApiHandler = ApiHandler()
-    val myTest = Manager(myApiHandler)
-    myTest.fetchLocations("Wil")
-    myTest.pickLocation("Wil", 1)
+    Application.launch(Gui::class.java)
+
+//    val myApiHandler = ApiHandler()
+//    val myTest = Manager(myApiHandler)
+//    myTest.fetchLocations("Wil")
+//    val loc = myTest.pickLocation("Wil", 1)
+//    val test = myTest.getCurrentWeather(loc)
+//    println("$test")
 
 }

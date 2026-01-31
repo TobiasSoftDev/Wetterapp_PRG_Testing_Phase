@@ -11,6 +11,14 @@ data class DailyData(
     private val sunrise: LocalDateTime,
     private val weatherCode: WeatherCodes ) {
 
+    fun getTime(): LocalDate = time
+    fun getTemperatureMin(): Double = temperatureMin
+    fun getTemperatureMax(): Double = temperatureMax
+    fun getApparentTemperatureMin(): Double = apparentTemperatureMin
+    fun getApparentTemperatureMax(): Double = apparentTemperatureMax
+    fun getSunset(): String = "${sunset.hour}:${sunset.minute} Uhr"
+    fun getSunrise(): String = "${sunrise.hour}:${sunrise.minute} Uhr"
+
     val weatherCodeNumber: Int
         get() = weatherCode.code
 
@@ -26,8 +34,4 @@ data class DailyData(
     fun get(): List<Any> {
         return listOf(time, temperatureMin, temperatureMax, apparentTemperatureMin, apparentTemperatureMax, sunset, sunrise,  "${weatherCodeNumber}${weatherCodeDescription}${weatherCodeIcon}")
     }
-
-
-
-
 }

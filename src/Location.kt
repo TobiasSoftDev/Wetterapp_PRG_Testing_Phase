@@ -11,10 +11,12 @@ data class Location(
 
 
     fun getLocationDataAll(): List<Any> = listOf(latitude, longitude, name, kanton, bezirk, gemeinde, elevation)
-    fun getLocationID(): Int = id.toInt()
+    fun getLocationForSearchResult() = "$name ($kanton), Gemeinde: $gemeinde"
+    fun getLocationName() = name
     fun getLongitude(): Double = longitude
     fun getLatitude(): Double = latitude
     fun getName(): String = name
+    fun getLocationID(): UInt = id
 
     private var isFavorite = false
     fun toggleFavorite() { isFavorite = !isFavorite }
