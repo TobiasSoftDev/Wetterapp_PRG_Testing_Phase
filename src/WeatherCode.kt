@@ -23,6 +23,7 @@ enum class WeatherCodes(
             // Dann Range-Checks für Bereiche
             return when (code) {
                 in 1..2 -> LEICHT_BEWOELKT
+                in 3..39 -> BEWOELKT
                 in 40..49 -> NEBEL
                 in 50..59 -> LEICHTER_REGEN
                 in 60..69 -> REGEN
@@ -32,8 +33,5 @@ enum class WeatherCodes(
             }
         }
     }
-
-       //fun getIcon(): String = icon
-
 
 }

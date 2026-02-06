@@ -1,8 +1,12 @@
-class Favorites {
-    private val favorites = mutableListOf<String>()
+class Favorite(
+    val location: Location,
+    val name: String,
+    val temperature: Double,
+    val icon: String)
 
 
-    fun addFavorites(weather: Weather) : Boolean {
+
+  /*  fun addFavorites(weather: Weather) : Boolean {
         val location = weather.locationName
         //kontrollieren, ob Ort schon vorhanden und Liste nicht grösser als 5, wenn nicht an freier Stelle hinzufügen
         if (favorites.contains(location)) {
@@ -40,6 +44,6 @@ class Favorites {
                 println(" ${weatherCode.description}${weatherCode.icon} ")
             }
         }
-    }
+    } */
 
 

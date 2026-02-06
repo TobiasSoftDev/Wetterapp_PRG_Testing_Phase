@@ -4,6 +4,7 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.Scene
+import javafx.scene.control.Alert
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.ListCell
@@ -26,10 +27,12 @@ import javafx.stage.Modality
 import javafx.stage.Stage
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.collections.addAll
 
 
 class Gui : Application() {
     private val manager: Logic = Manager()
+    private val favorites: GuiFavorites = GuiFavorites(manager)
     private var locationsModel = FXCollections.observableArrayList<Location>()
     private val resultsList = ListView<Location>().apply {
         prefWidth = 400.0
@@ -169,6 +172,44 @@ class Gui : Application() {
         alignment = Pos.CENTER_LEFT
         font = Font.font("Outfit", 20.0)
     }
+    private lateinit var root: BorderPane
+
+    private val btnFavoritAdd = Button("⭐ Zu Favoriten").apply {
+        alignment = Pos.TOP_RIGHT
+        padding = Insets(6.0, 18.0, 6.0, 18.0)
+
+        setOnAction {
+
+            if (selectedLocation != null && selectedLocationWeather != null) {
+                val actualFavorite = manager.addFavorites(selectedLocation!!, selectedLocationWeather!!)
+
+                if (actualFavorite) {
+                    val alert = Alert(Alert.AlertType.INFORMATION)
+                    alert.title = "Erfolg"
+                    alert.contentText = "✅ Zu Favoriten hinzugefügt!"
+                    alert.showAndWait()
+
+                    // ✅ Favoriten-Box NEU erstellen und aktualisieren
+                    root.right = favorites.createFavoriteBox(manager)
+                } else {
+                    val alert = Alert(Alert.AlertType.WARNING)
+                    alert.title = "Fehler"
+                    alert.contentText = "❌ Bereits in Favoriten!"
+                    alert.showAndWait()
+                }
+            } else {
+                    val alert = Alert(Alert.AlertType.WARNING)
+                    alert.title = "Fehler"
+                    alert.contentText = "Bitte erst einen Ort suchen!"
+                    alert.showAndWait()
+
+            }
+        }
+    }
+    private val headerBox = HBox(10.0).apply {
+        alignment = Pos.CENTER_LEFT
+        children.addAll(lblLocation)
+    }
 
     private val lblWeatherCode = Label().apply {
         alignment = Pos.CENTER_LEFT
@@ -207,30 +248,24 @@ class Gui : Application() {
         border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
         HBox.setHgrow(vBoxDayTime, Priority.ALWAYS)
         HBox.setHgrow(vBoxCurrentLocationTemp, Priority.ALWAYS)
-        children.addAll(vBoxDayTime, vBoxCurrentLocationTemp)
+        children.addAll(vBoxDayTime, vBoxCurrentLocationTemp,btnFavoritAdd)
     }
-    private val vBoxFavorites = VBox().apply {
-        alignment = Pos.TOP_RIGHT
-        spacing = 0.0
-        padding = Insets(20.0)
-        border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
-    }
+
 
     private val hBoxDayViewFavorites = HBox().apply {
         alignment = Pos.CENTER
         spacing = 15.0
         padding = Insets(20.0)
         HBox.setHgrow(vBoxDayView, Priority.ALWAYS)
-        HBox.setHgrow(vBoxFavorites, Priority.ALWAYS)
-        children.addAll(vBoxDayView, vBoxFavorites)
+        children.addAll(vBoxDayView,headerBox)
     }
 
     override fun start(stage: Stage) {
-        val root = BorderPane().apply {
+         root = BorderPane().apply {
             top = hBoxSucheGuete
             bottom = hBoxBottom
             center = hBoxDayViewFavorites
-
+            right = favorites.createFavoriteBox(manager)
             isFocusTraversable = true   // Nimmt den Cursor aus dem Textfeld. Textfeld will Aufmerksamkeit haben...
         }
 
@@ -258,6 +293,7 @@ class Gui : Application() {
 
                 lblLocation.text = selectedLocation?.getLocationName()
                 lblWeatherCode.text = selectedLocationWeather?.getWeatherCode()?.description
+                lblWeatherCode.text = selectedLocationWeather?.getWeatherCode()?.icon
                 lblTemperature.text = "${selectedLocationWeather?.getTemperature()} ℃"
                 lblTempMaxMin.text = "${selectedLocationWeather?.getDailyList()?.get(0)?.getTemperatureMax()} / ${
                     selectedLocationWeather?.getDailyList()?.get(0)?.getTemperatureMin()}"
