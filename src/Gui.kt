@@ -187,8 +187,8 @@ class Gui : Application() {
         padding = Insets(30.0)
         border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
         fpDetailsDayView.prefWidthProperty().bind(this.widthProperty().multiply(0.33))
-        graphView.prefWidthProperty().bind(this.widthProperty().multiply(0.66))
-        children.addAll(fpDetailsDayView, graphView)
+        plotterLineChart.getView().prefWidthProperty().bind(this.widthProperty().multiply(0.66))
+        children.addAll(fpDetailsDayView, plotterLineChart.getView())
     }
 
     private val hBoxSuche = HBox().apply {
