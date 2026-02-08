@@ -48,8 +48,8 @@ object plotterLineChart {
         }
     }
     private fun createAllSeries() {
-        createSerie("Tiefste\nTemperatur")
         createSerie("Höchste\n Temperatur")
+        createSerie("Tiefste\nTemperatur")
     }
 
     private fun createSerie(name: String) {
