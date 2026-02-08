@@ -7,5 +7,3 @@ class Favorite(
     val icon: Image) {
 
 }
-
-

@@ -72,29 +72,7 @@ class Gui : Application() {
         strokeLineCap = StrokeLineCap.ROUND
         strokeLineJoin = StrokeLineJoin.ROUND
     }
-//    private val chevronUp = SVGPath().apply {
-//        content = "M9.375 13.5415L12.5 10.4165L15.625 13.5415"
-//        stroke = Color.web("#232F48")
-//        strokeWidth = 2.0
-//        strokeLineCap = StrokeLineCap.ROUND
-//        strokeLineJoin = StrokeLineJoin.ROUND
-//    }
-//    private val chevronDown = SVGPath().apply {
-//        content = "M15.625 11.4585L12.5 14.5835L9.375 11.4585"
-//        stroke = Color.web("#232F48")
-//        strokeWidth = 2.0
-//        strokeLineCap = StrokeLineCap.ROUND
-//        strokeLineJoin = StrokeLineJoin.ROUND
-//    }
-//    private val scaledChevronUp = Group(chevronUp).apply {
-//        scaleX = 1.5
-//        scaleY = 1.5
-//    }
-//
-//    private val scaledChevronDown = Group(chevronDown).apply {
-//        scaleX = 1.5
-//        scaleY = 1.5
-//    }
+
     private val chevronUp = Image("/icons/chevronUp.png")
     private val imageViewChevronUp = ImageView(chevronUp).apply {
         fitWidth = 25.0
@@ -323,7 +301,7 @@ class Gui : Application() {
     private val mapImage = Image("/pictures/Schweiz.png", 1052.09, 668.54, true, false)
 
     private val mapView = ImageView(mapImage).apply {
-        fitWidth = 300.0
+        fitWidth = 360.0
         isPreserveRatio = true
     }
 

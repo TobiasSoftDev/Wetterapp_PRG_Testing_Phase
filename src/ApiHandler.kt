@@ -7,6 +7,7 @@ import java.net.URLEncoder
 import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 class ApiHandler() : Api {
 
@@ -47,75 +48,71 @@ class ApiHandler() : Api {
                 val dailyObj = responseText.getJSONObject("daily")
 
 // Werte aus "current"-Objekt extrahieren:
-                val temperature = currentObj.getDouble("temperature_2m")
-                val humidity = currentObj.getInt("relative_humidity_2m")
-                //val weatherCode = currentObj.getInt("weather_code")
-                val weatherCodeInt = currentObj.getInt("weather_code")
+                val temperature = currentObj.optDouble("temperature_2m", 0.0)
+                val humidity = currentObj.optInt("relative_humidity_2m", 0)
+                val weatherCodeInt = currentObj.optInt("weather_code", 0)
                 val weatherCode = WeatherCodes.fromCode(weatherCodeInt)
-                val precipitation = currentObj.getInt("precipitation")
-                val windSpeed = currentObj.getInt("wind_speed_10m")
-                val windDirection = currentObj.getInt("wind_direction_10m")
-                val apparentTemperature = currentObj.getDouble("apparent_temperature")
+                val precipitation = currentObj.optInt("precipitation", 0)
+                val windSpeed = currentObj.optInt("wind_speed_10m", 0)
+                val windDirection = currentObj.optInt("wind_direction_10m", 0)
+                val apparentTemperature = currentObj.optDouble("apparent_temperature", 0.0)
 
-
-// Werte aus "hourly"-Objekt extrahieren:
-                val hourlyTimes = hourlyObj.getJSONArray("time")
-                val hourlyTemps = hourlyObj.getJSONArray("temperature_2m")
-                val hourlyHumidity = hourlyObj.getJSONArray("relative_humidity_2m")
-                val hourlyApparentTemperature = hourlyObj.getJSONArray("apparent_temperature")
-                val hourlyPrecipitation = hourlyObj.getJSONArray("precipitation")
-                val hourlyWindSpeed = hourlyObj.getJSONArray("wind_speed_10m")
-                val hourlyWindDirection = hourlyObj.getJSONArray("wind_direction_10m")
-                val hourlyWeatherCode = hourlyObj.getJSONArray("weather_code")
-                val hourlyFreezingLevelHeight = hourlyObj.getJSONArray("freezing_level_height")
-                //val hourlySnowfallHeight = hourlyObj.getJSONArray("snowfall_height")
-
-// HourlyData-Objekte mit "hourly"-Daten befüllen:
                 val hourlyList = mutableListOf<HourlyData>()
-                for (i in 0 until hourlyTimes.length()-1) {
-                    hourlyList.add(HourlyData(
-                        times = LocalDateTime.parse(hourlyTimes.getString(i)),
-                        temperature2M = hourlyTemps.optDouble(i),
-                        relativeHumidity2M = hourlyHumidity.optInt(i),
-                        apparentTemperature2M = hourlyApparentTemperature.optDouble(i),
-                        precipitation = hourlyPrecipitation.optDouble(i),
-                        windSpeed = hourlyWindSpeed.optDouble(i),
-                        windDirection = hourlyWindDirection.optInt(i),
-                        //weatherCode = hourlyWeatherCode.optInt(i),
-                        weatherCode = WeatherCodes.fromCode(hourlyWeatherCode.optInt(i)),
-                        freezingLevel = hourlyFreezingLevelHeight.optDouble(i),
-                        //snowfallLevel = hourlySnowfallHeight.optDouble(i)
+                // Werte aus "hourly"-Objekt extrahieren:
+                val hourlyTimes = hourlyObj.optJSONArray("time")
+                if (hourlyTimes != null) {
 
-                    ))
+                    for (i in 0 until hourlyTimes.length()) {
+                        val timeString = hourlyTimes.optString(i, "")
+                        val time = if (timeString.isNotEmpty()) {
+                            try { LocalDateTime.parse(timeString) } catch (e: Exception) { LocalDateTime.now() }
+                        } else {
+                            LocalDateTime.now()
+                        }
+                        hourlyList.add(HourlyData(
+                            times = time,
+                            temperature2M = hourlyObj.optJSONArray("temperature_2m")?.optDouble(i) ?: 0.0,
+                            relativeHumidity2M = hourlyObj.optJSONArray("relative_humidity_2m")?.optInt(i) ?: 0,
+                            apparentTemperature2M = hourlyObj.optJSONArray("apparent_temperature")?.optDouble(i) ?: 0.0,
+                            precipitation = hourlyObj.optJSONArray("precipitation")?.optDouble(i) ?: 0.0,
+                            windSpeed = hourlyObj.optJSONArray("wind_speed_10m")?.optDouble(i) ?: 0.0,
+                            windDirection = hourlyObj.optJSONArray("wind_direction_10m")?.optInt(i) ?: 0,
+                            //weatherCode = hourlyWeatherCode.optInt(i),
+                            weatherCode = WeatherCodes.fromCode(
+                                hourlyObj.optJSONArray("weather_code")?.optInt(i) ?: 0
+                            ),
+                            freezingLevel = hourlyObj.optJSONArray("freezing_level_height")?.optDouble(i) ?: 0.0))
+                            //snowfallLevel = hourlySnowfallHeight.optDouble(i)
+                    }
                 }
 
-// Werte aus "daily"-Objekt extrahieren:
-                val dailyTimes = dailyObj.getJSONArray("time")
-                val dailyWeatherCodes = dailyObj.getJSONArray("weather_code")
-                val dailyTemperatureMin = dailyObj.getJSONArray("temperature_2m_min")
-                val dailyTemperatureMax = dailyObj.getJSONArray("temperature_2m_max")
-                val dailyApparentTemperatureMin = dailyObj.getJSONArray("apparent_temperature_min")
-                val dailyApparentTemperatureMax = dailyObj.getJSONArray("apparent_temperature_max")
-                val dailySunset = dailyObj.getJSONArray("sunset")
-                val dailySunrise = dailyObj.getJSONArray("sunrise")
-
-                // DailyData-Objekte mit "hourly"-Daten befüllen:
                 val dailyList = mutableListOf<DailyData>()
-                for (i in 0 until dailyTimes.length()-1) {
+                // Werte aus "daily"-Objekt extrahieren:
+                val dailyTimes = dailyObj.optJSONArray("time")
+                if (dailyTimes != null) {
+
+
+                    for (i in 0 until dailyTimes.length()) {
+                        //Datum sicher parsen:
+                        val dateString = dailyTimes.optString(i, "")
+                        val date = if (dateString.isNotEmpty()) {
+                            try { LocalDate.parse(dateString) } catch (e: Exception) { LocalDate.now() }
+                        } else { LocalDate.now() }
                     dailyList.add(DailyData(
-                        time = LocalDate.parse(dailyTimes.getString(i)),
-                        temperatureMin = dailyTemperatureMin.optDouble(i),
-                        temperatureMax = dailyTemperatureMax.optDouble(i),
-                        apparentTemperatureMin = dailyApparentTemperatureMin.optDouble(i),
-                        apparentTemperatureMax = dailyApparentTemperatureMax.optDouble(i),
-                        sunset = LocalDateTime.parse(dailySunset.getString(i)),
-                        sunrise = LocalDateTime.parse(dailySunrise.getString(i)),
-//                        weatherCode = dailyWeatherCodes.optInt(i),
-                        weatherCode = WeatherCodes.fromCode(dailyWeatherCodes.optInt(i))
-
+                        time = date,
+                        temperatureMin = dailyObj.optJSONArray("temperature_2m_min")?.optDouble(i) ?: 0.0,
+                        temperatureMax = dailyObj.optJSONArray("temperature_2m_max")?.optDouble(i) ?: 0.0,
+                        apparentTemperatureMin = dailyObj.optJSONArray("apparent_temperature_min")?.optDouble(i) ?: 0.0,
+                        apparentTemperatureMax = dailyObj.optJSONArray("apparent_temperature_max")?.optDouble(i) ?: 0.0,
+                        sunrise = parseDateTimeSafely(dailyObj.optJSONArray("sunrise")?.optString(i)),
+                        sunset = parseDateTimeSafely(dailyObj.optJSONArray("sunset")?.optString(i)),
+                        weatherCode = WeatherCodes.fromCode(
+                            dailyObj.optJSONArray("weather_code")?.optInt(i) ?: 0
+                        )
                     ))
-
+                    }
                 }
+
                 result = Weather(location,temperature, humidity, weatherCode, precipitation, windSpeed, windDirection, apparentTemperature, hourlyList, dailyList)
 
             } else {
@@ -166,14 +163,14 @@ class ApiHandler() : Api {
                         val item = resultsArray.getJSONObject(i)
 
                         // 1. Merkmale extrahieren
-                        val latitude = item.getDouble("latitude")
-                        val longitude = item.getDouble("longitude")
-                        val name = item.getString("name")
-                        val kanton = item.optString("admin1")
-                        val bezirk = item.getString("admin2")
-                        val gemeinde = item.getString("admin3")
-                        val elevation = item.getDouble("elevation")
-                        val id = item.getInt("id")
+                        val latitude = item.optDouble("latitude", 0.0)
+                        val longitude = item.optDouble("longitude", 0.0)
+                        val name = item.optString("name", "unbekannter Ort")
+                        val kanton = item.optString("admin1", "")
+                        val bezirk = item.optString("admin2", "")
+                        val gemeinde = item.optString("admin3", "")
+                        val elevation = item.optDouble("elevation", 0.0)
+                        val id = item.optLong("id", 0L).toInt()
 
                         results.add(Location(latitude, longitude, name, kanton, bezirk, gemeinde, elevation, id.toUInt()))
                     }
@@ -189,5 +186,20 @@ class ApiHandler() : Api {
         }
         println(results)
         return results
+    }
+
+    private fun parseDateTimeSafely(dateTimeString: String?): LocalDateTime {
+        return if (!dateTimeString.isNullOrEmpty()) {
+            try {
+                // Versucht den String zu parsen
+                LocalDateTime.parse(dateTimeString)
+            } catch (e: Exception) {
+                // Falls das Format falsch ist: Aktuelle Zeit als Sicherheitsnetz
+                LocalDateTime.now()
+            }
+        } else {
+            // Falls der String null oder leer ist: Aktuelle Zeit
+            LocalDateTime.now()
+        }
     }
 }
