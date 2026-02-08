@@ -23,16 +23,23 @@ abstract class WeatherList() : Fileinterface {
         TODO("Not yet implemented")
     }
 
+    override fun storeFavorites() {
+        TODO("Not yet implemented")
+    }
+
     override fun readWeatherDataDaily() {
         TODO("Not yet implemented")
     }
 
-//    override fun readWeatherDataHourly(): Weather  {
-//        TODO("Not yet implemented")
-//        return Weather
-//    }
+    override fun readWeatherDataHourly() {
+        TODO("Not yet implemented")
+    }
 
-    override fun readWeatherData(){
+    override fun readWeatherData() {
+        TODO("Not yet implemented")
+    }
+
+    override fun readFavorites() {
         TODO("Not yet implemented")
     }
 

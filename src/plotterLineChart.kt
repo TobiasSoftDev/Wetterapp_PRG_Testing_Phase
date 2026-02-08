@@ -1,5 +1,7 @@
 import javafx.application.Platform.runLater
+import javafx.collections.FXCollections
 import javafx.geometry.Side
+import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
@@ -8,14 +10,17 @@ import javafx.scene.chart.XYChart.Series
 /* Tag und Temperatur als LineChart anzeigen */
 
 object plotterLineChart {
-    private val xAxis = NumberAxis()
+    private val weekDays = listOf("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag")
+    private val xAxis = CategoryAxis(FXCollections.observableArrayList(weekDays))
     private val yAxis = NumberAxis()
     private var chart = LineChart(xAxis, yAxis)
-    private val series: MutableList<Series<Number, Number>> = mutableListOf()
-    private var counter = 0.0
-    private val MAX_SHOWN_VALUES = 30
+    private val series: MutableList<Series<String, Number>> = mutableListOf()
+    private var dayIndex = 0
+    private val MAX_SHOWN_VALUES = 7
+    private var updateCount = 0
+    private var initialized = false
 
-    fun getView(): LineChart<Number, Number> {
+    fun getView(): LineChart<String?, Number?> {
         xAxis.label = "Wochentag"
         yAxis.label = "Temperatur [C]"
 
@@ -24,8 +29,14 @@ object plotterLineChart {
             legendSide = Side.LEFT
             createSymbols = false
             animated = false
+
         }
-        createAllSeries()
+
+        if (!initialized) {
+            createAllSeries()
+            initialized = true
+        }
+
         return chart
     }
 
@@ -37,25 +48,32 @@ object plotterLineChart {
         }
     }
     private fun createAllSeries() {
-        createSerie("Min Temperatur")
-        createSerie("Max Temperatur")
+        createSerie("Tiefste\nTemperatur")
+        createSerie("Höchste\n Temperatur")
     }
 
     private fun createSerie(name: String) {
-        val serie = Series<Number, Number>()
+        val serie = Series<String, Number>()
         serie.name = name
         chart.data.add(serie)
         series += serie
     }
 
-    private fun updateSerie(serie: Series<Number, Number>, value: Int) {
+    private fun updateSerie(serie: Series<String, Number>, value: Int) {
         runLater {
-            val data = XYChart.Data<Number, Number>(counter.toInt(), value)
+            val currentDay = weekDays[dayIndex % 7]
+            val data = XYChart.Data<String, Number>(currentDay, value)
             serie.data.add(data)
             if (serie.data.size > MAX_SHOWN_VALUES) {
                 serie.data.removeAt(0)
             }
-            counter += 1.0 / series.size // Passt für 1 Sekunden Zyklus des Supervisors
+
+            // Nur nach dem Update beider Serien zum nächsten Tag
+            updateCount++
+            if (updateCount >= series.size) {
+                dayIndex++
+                updateCount = 0
+            }
         }
     }
 
