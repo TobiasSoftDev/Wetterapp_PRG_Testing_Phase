@@ -1,3 +1,4 @@
+import Gui
 import javafx.application.Application.*
 
 
@@ -12,6 +13,7 @@ import javafx.application.Application.*
 
 fun main(){
     launch(Gui::class.java)
+
 
 //    val myApiHandler = ApiHandler()
 //    val myTest = Manager(myApiHandler)
