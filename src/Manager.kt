@@ -6,7 +6,7 @@ class Manager() : Logic {
     private var fetchedWeather: Weather? = null
     private var fetchedLocations: MutableList<Location> = mutableListOf()
 //    private val weatherCodes: WeatherCode = WeatherCode.SONNIG
-    private var hourlyWeather: MutableList<WeatherList> = mutableListOf()
+    private var hourlyWeather: MutableList<WeatherData> = mutableListOf()
     private var favoritesList: MutableList<Favorite> = mutableListOf()
 
 //    fun getCurrentWeather(location: Location): List<Any> {
