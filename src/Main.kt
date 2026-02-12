@@ -32,6 +32,7 @@ fun main(){
 //        temperature = 0.0,
 //        icon =  Image("")
 //        )
+
     val storage: Storabledata = WeatherData()
     val hourlyData = weather.getHourlyList()
     val dailyData = weather.getDailyList()
