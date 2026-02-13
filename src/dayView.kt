@@ -3,14 +3,19 @@ import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.control.Button
 import javafx.scene.control.Label
-import javafx.scene.effect.InnerShadow
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.Background
+import javafx.scene.layout.Border
+import javafx.scene.layout.BorderStroke
+import javafx.scene.layout.BorderStrokeStyle
+import javafx.scene.layout.BorderWidths
+import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 import javafx.scene.shape.SVGPath
 import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
@@ -49,7 +54,7 @@ object dayView {
     val lblUpdateTime = Label("Für welchen Ort möchtest du das Wetter abfragen?").apply {
         alignment = Pos.CENTER_LEFT
         font = Font.font("Outfit", 16.0)
-        textFill = AppStyle.ACCENT_FONT_COLOR
+        textFill = appStyle.ACCENT_FONT_COLOR
     }
 
     val lblCurrentDay = Label().apply {
@@ -101,35 +106,52 @@ object dayView {
         children.addAll(lblLocation)
         maxHeight = 250.0
     }
+
     val lblWeatherCode = Label().apply {
         alignment = Pos.CENTER_LEFT
-        font = Font.font("Outfit", FontWeight.LIGHT, 16.0)
+        font = appStyle.FONT_16
     }
 
     val lblTemperature = Label().apply {
         alignment = Pos.CENTER_LEFT
-        //border = Border(BorderStroke(Color.RED, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
-        font = Font.font("Helvetica", FontWeight.BOLD, 64.0)
+        font = appStyle.FONT_64_BOLD
+        padding = Insets(0.0, 20.0, 0.0, 0.0)
     }
 
-    val lblMaxTemperature = Label().apply {
-        alignment = Pos.CENTER_RIGHT
-        textFill = AppStyle.RED
+    private val lblMaximum = Label("max").apply {
         prefWidth = 30.0
-        font = Font.font("Outfit", FontWeight.LIGHT, 16.0)
+        minWidth = Label.USE_PREF_SIZE
+        alignment = Pos.CENTER_LEFT
+
+    }
+    private val lblMinimum = Label("min").apply {
+        prefWidth = 30.0
+        minWidth = Label.USE_PREF_SIZE
+        alignment = Pos.CENTER_LEFT
+    }
+
+    val lblMaxTemperature = Label("-").apply {
+        prefWidth = 40.0
+        alignment = Pos.CENTER_RIGHT
+        textFill = appStyle.RED
+        minWidth = Label.USE_PREF_SIZE
+        font = appStyle.FONT_16
     }
     private val hBoxTempMax = HBox().apply {
         alignment = Pos.CENTER_LEFT
+        spacing = 5.0
         children.addAll(lblMaximum, lblMaxTemperature)
     }
-    val lblMinTemperature = Label().apply {
+    val lblMinTemperature = Label("-").apply {
+        prefWidth = 40.0
         alignment = Pos.CENTER_RIGHT
-        textFill = AppStyle.BLUE
-        prefWidth = 30.0
-        font = Font.font("Outfit", FontWeight.LIGHT, 16.0)
+        textFill = appStyle.BLUE
+        minWidth = Label.USE_PREF_SIZE
+        font = appStyle.FONT_16
     }
     private val hBoxTempMin = HBox().apply {
         alignment = Pos.CENTER_LEFT
+        spacing = 5.0
         children.addAll(lblMinimum, lblMinTemperature)
     }
     private val vBoxMaxMin = VBox().apply {
@@ -141,21 +163,18 @@ object dayView {
     private val hBoxTemperatures = HBox().apply {
         alignment = Pos.CENTER_LEFT
         spacing = 8.0
-        //border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
         children.addAll(lblTemperature, vBoxMaxMin)
     }
 
     private val vBoxCurrentLocationTemp = VBox().apply {
         alignment = Pos.CENTER_LEFT
         spacing = 16.0
-        //border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
         children.addAll(locationHbox, lblWeatherCode, hBoxTemperatures)
     }
 
     private val vBoxDayView = VBox().apply {
         alignment = Pos.TOP_LEFT
         spacing = 27.0
-        //border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
         maxWidth = Double.MAX_VALUE
         HBox.setHgrow(this, Priority.ALWAYS)
         children.addAll(vBoxDayTime, vBoxCurrentLocationTemp)
@@ -177,8 +196,6 @@ object dayView {
     }
 
     val imageViewContainer = StackPane(mapView).apply {
-        //padding = Insets(20.0)
-        //border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
         children.addAll(pinView)
     }
 

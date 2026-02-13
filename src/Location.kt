@@ -8,8 +8,6 @@ data class Location(
     private val elevation: Double,
     private val id: UInt) {
 
-
-
     fun getLocationDataAll(): List<Any> = listOf(latitude, longitude, name, kanton, bezirk, gemeinde, elevation)
     fun getLocationForSearchResult() = "$name ($kanton), Gemeinde: $gemeinde"
     fun getLocationName() = name

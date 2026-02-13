@@ -1,4 +1,3 @@
-import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Cursor
@@ -7,7 +6,6 @@ import javafx.scene.control.TextField
 import javafx.scene.effect.InnerShadow
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
-import javafx.stage.Stage
 
 object searchbar {
 
@@ -22,7 +20,7 @@ object searchbar {
         padding = Insets(6.0, 18.0, 6.0, 18.0)
         cursor = Cursor.HAND
         val shadow = InnerShadow().apply {
-            color = AppStyle.ACCENT_COLOR_LIGHT
+            color = appStyle.ACCENT_COLOR_LIGHT
         }
         setOnMouseEntered {
             effect = shadow

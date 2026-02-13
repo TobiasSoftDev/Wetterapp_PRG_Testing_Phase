@@ -18,9 +18,7 @@ import javafx.scene.layout.BorderStroke
 import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.layout.BorderWidths
 import javafx.scene.layout.CornerRadii
-import javafx.scene.layout.FlowPane
 import javafx.scene.layout.HBox
-import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
@@ -31,6 +29,7 @@ import javafx.stage.Modality
 import javafx.stage.Stage
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.round
 
 //fun exit() {
 //    with(Alert(Alert.AlertType.INFORMATION)) {
@@ -99,58 +98,22 @@ class Gui : Application() {
 
     private val lblProzent = Label("98%").apply {
         alignment = Pos.CENTER
-        font = Font.font("Outfit", 16.0)
+        font = appStyle.FONT_16
         //background = Background(BackgroundFill(Color.BLUE, null, null))
-    }
-
-
-    private val lblPrecipitation = Label("Niederschlag: ").apply {
-        alignment = Pos.CENTER
-        font = Font.font("Outfit", 16.0)
-        padding = Insets(8.0, 8.0, 8.0, 8.0)
-    }
-
-    private val lblHumidity = Label("Luftfeuchtigkeit: ").apply {
-        alignment = Pos.CENTER
-        font = Font.font("Outfit", 16.0)
-        padding = Insets(8.0, 8.0, 8.0, 8.0)
-    }
-
-    private val lblSunrise = Label("Sonnenaufgang: ").apply {
-        alignment = Pos.CENTER
-        font = Font.font("Outfit", 16.0)
-        padding = Insets(8.0, 8.0, 8.0, 8.0)
-    }
-
-    private val lblSunset = Label("Sonnenuntergang: ").apply {
-        alignment = Pos.CENTER
-        font = Font.font("Outfit", 16.0)
-        padding = Insets(8.0, 8.0, 8.0, 8.0)
-    }
-
-    private val fpDetailsDayView = FlowPane().apply {
-        alignment = Pos.TOP_LEFT
-        padding = Insets(8.0, 0.0, 8.0, 0.0)
-        border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
-        children.addAll(lblHumidity, lblPrecipitation, lblSunrise, lblSunset)
-    }
-
-    private val graphView = HBox().apply {
-        alignment = Pos.CENTER
-        border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
     }
 
     private val hBoxBottom = HBox().apply {
         alignment = Pos.CENTER
         padding = Insets(30.0)
-        border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
-        fpDetailsDayView.prefWidthProperty().bind(this.widthProperty().multiply(0.33))
-        plotterLineChart.getView().prefWidthProperty().bind(this.widthProperty().multiply(0.66))
-        children.addAll(fpDetailsDayView, plotterLineChart.getView())
+
+        detailsView.getView().prefWidthProperty().bind(this.widthProperty().multiply(0.4))
+        plotterLineChart.getView().prefWidthProperty().bind(this.widthProperty().multiply(0.6))
+        children.addAll(detailsView.getView(), plotterLineChart.getView())
+
     }
 
     private val lblGuete = Label("Güte der Vorhersage").apply {
-        font = Font.font("Outfit", 18.0)
+        font = appStyle.FONT_18
     }
 
     private val hBoxGuete = HBox().apply {
@@ -179,7 +142,6 @@ class Gui : Application() {
                 popupLogic(source)
             }
         }
-
         children.addAll(searchbar.getView(), hBoxGuete)
     }
 
@@ -247,9 +209,10 @@ class Gui : Application() {
             background = Background(BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets(0.0, 0.0, 0.0, 0.0)))
             isFocusTraversable = true   // Nimmt den Cursor aus dem Textfeld. Textfeld will Aufmerksamkeit haben...
         }
+
         dayView.getView().prefWidthProperty().bind(root.widthProperty().multiply(0.50))
         dayView.getView().minWidth = 200.0
-        hBoxBottom.prefHeightProperty().bind(root.heightProperty().multiply(0.40))
+        hBoxBottom.prefHeightProperty().bind(root.heightProperty().multiply(0.45))
         hBoxBottom.minHeight = 100.0
 
         with(stage) {
@@ -291,8 +254,8 @@ class Gui : Application() {
             textAlignment = TextAlignment.CENTER
             isWrapText = true
             padding = Insets(10.0, 0.0, 0.0, 0.0)
-            font = Font.font("Outfit", FontWeight.LIGHT, FontPosture.ITALIC, 14.0)
-            textFill = AppStyle.MAIN_FONT_COLOR
+            font = appStyle.FONT_14
+            textFill = appStyle.MAIN_FONT_COLOR
         }
         val resultsBox = VBox().apply {
             alignment = Pos.CENTER
@@ -306,6 +269,7 @@ class Gui : Application() {
         dayView.lblLocation.text = Gui.selectedLocation?.getLocationName()
         if (location != null) {
             dayView.pinPosition(dayView.calculatePosition(location.getLatitude(), location.getLongitude()))
+            detailsView.lblDetailsTitle.text = "Details für ${location.getLocationName()}"
         }
     }
 
@@ -315,12 +279,15 @@ class Gui : Application() {
             dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
             dayView.lblMaxTemperature.text = "${weather.getDailyList()[0].getTemperatureMax()}"
             dayView.lblMinTemperature.text = "${weather.getDailyList()[0].getTemperatureMin()}"
-            lblHumidity.text = "Luftfeuchtigkeit: ${weather.getHumidity()}%"
-            lblPrecipitation.text = "Niederschlag: ${weather.getPrecipitation()}%"
-            lblSunrise.text = "Sonnenaufgang: ${
-                weather.getDailyList().get(0).getSunrise()}"
-            lblSunset.text = "Sonnenuntergang: ${
-                weather.getDailyList().get(0).getSunset()}"
+
+            detailsView.lblHumidityValue.text = "${weather.getHumidity()}%"
+            detailsView.lblPrecipitationValue.text = "${weather.getPrecipitation()} mm"
+            detailsView.lblSunriseValue.text = weather.getDailyList().get(0).getSunrise()
+            detailsView.lblSunsetValue.text = weather.getDailyList().get(0).getSunset()
+            detailsView.lblWindSpeedValue.text = "${weather.getWindSpeed()} km/h"
+            detailsView.updateWindDirection(weather.getWindDirection())
+            detailsView.lblApparentTemperatureValue.text = "${round(weather.getApparentTemperature()).toInt()}º"
+
             dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
         }
         favorites.updateStarColor(Gui.selectedLocation)

@@ -90,7 +90,6 @@ class ApiHandler() : Api {
                 val dailyTimes = dailyObj.optJSONArray("time")
                 if (dailyTimes != null) {
 
-
                     for (i in 0 until dailyTimes.length()) {
                         //Datum sicher parsen:
                         val dateString = dailyTimes.optString(i, "")
@@ -128,7 +127,7 @@ class ApiHandler() : Api {
     override fun getLocations(searchText: String) : MutableList<Location> {
         val results = mutableListOf<Location>()
         val text = URLEncoder.encode(searchText, "UTF-8")
-        val apiUrl = "https://geocoding-api.open-meteo.com/v1/search?name=$text&count=10&language=de&format=json&countryCode=CH"
+        val apiUrl = "https://geocoding-api.open-meteo.com/v1/search?name=$text&count=20&language=de&format=json&countryCode=CH"
 
         try {
 
@@ -142,7 +141,7 @@ class ApiHandler() : Api {
             val responseCode: Int = connection.responseCode     // 200 = HTTP_OK: Abruf funktioniert
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                // Read and print the response data
+                // Read the response data
                 val reader = BufferedReader(InputStreamReader(connection.inputStream))
                 var line: String?
                 val response = StringBuilder()
@@ -183,7 +182,6 @@ class ApiHandler() : Api {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        println(results)
         return results
     }
 

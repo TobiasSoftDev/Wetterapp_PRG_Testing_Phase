@@ -29,9 +29,6 @@ data class DailyWeather(
     val weatherCodeIcon: Image
         get() = weatherCode.icon
 
-
-
-
     fun get(): List<Any> {
         return listOf(time, temperatureMin, temperatureMax, apparentTemperatureMin, apparentTemperatureMax, sunset, sunrise,  "${weatherCodeNumber}${weatherCodeDescription}${weatherCodeIcon}")
     }
