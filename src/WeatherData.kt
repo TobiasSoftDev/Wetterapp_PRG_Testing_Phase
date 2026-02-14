@@ -1,4 +1,13 @@
+import java.beans.XMLDecoder
+import java.beans.XMLEncoder
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /*
@@ -10,7 +19,14 @@ import java.time.format.DateTimeFormatter
   und die Guetepruefung durchgeführt
  */
 
-class WeatherData() : Storabledata {
+data class WeatherData(
+    var timestamp: String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd 'T' HH:mm:ss")).toString(),
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
+    var id: Int = 0,
+    var temperature: Double = 0.0,
+    var weatherCode: Int = 0) : Storabledata {
+
 
     // supply Date and time on the first line in the data file
     val date = java.time.LocalDate.now()
@@ -102,6 +118,53 @@ class WeatherData() : Storabledata {
 
     override fun storeData(weather: Weather?) {
 
+        if (weather != null) {
+            val dataset = WeatherData(
+                LocalDateTime.now().toString(),
+                weather.latitude,
+                weather.longitude,
+                weather.locationID.toInt(),
+                weather.getTemperature(),
+                weather.getWeatherCode().code
+            )
+            val file = getStorageFile()
+            val history = if (file.exists()) {
+                loadHistory(file)
+            } else {
+                FileWrapper()
+            }
+            history.dataList.add(dataset)
+            val encoder = XMLEncoder(               // Stream bereitstellen
+                BufferedOutputStream(
+                    FileOutputStream(file)
+                )
+            )
+            encoder.writeObject(history)             // Objekt speichern
+            encoder.close()                         // Stream schliessen
+        }
+    }
+
+    private fun getStorageFile(): File {
+        // Holt den Pfad des globalen Benutzerordners (bspw. Mac: /users/peterkoch)
+        val userHome = System.getProperty("user.home")
+        // erstellt einen Ordner im Dateiensystem des Nutzers. Der Punkt steht für einen versteckten Ordner "XmlTest".
+        val storageDirectory = Paths.get(userHome, ".Weather2b", "storage")
+
+        if (!Files.exists(storageDirectory)) {
+            Files.createDirectories(storageDirectory)
+        }
+        return storageDirectory.resolve("storageFile.xml").toFile()
+    }
+
+    private fun loadHistory(file: File): FileWrapper {
+        return try {
+            val decoder = XMLDecoder(
+                BufferedInputStream(
+                    FileInputStream(file)))
+            decoder.readObject() as FileWrapper
+        } catch (_: Exception) {
+            FileWrapper()
+        }
     }
 
     override fun storeFavorites(favorites: Favorite): Favorite {
