@@ -240,9 +240,13 @@ class Gui : Application() {
                 val storage: Storabledata = WeatherData()
                 println("Current: ${storage.storeWeatherData(Gui.selectedLocationWeather)}")
 
-                // For Test purposes only safe the hourly and daily weather as well
-                println("Daily: ${storage.storeWeatherDataDaily(Gui.selectedLocationWeather)}")
-                println("Hourly: ${storage.storeWeatherDataHourly(Gui.selectedLocationWeather)}")
+//                // Create and refresh the current weather file in "currentData"
+//                val storage: Storabledata = WeatherData()
+//                println("Current: ${storage.storeWeatherData(selectedLocationWeather)}")
+//
+//                // For Test purposes only safe the hourly and daily weather as well
+//                println("Daily: ${storage.storeWeatherDataDaily(selectedLocationWeather)}")
+//                println("Hourly: ${storage.storeWeatherDataHourly(selectedLocationWeather)}")
 
                 popupStage.close()
             }

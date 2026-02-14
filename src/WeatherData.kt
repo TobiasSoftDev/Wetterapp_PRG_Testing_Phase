@@ -100,6 +100,10 @@ class WeatherData() : Storabledata {
         return currentData
     }
 
+    override fun storeData(weather: Weather?) {
+
+    }
+
     override fun storeFavorites(favorites: Favorite): Favorite {
         val file = File("resources/favoriteLocationData/Favorites.xml")
         println("Storing favorite: ${favorites.location}")
