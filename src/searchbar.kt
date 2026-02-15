@@ -20,7 +20,7 @@ object searchbar {
         padding = Insets(6.0, 18.0, 6.0, 18.0)
         cursor = Cursor.HAND
         val shadow = InnerShadow().apply {
-            color = appStyle.ACCENT_COLOR_LIGHT
+            color = AppStyle.ACCENT_COLOR_LIGHT
         }
         setOnMouseEntered {
             effect = shadow

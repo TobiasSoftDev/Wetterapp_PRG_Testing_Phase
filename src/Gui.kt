@@ -19,11 +19,9 @@ import javafx.scene.layout.BorderStrokeStyle
 import javafx.scene.layout.BorderWidths
 import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.HBox
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
-import javafx.scene.text.Font
-import javafx.scene.text.FontPosture
-import javafx.scene.text.FontWeight
 import javafx.scene.text.TextAlignment
 import javafx.stage.Modality
 import javafx.stage.Stage
@@ -98,7 +96,7 @@ class Gui : Application() {
 
     private val lblProzent = Label("98%").apply {
         alignment = Pos.CENTER
-        font = appStyle.FONT_16
+        font = AppStyle.FONT_16
         //background = Background(BackgroundFill(Color.BLUE, null, null))
     }
 
@@ -113,7 +111,7 @@ class Gui : Application() {
     }
 
     private val lblGuete = Label("Güte der Vorhersage").apply {
-        font = appStyle.FONT_18
+        font = AppStyle.FONT_18
     }
 
     private val hBoxGuete = HBox().apply {
@@ -254,8 +252,8 @@ class Gui : Application() {
             textAlignment = TextAlignment.CENTER
             isWrapText = true
             padding = Insets(10.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_14
-            textFill = appStyle.MAIN_FONT_COLOR
+            font = AppStyle.FONT_14
+            textFill = AppStyle.MAIN_FONT_COLOR
         }
         val resultsBox = VBox().apply {
             alignment = Pos.CENTER

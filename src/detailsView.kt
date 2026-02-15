@@ -1,34 +1,26 @@
-import com.sun.org.apache.xalan.internal.lib.ExsltStrings.padding
 import javafx.animation.Interpolator
-import javafx.animation.ParallelTransition
 import javafx.animation.RotateTransition
-import javafx.animation.SequentialTransition
 import javafx.geometry.HPos
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.Group
 import javafx.scene.control.Label
 import javafx.scene.control.ScrollPane
 import javafx.scene.image.ImageView
-import javafx.scene.layout.Background
 import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.VBox
 import javafx.scene.layout.VBox.setMargin
-import javafx.scene.transform.Rotate
 import javafx.util.Duration
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 
 object detailsView {
 
     val lblPrecipitation = Label("Niederschlag").apply {
-        appStyle.layoutLabelHeaderLeft(this)
+        AppStyle.layoutLabelHeaderLeft(this)
     }
 
     val lblPrecipitationValue = Label("-").apply {
-        appStyle.layoutLabelLeft(this)
+        AppStyle.layoutLabelLeft(this)
     }
 
     val vBoxPrecipitation = VBox().apply {
@@ -38,11 +30,11 @@ object detailsView {
     }
 
     val lblHumidity = Label("Luftfeuchtigkeit").apply {
-        appStyle.layoutLabelHeaderRight(this)
+        AppStyle.layoutLabelHeaderRight(this)
     }
 
     val lblHumidityValue = Label("-").apply {
-        appStyle.layoutLabelRight(this)
+        AppStyle.layoutLabelRight(this)
     }
 
     val vBoxHumidity = VBox().apply {
@@ -52,11 +44,11 @@ object detailsView {
     }
 
     val lblSunrise = Label("Sonnenaufgang").apply {
-        appStyle.layoutLabelHeaderLeft(this)
+        AppStyle.layoutLabelHeaderLeft(this)
     }
 
     val lblSunriseValue = Label("-").apply {
-        appStyle.layoutLabelLeft(this)
+        AppStyle.layoutLabelLeft(this)
     }
 
     val vBoxSunrise = VBox().apply {
@@ -66,11 +58,11 @@ object detailsView {
     }
 
     val lblSunset = Label("Sonnenuntergang").apply {
-        appStyle.layoutLabelHeaderRight(this)
+        AppStyle.layoutLabelHeaderRight(this)
     }
 
     val lblSunsetValue = Label("-").apply {
-        appStyle.layoutLabelRight(this)
+        AppStyle.layoutLabelRight(this)
     }
 
     val vBoxSunset = VBox().apply {
@@ -80,11 +72,11 @@ object detailsView {
     }
 
     val lblWindSpeed = Label("Windgeschwindigkeit").apply {
-        appStyle.layoutLabelHeaderLeft(this)
+        AppStyle.layoutLabelHeaderLeft(this)
     }
 
     val lblWindSpeedValue = Label("- km/h").apply {
-        appStyle.layoutLabelLeft(this)
+        AppStyle.layoutLabelLeft(this)
     }
 
     val vBoxWindSpeed = VBox().apply {
@@ -94,7 +86,7 @@ object detailsView {
     }
 
     val lblWindDirection = Label("Windrichtung").apply {
-        appStyle.layoutLabelHeaderRight(this)
+        AppStyle.layoutLabelHeaderRight(this)
     }
 
     private val windDirectionArrow = javafx.scene.image.Image("/icons/Arrow_Down_LG.png")
@@ -119,10 +111,10 @@ object detailsView {
     }
 
     val lblApparentTemperature = Label("Gefühlte Temperatur").apply {
-        appStyle.layoutLabelHeaderLeft(this)
+        AppStyle.layoutLabelHeaderLeft(this)
     }
     val lblApparentTemperatureValue = Label("-").apply {
-        appStyle.layoutLabelLeft(this)
+        AppStyle.layoutLabelLeft(this)
     }
 
     val vBoxApparentTemperature = VBox().apply {
@@ -133,7 +125,7 @@ object detailsView {
 
     val lblDetailsTitle = Label().apply {
         text = "Details für..."
-        appStyle.layoutLabelHeaderTop(this)
+        AppStyle.layoutLabelHeaderTop(this)
     }
 
     val gpDetailsView = GridPane().apply {

@@ -1,24 +1,12 @@
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.Cursor
-import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
-import javafx.scene.layout.Background
-import javafx.scene.layout.Border
-import javafx.scene.layout.BorderStroke
-import javafx.scene.layout.BorderStrokeStyle
-import javafx.scene.layout.BorderWidths
-import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
-import javafx.scene.paint.Color
-import javafx.scene.shape.SVGPath
-import javafx.scene.shape.StrokeLineCap
-import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 import java.time.LocalDate
@@ -41,20 +29,10 @@ object dayView {
         }
     }
 
-    private val lblMaximum = Label("max").apply {
-        padding = Insets(5.0, 10.0, 5.0, 10.0)
-        alignment = Pos.BOTTOM_CENTER
-    }
-    private val lblMinimum = Label("min").apply {
-        padding = Insets(5.0, 10.0, 5.0, 10.0)
-        alignment = Pos.BOTTOM_CENTER
-    }
-
-
     val lblUpdateTime = Label("Für welchen Ort möchtest du das Wetter abfragen?").apply {
         alignment = Pos.CENTER_LEFT
         font = Font.font("Outfit", 16.0)
-        textFill = appStyle.ACCENT_FONT_COLOR
+        textFill = AppStyle.ACCENT_FONT_COLOR
     }
 
     val lblCurrentDay = Label().apply {
@@ -109,12 +87,12 @@ object dayView {
 
     val lblWeatherCode = Label().apply {
         alignment = Pos.CENTER_LEFT
-        font = appStyle.FONT_16
+        font = AppStyle.FONT_16
     }
 
     val lblTemperature = Label().apply {
         alignment = Pos.CENTER_LEFT
-        font = appStyle.FONT_64_BOLD
+        font = AppStyle.FONT_64_BOLD
         padding = Insets(0.0, 20.0, 0.0, 0.0)
     }
 
@@ -133,9 +111,9 @@ object dayView {
     val lblMaxTemperature = Label("-").apply {
         prefWidth = 40.0
         alignment = Pos.CENTER_RIGHT
-        textFill = appStyle.RED
+        textFill = AppStyle.RED
         minWidth = Label.USE_PREF_SIZE
-        font = appStyle.FONT_16
+        font = AppStyle.FONT_16
     }
     private val hBoxTempMax = HBox().apply {
         alignment = Pos.CENTER_LEFT
@@ -145,9 +123,9 @@ object dayView {
     val lblMinTemperature = Label("-").apply {
         prefWidth = 40.0
         alignment = Pos.CENTER_RIGHT
-        textFill = appStyle.BLUE
+        textFill = AppStyle.BLUE
         minWidth = Label.USE_PREF_SIZE
-        font = appStyle.FONT_16
+        font = AppStyle.FONT_16
     }
     private val hBoxTempMin = HBox().apply {
         alignment = Pos.CENTER_LEFT
