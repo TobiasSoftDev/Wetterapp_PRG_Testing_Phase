@@ -298,12 +298,9 @@ class Gui : Application() {
         dayView.btnAddFavorite.isVisible = true
 
         // API-Daten neu laden für Plotter Line Chart
-        val weather = Gui.selectedLocationWeather
-        if (weather != null) {
-            weather.getDailyWeatherDataAll().forEach { day ->
-                plot("Max Temperatur", day.getTemperatureMax().toInt())
-                plot("Min Temperatur", day.getTemperatureMin().toInt())
-            }
+        weather?.getDailyWeatherDataAll()?.forEach { day ->
+            plot("Max Temperatur", day.getTemperatureMax().toInt())
+            plot("Min Temperatur", day.getTemperatureMin().toInt())
         }
     }
 
