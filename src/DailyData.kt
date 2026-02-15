@@ -1,3 +1,4 @@
+import javafx.scene.image.Image
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -25,7 +26,7 @@ data class DailyData(
     val weatherCodeDescription: String
         get() = weatherCode.description
 
-    val weatherCodeIcon: String
+    val weatherCodeIcon: Image
         get() = weatherCode.icon
 
 

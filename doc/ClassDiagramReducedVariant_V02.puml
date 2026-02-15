@@ -10,8 +10,8 @@ title Klassen
 Api <|-. APIHandler
 UIClass --> Logic
 Logic <|-. Manager
-FileInterface <|-. WeatherList
-Manager --> FileInterface
+Storabledata <|-. WeatherData
+Manager --> Storabledata
 Manager --> Api
 Manager --> Weather
 Weather -> Location
@@ -32,18 +32,27 @@ class Manager {
     getDailyWeather(location: Location): List<Any>
     fetchLocations(searchedLocation: String): MutableList<Location>
     pickLocation(search: String, choice: Int): Location
-    storeWeatherDataHourly(weather: Weather): List<Any>
+    storeWeatherDataDaily(weather: Weather): List<HourlyData>
+    storeWeatherDataHourly(weather: Weather): List<HourlyData>
+    storeWeatherData(weather: Weather): List<Any>
+    storeFavorites(favorites: Favorites): Favorite
+    readWeatherDataDaily()
     readWeatherDataHourly()
-    clearOldData()
+    readWeatherData()
+    readFavorites()
     checkAccuracy()
 }
 
-interface FileInterface {
+interface Storabledata {
+    storeWeatherDataDaily(weather: Weather)
     storeWeatherDataHourly(weather: Weather)
+    storeWeatherData(weather: Weather)
+    storeFavorites(favorites: Favorites)
+    readWeatherDataDaily()
     readWeatherDataHourly()
-    clearOldData()
+    readWeatherData()
+    readFavorites()
     checkAccuracy()
-
 }
 
 interface Api {
@@ -65,10 +74,15 @@ class UIClass {
 }
 
 
-class WeatherList {
+class WeatherData {
+    storeWeatherDataDaily(weather: Weather)
     storeWeatherDataHourly(weather: Weather)
+    storeWeatherData(weather: Weather)
+    storeFavorites(favorites: Favorites)
+    readWeatherDataDaily()
     readWeatherDataHourly()
-    clearOldData()
+    readWeatherData()
+    readFavorites()
     checkAccuracy()
 }
 

@@ -4,6 +4,5 @@ class Favorite(
     val location: Location,
     val name: String,
     val temperature: Double,
-    val icon: Image) {
+    val icon: Image)
 
-}
