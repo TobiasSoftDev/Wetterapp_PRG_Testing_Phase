@@ -7,6 +7,9 @@ class Manager() : Logic {
     private val apiHandler: Api = ApiHandler()
     private var fetchedWeather: Weather? = null
     private var fetchedLocations: MutableList<Location> = mutableListOf()
+//    private val weatherCodes: WeatherCode = WeatherCode.SONNIG
+    private var hourlyWeather: MutableList<WeatherData> = mutableListOf()
+    //private var favoritesList: MutableList<Favorite> = mutableListOf()
     private val favoritesList: ObservableList<Favorite> = FXCollections.observableArrayList()
 
 

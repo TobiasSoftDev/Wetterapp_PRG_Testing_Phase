@@ -2,7 +2,7 @@ import javafx.scene.image.Image
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class DailyData(
+data class DailyWeather(
     private val time: LocalDate,
     private val temperatureMin: Double,
     private val temperatureMax: Double,

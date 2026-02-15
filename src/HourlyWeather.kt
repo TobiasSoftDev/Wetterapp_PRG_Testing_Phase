@@ -1,7 +1,7 @@
 import javafx.scene.image.Image
 import java.time.LocalDateTime
 
-data class HourlyData(
+data class HourlyWeather(
     private val times: LocalDateTime,
     private val temperature2M: Double,
     private val apparentTemperature2M: Double,

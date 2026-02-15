@@ -10,7 +10,16 @@ import javafx.application.Application.*
   Beschreibung: Main
 */
 
+
 fun main(){
+
+    //    val favorites = Favorite(
+//        location = Location(0.0, 0.0, "default", "default", "default", "default", 0.0, 0U),
+//        name = "Default",
+//        temperature = 0.0,
+//        icon =  Image("")
+//        )
+
    /* val weather = Weather(
         location = Location(0.0, 0.0, "default", "default", "default", "default", 0.0, 0U),
         temperature = 0.0,
@@ -33,12 +42,12 @@ fun main(){
 
     launch(Gui::class.java)
 
-    val storage: Storabledata = WeatherData()
-
-    println("Daily: ${storage.readWeatherDataDaily()}")
-    println("Hourly: ${storage.readWeatherDataHourly()}")
-    println("Current: ${storage.readWeatherData()}")
-    println("Favorite: ${storage.readFavorites()}")
+//    val storage: Storabledata = WeatherData()
+//
+//    println("Daily: ${storage.readWeatherDataDaily()}")
+//    println("Hourly: ${storage.readWeatherDataHourly()}")
+//    println("Current: ${storage.readWeatherData()}")
+//    println("Favorite: ${storage.readFavorites()}")
 
 //    val myApiHandler = ApiHandler()
 //    val myTest = Manager(myApiHandler)

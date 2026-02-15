@@ -7,8 +7,8 @@ data class Weather(
     private val windSpeed: Int,
     private val windDirection: Int,
     private val apparentTemperature: Double,
-    private val hourlyList: List<HourlyData>,
-    private val dailyList: List<DailyData>) {
+    private val hourlyList: List<HourlyWeather>,
+    private val dailyList: List<DailyWeather>) {
 
     fun getTemperature(): Double = temperature
     fun getHumidity(): Int = humidity
@@ -17,8 +17,8 @@ data class Weather(
     fun getWindSpeed(): Int = windSpeed
     fun getWindDirection(): Int = windDirection
     fun getApparentTemperature(): Double = apparentTemperature
-    fun getHourlyList(): List<HourlyData> = hourlyList
-    fun getDailyList(): List<DailyData> = dailyList
+    fun getHourlyList(): List<HourlyWeather> = hourlyList
+    fun getDailyList(): List<DailyWeather> = dailyList
 
     fun getCurrentWeatherDataAll() : List<Any> = listOf(temperature, apparentTemperature, humidity, precipitation, windSpeed, windDirection)
 

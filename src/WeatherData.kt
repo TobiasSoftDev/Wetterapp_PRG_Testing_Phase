@@ -18,7 +18,7 @@ class WeatherData() : Storabledata {
     val time = java.time.LocalTime.now()
         .format(DateTimeFormatter.ofPattern("HH:mm:ss"))
 
-    override fun storeWeatherDataDaily(weather: Weather?): List<HourlyData>? {
+    override fun storeWeatherDataDaily(weather: Weather?): List<HourlyWeather>? {
         // DataDaily --> 14 days weather forecast$
         val dailyForecast = weather?.getHourlyWeatherDataAll()
         println("Getting current weather data...$dailyForecast")
@@ -56,7 +56,7 @@ class WeatherData() : Storabledata {
         return dailyForecast
     }
 
-    override fun storeWeatherDataHourly(weather: Weather?): List<HourlyData>? {
+    override fun storeWeatherDataHourly(weather: Weather?): List<HourlyWeather>? {
         // DataHourly --> 24h weather of current day
         val hourlyData = weather?.getHourlyWeatherDataAll()
         println("Getting current weather data...${hourlyData}Data")
