@@ -1,5 +1,6 @@
 import javafx.application.Platform.runLater
 import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.geometry.Side
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.LineChart
@@ -55,7 +56,6 @@ object plotterLineChart {
             legendSide = Side.LEFT
             createSymbols = false
             animated = false
-
         }
         // um die Legende zu einmalig zu erstellen, damit doppelte Beschriftungen nicht mehr auftreten
         if (!initialized) {
@@ -67,15 +67,16 @@ object plotterLineChart {
     }
 
     fun plot(name: String, value: Int) {
-        when (name) {
-            "Min Temperatur"   -> updateSerie(series[0], value)
-            "Max Temperatur"   -> updateSerie(series[1], value)
+                when (name) {
+            "Max Temperatur"   -> updateSerie(series[0], value)
+            "Min Temperatur"   -> updateSerie(series[1], value)
             else -> println("WARNUNG Plotter: unbekannte Datenserie: $name")
         }
+
     }
     private fun createAllSeries() {
-        createSerie("Höchste\nTemperatur")
-        createSerie("Tiefste\nTemperatur")
+        createSerie("Max Temperatur")
+        createSerie("Min Temperatur")
     }
 
     private fun createSerie(name: String) {

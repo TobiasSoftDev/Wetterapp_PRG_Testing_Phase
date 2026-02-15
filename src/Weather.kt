@@ -44,6 +44,4 @@ data class Weather(
     //println("$temperature\n$apparentTemperature\n$humidity\n$precipitation\n$windSpeed\n$windDirection\n$weatherCode")
     fun getHourlyWeatherDataAll() = hourlyList
     fun getDailyWeatherDataAll() = dailyList
-
-
 }

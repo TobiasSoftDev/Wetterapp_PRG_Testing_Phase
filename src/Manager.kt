@@ -33,6 +33,7 @@ class Manager() : Logic {
             // prüfen ob Ort in Favoriten? Wenn ja: Wetterabfrage im Speicher speichern.
             fileHandler.storeData(fetchedWeather)
         }
+
         return fetchedWeather
     }
 

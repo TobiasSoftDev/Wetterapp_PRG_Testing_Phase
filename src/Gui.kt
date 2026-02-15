@@ -25,6 +25,7 @@ import javafx.scene.paint.Color
 import javafx.scene.text.TextAlignment
 import javafx.stage.Modality
 import javafx.stage.Stage
+import plotterLineChart.plot
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.round
@@ -295,6 +296,15 @@ class Gui : Application() {
         }
         favorites.updateStarColor(Gui.selectedLocation)
         dayView.btnAddFavorite.isVisible = true
+
+        // API-Daten neu laden für Plotter Line Chart
+        val weather = Gui.selectedLocationWeather
+        if (weather != null) {
+            weather.getDailyWeatherDataAll().forEach { day ->
+                plot("Max Temperatur", day.getTemperatureMax().toInt())
+                plot("Min Temperatur", day.getTemperatureMin().toInt())
+            }
+        }
     }
 
     fun fillSearchResults(string: String) {

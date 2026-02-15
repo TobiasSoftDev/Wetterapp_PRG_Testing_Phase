@@ -1,3 +1,4 @@
+import plotterLineChart.plot
 import java.beans.XMLDecoder
 import java.beans.XMLEncoder
 import java.io.BufferedInputStream
@@ -199,9 +200,8 @@ data class WeatherData(
 
         val lines = file.readLines()
         for (line in lines) {
-            print (line)
+            print(line)
         }
-
     }
 
     override fun readWeatherDataHourly() {
