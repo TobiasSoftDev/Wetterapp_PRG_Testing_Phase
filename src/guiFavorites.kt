@@ -1,9 +1,7 @@
-import javafx.application.Application
 import javafx.collections.ListChangeListener
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Cursor
-import javafx.scene.Node
 import javafx.scene.control.Alert
 import javafx.scene.control.Button
 import javafx.scene.control.Label
@@ -19,11 +17,12 @@ import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
-import javafx.stage.Stage
 import kotlin.apply
 import kotlin.collections.forEach
 
-class GuiFavorites (private val manager:Logic) {
+object guiFavorites {
+    lateinit var manager : Logic
+
     private val favoriteConstruct = VBox(5.0).apply {
         alignment = Pos.TOP_CENTER
         isFillWidth = true
@@ -48,7 +47,7 @@ class GuiFavorites (private val manager:Logic) {
         padding = Insets(10.0, 0.0, 0.0, 0.0)
     }
 
-    fun createFavoriteBox(manager: Logic, onHomeClick: (Location) -> Unit): VBox {
+    fun createFavoriteBox(onHomeClick: (Location) -> Unit): VBox {
 
         val favoriteBox = VBox(5.0).apply {
             padding = Insets(10.0)
