@@ -13,7 +13,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 object dayView {
-    lateinit var favorites: GuiFavorites
+    lateinit var favorites: guiFavorites
 
 
     val btnAddFavorite by lazy {

@@ -37,7 +37,7 @@ import kotlin.math.round
 //}
 class Gui : Application() {
     private val manager: Logic = Manager()
-    private val favorites: GuiFavorites = GuiFavorites(manager)
+    //private val favorites: guiFavorites = GuiFavorites(manager)
     private var locationsModel = FXCollections.observableArrayList<Location>()
     private val resultsList = ListView<Location>().apply {
         prefWidth = 400.0
@@ -74,7 +74,7 @@ class Gui : Application() {
 
     var isFavorite = SimpleBooleanProperty(false)
 
-    private var selectedLocation: Location? = null
+   private var selectedLocation: Location? = null
     private var selectedLocationWeather: Weather? = null
 
     private val onHomeClick = { location: Location ->
@@ -84,15 +84,6 @@ class Gui : Application() {
         fillInWeatherData(Gui.selectedLocationWeather)
         searchbar.tflSucheingabe.text = location.getLocationName()
     }
-
-
-    private val btnAddFavorite = favorites.createAddButton(
-        activeLocation = {Gui.selectedLocation},
-        activeWeather = {Gui.selectedLocationWeather}
-    )
-
-
-
 
     private val lblProzent = Label("98%").apply {
         alignment = Pos.CENTER
@@ -171,13 +162,11 @@ class Gui : Application() {
             alignment = Pos.TOP_LEFT
             padding = Insets(30.0)
             isFillHeight = false
-            val favBox = favorites.createFavoriteBox(manager, onHomeClick)
+            val favBox = guiFavorites.createFavoriteBox(onHomeClick)
             favBox.apply {
-                // Hier begrenzen wir die Höhe der Favoritenliste, damit sie nicht nach unten wächst
                 maxWidth = 350.0
                 maxHeight = 100.0
                 maxHeightProperty().bind(dayView.hBoxDayView.heightProperty())
-
                 alignment = Pos.TOP_CENTER
                 VBox.setVgrow(this, Priority.NEVER)
             }
@@ -189,14 +178,12 @@ class Gui : Application() {
     }
 
     override fun start(stage: Stage) {
-
-        dayView.favorites = favorites
+        guiFavorites.manager = this.manager
+        dayView.favorites = guiFavorites
         dayView.addFavoriteButtonToBox()
-
-        favorites.updateFavoritesList(onHomeClick)
-
+        guiFavorites.updateFavoritesList(onHomeClick)
         manager.getFavoritesObservableList().addListener(javafx.collections.ListChangeListener{
-            favorites.updateFavoritesList(onHomeClick)
+            guiFavorites.updateFavoritesList(onHomeClick)
         })
 
 
@@ -293,7 +280,7 @@ class Gui : Application() {
 
             dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
         }
-        favorites.updateStarColor(Gui.selectedLocation)
+        guiFavorites.updateStarColor(Gui.selectedLocation)
         dayView.btnAddFavorite.isVisible = true
     }
 
