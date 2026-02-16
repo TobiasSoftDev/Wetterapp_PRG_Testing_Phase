@@ -62,6 +62,7 @@ object plotterLineChart {
             animated = false
 
         }
+
         // um die Legende zu einmalig zu erstellen, damit doppelte Beschriftungen nicht mehr auftreten
         if (!initialized) {
             createAllSeries()
@@ -91,8 +92,8 @@ object plotterLineChart {
 
     }
     private fun createAllSeries() {
-        createSerie("Max Temperatur")
-        createSerie("Min Temperatur")
+        createSerie("Maximal\nTemperatur")
+        createSerie("Minimal\nTemperatur")
     }
 
     private fun createSerie(name: String) {

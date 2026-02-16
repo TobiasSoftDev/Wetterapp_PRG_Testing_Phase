@@ -284,8 +284,8 @@ class Gui : Application() {
         guiFavorites.updateStarColor(Gui.selectedLocation)
         dayView.btnAddFavorite.isVisible = true
 
-        // API-Daten neu laden für Plotter Line Chart
-        weather?.getDailyWeatherDataAll()?.forEach { day ->
+        // API-Daten neu laden für Plotter Line Chart und erste 7 Werte auslesen
+        weather?.getDailyWeatherDataAll()?.take(7)?.forEach { day ->
             plot("Max Temperatur", day.getTemperatureMax().toInt())
             plot("Min Temperatur", day.getTemperatureMin().toInt())
         }
