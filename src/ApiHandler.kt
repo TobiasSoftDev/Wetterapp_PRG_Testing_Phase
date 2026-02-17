@@ -50,7 +50,7 @@ class ApiHandler() : Api {
                 val temperature = currentObj.optDouble("temperature_2m", 0.0)
                 val humidity = currentObj.optInt("relative_humidity_2m", 0)
                 val weatherCodeInt = currentObj.optInt("weather_code", 0)
-                val weatherCode = WeatherCodes.fromCode(weatherCodeInt,weather = null)
+                val weatherCode = WeatherCodes.fromCode(weatherCodeInt)
                 val precipitation = currentObj.optInt("precipitation", 0)
                 val windSpeed = currentObj.optInt("wind_speed_10m", 0)
                 val windDirection = currentObj.optInt("wind_direction_10m", 0)
@@ -78,7 +78,7 @@ class ApiHandler() : Api {
                             windDirection = hourlyObj.optJSONArray("wind_direction_10m")?.optInt(i) ?: 0,
                             //weatherCode = hourlyWeatherCode.optInt(i),
                             weatherCode = WeatherCodes.fromCode(
-                                hourlyObj.optJSONArray("weather_code")?.optInt(i) ?: 0,weather = null
+                                hourlyObj.optJSONArray("weather_code")?.optInt(i) ?: 0
                             ),
                             freezingLevel = hourlyObj.optJSONArray("freezing_level_height")?.optDouble(i) ?: 0.0))
                             //snowfallLevel = hourlySnowfallHeight.optDouble(i)
@@ -105,7 +105,7 @@ class ApiHandler() : Api {
                         sunrise = parseDateTimeSafely(dailyObj.optJSONArray("sunrise")?.optString(i)),
                         sunset = parseDateTimeSafely(dailyObj.optJSONArray("sunset")?.optString(i)),
                         weatherCode = WeatherCodes.fromCode(
-                            dailyObj.optJSONArray("weather_code")?.optInt(i) ?: 0, weather = null
+                            dailyObj.optJSONArray("weather_code")?.optInt(i) ?: 0
                         )
                     ))
                     }

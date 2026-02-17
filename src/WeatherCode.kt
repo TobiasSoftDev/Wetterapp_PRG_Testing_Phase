@@ -1,5 +1,7 @@
 import javafx.scene.image.Image
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.chrono.ChronoLocalDateTime
 import java.time.format.DateTimeFormatter
 
 private fun loadIcon(fileName : String): Image {
@@ -44,21 +46,18 @@ enum class WeatherCodes(
 
 
     companion object {
-        fun fromCode(code: Int, weather: DailyWeather?): WeatherCodes {
-            // Zuerst exakte Übereinstimmung suchen (z.B. 45, 51, 61)
-            entries.find { it.code == code }?.let { return it }
-
+        fun fromCode(code: Int): WeatherCodes {
             var weatherCode = code
-
-            if (weather != null){
-
-                val currentTime = LocalDateTime.now() //.format(DateTimeFormatter.ofPattern("HH:mm"))
-                val sunrise = weather.getSunriseLocalDateTime()
-                val sunset = weather.getSunsetLocalDateTime()
+                val currentTime = LocalTime.now() //.format(DateTimeFormatter.ofPattern("HH:/mm"))
+       //         val sunrise = weather.getSunriseLocalDateTime()
+         //       val sunset = weather.getSunsetLocalDateTime()
+                val sunrise = LocalTime.of(7,0)
+                val sunset = LocalTime.of(18,0)
                 if (currentTime.isBefore(sunrise) || currentTime.isAfter(sunset)) {
                     weatherCode += 100
+             //       println("Zeit = nach oder vor Sonnenuntergang")
                 }
-            }
+
                 // Dann Range-Checks für Bereiche
                 return when (weatherCode) {
                     0 -> SONNIG
