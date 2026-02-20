@@ -182,6 +182,49 @@ data class WeatherData(
         return history.dataList.filter { it.id == locationID }
     }
 
+    private fun getFavoritesStorageFile(): File {
+        // Holt den Pfad des globalen Benutzerordners
+        val userHome = System.getProperty("user.home")
+        // erstellt einen Ordner im Dateiensystem des Nutzers. Der Punkt steht für einen versteckten Ordner "XmlTest".
+        val storageDirectory = Paths.get(userHome, ".Weather2b", "storage", "favorites")
+
+        if (!Files.exists(storageDirectory)) {
+            Files.createDirectories(storageDirectory)
+        }
+        return storageDirectory.resolve("favoritesList.xml").toFile()
+    }
+
+    private fun loadFavorites(file: File): FavoriteWrapper {
+        try {
+            val decoder = XMLDecoder(
+                BufferedInputStream(
+                    FileInputStream(file)))
+
+            val storedObject = decoder.readObject() as FavoriteWrapper
+            return storedObject
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return FavoriteWrapper()
+    }
+
+    override fun readFavorites() {
+        val file = getFavoritesStorageFile()
+        if (!file.exists()) { return println("keine Favoriten-Datei gefunden") }
+
+        val wrapper = loadFavorites(file)
+        print("Gespeicherte Favoriten :")
+        wrapper.favorites.forEach { fav->
+            println("ID: ${fav.location.getLocationID()}---Name: ${fav.location.getLocationName()} ")
+        }
+    }
+
+    override fun getAllFavorites(): List<Favorite> {
+        val file = getFavoritesStorageFile()
+        if (!file.exists()) { return emptyList() }
+        else return loadFavorites(file).favorites
+    }
+
   /*  override fun storeFavorites(favorites: Favorite): Favorite {
         val file = File("resources/favoriteLocationData/Favorites.txt")
         println("Storing favorite: ${favorites.location}")
@@ -195,9 +238,34 @@ data class WeatherData(
         return favorites
     } */
 
-    override fun storeFavorites(favorites: Favorite): Favorite {
-        TODO("Not yet implemented")
+    override fun storeFavorites(favorite: Favorite): Favorite {
+        val file = getFavoritesStorageFile()
+        val wrapper = if (file.exists()) {
+            loadFavorites(file)
+        } else {
+            FavoriteWrapper()
+        }
+        if (wrapper.favorites.none { it.location.getLocationID() == favorite.location.getLocationID() }) {
+            wrapper.favorites.add(favorite)
+        }
+
+        try {
+            val encoder = XMLEncoder(               // Stream bereitstellen
+                BufferedOutputStream(
+                    FileOutputStream(file)
+                )
+            )
+            encoder.writeObject(wrapper)            // Objekt speichern
+            encoder.close()                         // Stream schliessen
+            println("Favorit gespeichert in XML: ${favorite.location.getLocationName()}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return favorite
     }
+
+
+
 
     override fun readWeatherDataDaily() {
         val file = File("resources/dailyData/DailyWeatherData$date.txt")
@@ -226,14 +294,14 @@ data class WeatherData(
         }
     }
 
-    override fun readFavorites() {
+  /*  override fun readFavorites() {
         val file = File("resources/favoriteLocationData/Favorites.xml")
 
         val lines = file.readLines()
         for (line in lines) {
             print (line)
         }
-    }
+    } */
 
     override fun checkAccuracy() {
         TODO("Not yet implemented")

@@ -182,6 +182,11 @@ class Gui : Application() {
         guiFavorites.manager = this.manager
         dayView.favorites = guiFavorites
         dayView.addFavoriteButtonToBox()
+
+        val storage: Storabledata = WeatherData()
+        val loadedFavorites = storage.getAllFavorites()
+        manager.getFavoritesObservableList().setAll(loadedFavorites)
+
         guiFavorites.updateFavoritesList(onHomeClick)
         manager.getFavoritesObservableList().addListener(javafx.collections.ListChangeListener{
             guiFavorites.updateFavoritesList(onHomeClick)

@@ -1,6 +1,7 @@
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.image.Image
+import java.io.File
 import java.util.logging.FileHandler
 import kotlin.String
 
@@ -19,6 +20,14 @@ class Manager() : Logic {
 //        fetchedWeather = apiHandler.fetchWeather(location)
 //        return fetchedWeather!!.getCurrentWeatherDataAll()
 //    }
+    init {
+        val savedFavorites = fileHandler.getAllFavorites()
+        favoritesList.addAll(savedFavorites)
+        println("Favoriten aus XML-File geladen")
+    }
+
+
+
     override fun getLocations(searchText: String): MutableList<Location> {
         fetchedLocations = apiHandler.getLocations(searchText)
         return fetchedLocations
@@ -41,20 +50,39 @@ class Manager() : Logic {
 
     override fun addFavorites(location: Location, weather: Weather): Boolean {
         if (favoritesList.size < 5 && !checkForFavorites(location)) {
-            val favorite =
-                Favorite(location, location.getName(), weather.getTemperature(), weather.getWeatherCode().icon)
-            println("Ort gespeichert!")
-            return favoritesList.add(favorite)
+            val favorite = Favorite(
+                location,
+                location.getName(),
+                weather.getTemperature(),
+                weather.getWeatherCode().icon)
+
+            val success = favoritesList.add(favorite)
+
+            if (success) {
+                fileHandler.storeFavorites(favorite)
+                println("Favorite persistent gespeichert")
+            }
+            return success
         }
         return false
     }
 
     override fun removeFavorites(location: Location): Boolean {
-        val removeFavorites = favoritesList.removeIf { it.location.getLocationID() == location.getLocationID() }
-        if (removeFavorites) {
-            println("Favorit wurde entfernt")
+        val removeFavorite = favoritesList.removeIf { it.location.getLocationID() == location.getLocationID() }
+        if (removeFavorite) {
+            updateFavoriteFile()
+            println("Favorit wurde entfernt und XMl Datei aktualisiert")
         }
-        return removeFavorites
+        return removeFavorite
+    }
+
+    private fun updateFavoriteFile() {
+        val userHome = System.getProperty("user.home")
+        val file = File(userHome,".Weather2b/storage/favorites/favoritesList.xml")
+        if (file.exists()) {
+            file.delete()
+            favoritesList.forEach { fileHandler.storeFavorites(it) }
+        }
     }
 
 

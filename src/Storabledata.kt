@@ -13,7 +13,8 @@ interface Storabledata {
     fun storeWeatherDataHourly(weather: Weather?): List<HourlyWeather>?
     // WeatherData --> current weather, is being rewritten with every search request
     fun storeWeatherData(weather: Weather?): List<Any>?
-    fun storeFavorites(favorites: Favorite): Favorite
+    fun storeFavorites(favorite: Favorite): Favorite
+    fun getAllFavorites(): List<Favorite>
     fun readWeatherDataDaily()
     fun readWeatherDataHourly()
     fun readWeatherData()
