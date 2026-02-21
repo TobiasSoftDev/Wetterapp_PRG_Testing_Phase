@@ -68,7 +68,7 @@ object plotterLineChart {
         }
 
         with(chart) {
-            maxHeight = 300.0
+            maxHeight = 350.0
             legendSide = Side.LEFT
             createSymbols = false
             animated = false
