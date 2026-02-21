@@ -13,12 +13,16 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
+/*
+  Projekt:      Wetterapp
+  Firma:        ABB Technikerschule
+  Autor:        Tobias Graf
 
-/* Tag und Temperatur als LineChart anzeigen */
+  Beschreibung: Tag und Temperatur als LineChart anzeigen
+ */
 
 object plotterLineChart {
     private var heute: LocalDate = LocalDate.now()
-    private var wochentag: DayOfWeek = heute.getDayOfWeek()
     private var dayIndex = 0
     private var updateCount = 0
     private var initialized = false
@@ -29,17 +33,18 @@ object plotterLineChart {
     private val weather = Gui.selectedLocationWeather?.getDailyWeatherDataAll()
 
     /*Die init Block Funktion um das aktuelle Datum und den Wochentag
-    auf der X-Achsenbeschreibung anzuzeigen, wurde mittels Claude AI erstellt.*/
+    auf der X-Achsenbeschreibung anzuzeigen, wurde mittels Unterstützung von Claude AI erstellt.*/
 
     init {
         val dateFormatter = DateTimeFormatter.ofPattern("dd.MM")
 
-        // Starte bei heute und füge 7 Tage hinzu
+        // Startet bei heute und fügt 7 Tage hinzu
         for (i in 0..6) {
             val tag = heute.plusDays(i.toLong())
             val weekDayName = tag.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.GERMAN)
             val datum = tag.format(DateTimeFormatter.ofPattern("dd.MM"))
 
+            // Hier wird der WeatherCode aus weather ausgelesen (in dieser Version der SW noch nicht verwendet)
             val dailyWeather = weather?.getOrNull(i)
             val weatherCode = if (dailyWeather != null) {
                 WeatherCodes.fromCode(
@@ -49,7 +54,12 @@ object plotterLineChart {
             } else {
                 WeatherCodes.UNBEKANNT
             }
-            weekDays.add("$weekDayName\n$datum\n\n$weatherCode\n")
+
+            /* Wochenverlauf Plotter Linie inklusive WetterCode anzeigen, in dieser Version noch deaktiviert
+               da nur textuell möglich, nicht als ICON */
+
+//          weekDays.add("$weekDayName\n$datum\n\n$weatherCode\n")
+            weekDays.add("$weekDayName\n$datum\n")
         }
     }
 
@@ -61,7 +71,7 @@ object plotterLineChart {
         xAxis.label = "7 Tage Wettervorhersage [day/date]"
         yAxis.label = "Temperatur [°C]"
 
-//        // X-, und Y-Achse Label gewuenschte Schriftgroesse von appStyle setzen
+        // Bei X-, und Y-Achse Labels die gewuenschte Schriftgroesse von appStyle verwenden
         runLater {
             (xAxis.lookup(".axis-label") as? Label)?.let {appStyle.layoutLabelBottomRight(it) }
             (yAxis.lookup(".axis-label") as? Label)?.let {appStyle.layoutLabelBottomRight(it) }
@@ -120,7 +130,7 @@ object plotterLineChart {
             val currentDay = weekDays[dayIndex % 7]
             val data = XYChart.Data<String, Number>(currentDay, value)
 
-            // Ergaenzung um Temperatur-Label als Node setzen (mittels Claude AI erstellt)
+            // Ergaenzung um Temperatur-Label als Node zu setzen (Erstellung wurde mittels Claude AI unterstützt)
             // von hier
             val label = Label("${value}°C")
             // Beschriftung wird direkt im Objekt definiert, da es zusätzliche grafische Formatierungsmerkmale gebraucht hat. Nicht nur klassisches Label
@@ -133,14 +143,10 @@ object plotterLineChart {
                 serie.data.removeAt(0)
             }
 
-            // Label nach dem Rendern positionieren (mittels Claude AI erstellt)
-            // von hier
             data.node?.let { node ->
-                node.translateY = 0.0  // 7px nach oben verschieben
+                node.translateY = 0.0    // 7px nach oben verschieben
                 node.translateX = 5.0    // 5px nach rechts verschieben
             }
-            // bis hier
-
 
             // Nur nach dem Update beider Serien zum nächsten Tag
             updateCount++

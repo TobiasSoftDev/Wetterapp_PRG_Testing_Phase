@@ -3,7 +3,7 @@
   Firma:        ABB Technikerschule
   Autor:        Tobias Graf
 
-  Beschreibung: Interface Speichern Daten
+  Beschreibung: Interface für das Speichern der Daten
 */
 
 interface Storabledata {
