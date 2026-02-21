@@ -21,6 +21,7 @@ object dayView {
             activeLocation = { Gui.selectedLocation },
             activeWeather = { Gui.selectedLocationWeather }
         )
+
     }
 
     fun addFavoriteButtonToBox() {

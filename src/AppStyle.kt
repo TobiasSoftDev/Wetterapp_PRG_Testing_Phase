@@ -2,6 +2,7 @@
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.Label
+import javafx.scene.layout.Region
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
@@ -32,6 +33,7 @@ object appStyle {
             alignment = Pos.CENTER_LEFT
             font = FONT_14
             padding = Insets(5.0, 5.0, 5.0, 5.0)
+            minWidth = Region.USE_PREF_SIZE
         }
     }
 
@@ -40,6 +42,7 @@ object appStyle {
             alignment = Pos.CENTER_RIGHT
             font = FONT_14
             padding = Insets(5.0, 5.0, 5.0, 5.0)
+            minWidth = Region.USE_PREF_SIZE
         }
     }
 
@@ -48,6 +51,7 @@ object appStyle {
             alignment = Pos.CENTER_LEFT
             font = FONT_14_BOLD
             padding = Insets(5.0, 5.0, 0.0, 5.0)
+            minWidth = Region.USE_PREF_SIZE
 
         }
     }
@@ -57,6 +61,7 @@ object appStyle {
             alignment = Pos.CENTER_RIGHT
             font = FONT_14_BOLD
             padding = Insets(5.0, 5.0, 0.0, 5.0)
+            minWidth = Region.USE_PREF_SIZE
         }
     }
 
@@ -65,6 +70,7 @@ object appStyle {
             alignment = Pos.TOP_LEFT
             font = FONT_18
             padding = Insets(0.0, 0.0, 8.0, 5.0)
+            minWidth = Region.USE_PREF_SIZE
         }
     }
 

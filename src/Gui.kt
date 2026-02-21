@@ -79,14 +79,14 @@ class Gui : Application() {
     private var selectedLocationWeather: Weather? = null
 
     private val onHomeClick = { location: Location ->
-        Gui.selectedLocation = location
-        Gui.selectedLocationWeather = manager.getCurrentWeather(location)
-        fillInLocationData(Gui.selectedLocation)
-        fillInWeatherData(Gui.selectedLocationWeather)
-        searchbar.tflSucheingabe.text = location.name
+        selectedLocation = location
+        selectedLocationWeather = manager.getCurrentWeather(location)
+        fillInLocationData(selectedLocation)
+        fillInWeatherData(selectedLocationWeather)
+        searchbar.tflSucheingabe.text = location.getLocationName()
     }
 
-    private val lblProzent = Label("98%").apply {
+    private val lblProzent = Label("").apply {
         alignment = Pos.CENTER
         font = appStyle.FONT_16
         //background = Background(BackgroundFill(Color.BLUE, null, null))
@@ -210,21 +210,12 @@ class Gui : Application() {
             initOwner(ownerStage)
             isResizable = false
         }
-        resultsList.selectionModel.selectedItemProperty().addListener { observable, oldValue, newValue ->
+        resultsList.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             if (newValue != null) {
                 Gui.selectedLocation = newValue
                 Gui.selectedLocationWeather = manager.getCurrentWeather(newValue)
                 fillInLocationData(Gui.selectedLocation)
                 fillInWeatherData(Gui.selectedLocationWeather)
-
-                // Create and refresh the current weather file in "currentData"
-                val storage: Storabledata = WeatherData()
-                println("Current: ${storage.storeWeatherData(Gui.selectedLocationWeather)}")
-
-//                // For Test purposes only safe the hourly and daily weather as well
-//                println("Daily: ${storage.storeWeatherDataDaily(selectedLocationWeather)}")
-//                println("Hourly: ${storage.storeWeatherDataHourly(selectedLocationWeather)}")
-
                 popupStage.close()
             }
         }
@@ -246,15 +237,16 @@ class Gui : Application() {
     }
 
     private fun fillInLocationData(location: Location?) {
-        dayView.lblLocation.text = Gui.selectedLocation?.name
+        dayView.lblLocation.text = Gui.selectedLocation?.getLocationName()
         if (location != null) {
-            dayView.pinPosition(dayView.calculatePosition(location.latitude, location.longitude))
-            detailsView.lblDetailsTitle.text = "Details für ${location.name}"
+            dayView.pinPosition(dayView.calculatePosition(location.getLatitude(), location.getLongitude()))
+            detailsView.lblDetailsTitle.text = "Details für ${location.getLocationName()}"
         }
     }
 
     private fun fillInWeatherData(weather: Weather?) {
         if (weather != null) {
+            lblProzent.text = "${manager.checkAccuracy(weather.locationID.toInt(),weather)} %"
             dayView.lblWeatherCode.text = weather.getWeatherCode().description
             dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
             dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
@@ -262,8 +254,8 @@ class Gui : Application() {
 
             detailsView.lblHumidityValue.text = "${weather.getHumidity()}%"
             detailsView.lblPrecipitationValue.text = "${weather.getPrecipitation()} mm"
-            detailsView.lblSunriseValue.text = weather.getDailyList().get(0).getSunrise()
-            detailsView.lblSunsetValue.text = weather.getDailyList().get(0).getSunset()
+            detailsView.lblSunriseValue.text = "${weather.getDailyList()[0].getSunrise()} Uhr"
+            detailsView.lblSunsetValue.text = "${weather.getDailyList()[0].getSunset()} Uhr"
             detailsView.lblWindSpeedValue.text = "${weather.getWindSpeed()} km/h"
             detailsView.updateWindDirection(weather.getWindDirection())
             detailsView.lblApparentTemperatureValue.text = "${round(weather.getApparentTemperature()).toInt()}º"
@@ -277,7 +269,6 @@ class Gui : Application() {
         }
         guiFavorites.updateStarColor(Gui.selectedLocation)
         dayView.btnAddFavorite.isVisible = true
-
 
     }
 

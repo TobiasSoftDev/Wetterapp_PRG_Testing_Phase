@@ -19,8 +19,30 @@ data class Weather(
     fun getApparentTemperature(): Double = apparentTemperature
     fun getHourlyList(): List<HourlyWeather> = hourlyList
     fun getDailyList(): List<DailyWeather> = dailyList
+    fun getLocationID(): Int = location.hashCode()
+    fun getLongitude(): Double = location.getLongitude()
+    fun getLatitude(): Double = location.getLatitude()
+
+    fun getHourlyWeatherCodes(): MutableList<Int> {
+        val myList = mutableListOf<Int>()
+        for (code in hourlyList) {
+            myList.add(code.getWeatherCodes().code)
+        }
+        return myList
+    }
+
+    fun getHourlyForecasts(): MutableList<HourlyWrapper> {
+        val myList = mutableListOf<HourlyWrapper>()
+
+        for (code in hourlyList) {
+            val wrapper = HourlyWrapper(code.getTemperature2M(), code.getWeatherCodes().code)
+            myList.add(wrapper)
+        }
+        return myList
+    }
 
     fun getCurrentWeatherDataAll() : List<Any> = listOf(temperature, apparentTemperature, humidity, precipitation, windSpeed, windDirection)
+    fun getDailyWeatherDataAll() = dailyList
 
     val weatherTemperature: Double
         get() = temperature
@@ -41,7 +63,4 @@ data class Weather(
         get() = getCurrentWeatherDataAll()
 
 
-    //println("$temperature\n$apparentTemperature\n$humidity\n$precipitation\n$windSpeed\n$windDirection\n$weatherCode")
-    fun getHourlyWeatherDataAll() = hourlyList
-    fun getDailyWeatherDataAll() = dailyList
 }

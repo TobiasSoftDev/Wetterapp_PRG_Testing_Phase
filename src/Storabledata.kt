@@ -21,6 +21,13 @@ interface Storabledata {
     fun readFavorites()
     fun checkAccuracy()
 
-    fun storeData(weather: Weather?)
-    fun getHistoryForLocation(locationID: Int): List<WeatherData>
+//    fun readWeatherDataDaily()
+//    fun readWeatherDataHourly()
+//    fun readWeatherData()
+//    fun readFavorites()
+    //fun checkAccuracy(id: Int, currentWeather: Weather)
+
+    fun getEntriesForLocation(locationID: Int): List<WeatherData>
+    fun storeWedderData(weather: Weather?)
+    fun getWedderHistoryFromLocation(locationID: Int): List<WeatherData>
 }

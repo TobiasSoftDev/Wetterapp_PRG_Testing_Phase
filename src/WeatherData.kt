@@ -26,99 +26,10 @@ data class WeatherData(
     var longitude: Double = 0.0,
     var id: Int = 0,
     var temperature: Double = 0.0,
-    //var temperatureMaxHistory: MutableList<Double> = mutableListOf(),
-    //var temperatureMinHistory: MutableList<Double> = mutableListOf(),
+    var hourlyForecasts: MutableList<HourlyWrapper> = mutableListOf(),
     var weatherCode: Int = 0) : Storabledata {
 
-    // supply Date and time on the first line in the data file
-    val date = java.time.LocalDate.now()
-        .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-    val time = java.time.LocalTime.now()
-        .format(DateTimeFormatter.ofPattern("HH:mm:ss"))
-
-    override fun storeWeatherDataDaily(weather: Weather?): List<HourlyWeather>? {
-        // DataDaily --> 14 days weather forecast$
-        val dailyForecast = weather?.getHourlyWeatherDataAll()
-        println("Getting current weather data...$dailyForecast")
-
-        //  Create new directory
-        val dailyDirectory = File("resources/dailyData")
-        dailyDirectory.mkdir()
-        println("Directory dailyData exists...")
-        println(dailyDirectory.exists())
-
-        // Dateien älter als 14 Tage löschen (Datum aus Dateiname lesen)
-        // diesen Teil der Funktion wurde mittels Claude AI entwickelt
-        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")
-        val cutoffDate = java.time.LocalDate.now().minusDays(14)
-
-        dailyDirectory.listFiles()?.forEach { file ->
-            val match = Regex("""(\d{2}\.\d{2}\.\d{4})""").find(file.name)
-            if (match != null) {
-                val fileDate = java.time.LocalDate.parse(match.value, formatter)
-                if (fileDate.isBefore(cutoffDate)) {
-                    file.delete()
-                    println("Gelöscht: ${file.name}")
-                }
-            }
-        }
-
-        // Write data in a .xml file
-        val file = File("resources/dailyData/DailyWeatherData$date.xml")
-        val formattedData = dailyForecast .toString()
-            .replace("]", "]\n")  // nach jedem ] ein Zeilenumbruch
-
-        file.writeText("--- Datum: $date | Uhrzeit: $time ---\n")  // erste Zeile mit Timestamp
-        file.appendText(formattedData)
-
-        return dailyForecast
-    }
-
-    override fun storeWeatherDataHourly(weather: Weather?): List<HourlyWeather>? {
-        // DataHourly --> 24h weather of current day
-        val hourlyData = weather?.getHourlyWeatherDataAll()
-        println("Getting current weather data...${hourlyData}Data")
-
-        //  Create new directory
-        val hourlyDirectory = File("resources/hourlyData")
-        hourlyDirectory.mkdir()
-        println("Directory hourlyData exists...")
-        println(hourlyDirectory.exists())
-
-        // Write data in a .xml file
-        val file = File("resources/hourlyData/HourlyWeatherData.xml")
-        val formattedData = hourlyData.toString()
-            .replace("]", "]\n")  // nach jedem ] ein Zeilenumbruch
-
-        file.writeText("--- Datum: $date | Uhrzeit: $time ---\n")  // erste Zeile mit Timestamp
-        file.appendText(formattedData)
-
-        return hourlyData
-    }
-
-    override fun storeWeatherData(weather: Weather?): List<Any>? {
-        // WeatherData --> current weather, is being rewritten with every search request
-        val currentData = weather?.getCurrentWeatherDataAll()
-        println("Getting current weather data...$currentData")
-
-        //  Create new directory
-        val currentDirectory = File("resources/currentData")
-        currentDirectory.mkdir()
-        println("Directory currentData exists...")
-        println(currentDirectory.exists())
-
-        // Write data in a .xml file
-        val file = File("resources/currentData/CurrentWeatherData.xml")
-        val formattedData = currentData.toString()
-            .replace("]", "]\n")  // nach jedem ] ein Zeilenumbruch
-
-        file.writeText("--- Datum: $date | Uhrzeit: $time ---\n")  // erste Zeile mit Timestamp
-        file.appendText(formattedData)
-
-        return currentData
-    }
-
-    override fun storeData(weather: Weather?) {
+    override fun storeWedderData(weather: Weather?) {
 
         if (weather != null) {
             val dataset = WeatherData(
@@ -127,36 +38,55 @@ data class WeatherData(
                 weather.longitude,
                 weather.locationID,
                 weather.getTemperature(),
-
-                weather.getWeatherCode().code
+                weather.getHourlyForecasts()
             )
             val file = getStorageFile()
-            val history = if (file.exists()) {
-                loadHistory(file)
-            } else {
-                FileWrapper()
-            }
-            history.dataList.add(dataset)
-            val encoder = XMLEncoder(               // Stream bereitstellen
-                BufferedOutputStream(
-                    FileOutputStream(file)
+            if (file != null) {
+                val history = if (file.exists()) loadHistory(file) else FileWrapper()
+                val entriesForLocation = history.dataList
+                    .filter { it.id == dataset.id }
+                    .sortedBy { it.timestamp }
+                // Maxmal-Anzahl von Ortswetterdaten, die gespeichert werden = 4
+                if (entriesForLocation.size >= 4) {
+                    history.dataList.remove(entriesForLocation.first())
+                }
+                history.dataList.add(dataset)
+
+                val encoder = XMLEncoder(               // Stream bereitstellen
+                    BufferedOutputStream(
+                        FileOutputStream(file)
+                    )
                 )
-            )
-            encoder.writeObject(history)            // Objekt speichern
-            encoder.close()                         // Stream schliessen
+                encoder.writeObject(history)            // Objekt speichern
+                encoder.close()                         // Stream schliessen
+            }
         }
     }
 
-    private fun getStorageFile(): File {
-        // Holt den Pfad des globalen Benutzerordners (bspw. Mac: /users/peterkoch)
-        val userHome = System.getProperty("user.home")
-        // erstellt einen Ordner im Dateiensystem des Nutzers. Der Punkt steht für einen versteckten Ordner "XmlTest".
-        val storageDirectory = Paths.get(userHome, ".Weather2b", "storage")
+    override fun getEntriesForLocation(locationID: Int): List<WeatherData> {
+        val file = getStorageFile() ?: return emptyList()
+        if (!file.exists()) return emptyList()
+        return loadHistory(file).dataList
+            .filter { it.id == locationID }
+            .sortedBy { it.timestamp }
+    }
 
-        if (!Files.exists(storageDirectory)) {
-            Files.createDirectories(storageDirectory)
+    private fun getStorageFile(): File? {
+        return try {
+            // Holt den Pfad des globalen Benutzerordners (bspw. Mac: /users/peterkoch)
+            val userHome = System.getProperty("user.home")
+            // erstellt einen Ordner im Dateiensystem des Nutzers. Der Punkt steht für einen versteckten Ordner "XmlTest".
+            val storageDirectory = Paths.get(userHome, ".Weather2b", "storage")
+
+            if (!Files.exists(storageDirectory)) {
+                Files.createDirectories(storageDirectory)
+            }
+            storageDirectory.resolve("storageFile.xml").toFile()
+        } catch (e: Exception) {
+            System.err.println("Fehler beim Datenzugriff: ${e.message}")
+            e.printStackTrace()
+            null
         }
-        return storageDirectory.resolve("storageFile.xml").toFile()
     }
 
     private fun loadHistory(file: File): FileWrapper {
@@ -173,10 +103,14 @@ data class WeatherData(
         return FileWrapper()
     }
 
-    override fun getHistoryForLocation(locationID: Int): List<WeatherData> {
+    override fun getWedderHistoryFromLocation(locationID: Int): List<WeatherData> {
         val file = getStorageFile()
-        if (!file.exists()) { return emptyList() }
+        if (file != null) {
+            if (!file.exists()) { return emptyList() }
 
+            val history = loadHistory(file)
+            println("History des gesuchten Orts: ${history.dataList.filter { it.id == locationID }}")
+            return history.dataList.filter { it.id == locationID }
         val history = loadHistory(file)
         print("History des gesuchten Orts: ${history.dataList.filter { it.id == locationID }}")
         return history.dataList.filter { it.id == locationID }
@@ -274,24 +208,7 @@ data class WeatherData(
         for (line in lines) {
             print(line)
         }
-    }
-
-    override fun readWeatherDataHourly() {
-        val file = File("resources/hourlyData/HourlyWeatherData.xml")
-
-        val lines = file.readLines()
-        for (line in lines) {
-            print (line)
-        }
-    }
-
-    override fun readWeatherData() {
-        val file = File("resources/currentData/CurrentWeatherData.xml")
-
-        val lines = file.readLines()
-        for (line in lines) {
-            print (line)
-        }
+        return emptyList()
     }
 
   /*  override fun readFavorites() {
