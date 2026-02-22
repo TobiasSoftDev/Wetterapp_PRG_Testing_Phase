@@ -1,4 +1,3 @@
-
 import java.beans.XMLDecoder
 import java.beans.XMLEncoder
 import java.io.BufferedInputStream
@@ -186,7 +185,7 @@ data class WeatherData(
         // Holt den Pfad des globalen Benutzerordners
         val userHome = System.getProperty("user.home")
         // erstellt einen Ordner im Dateiensystem des Nutzers. Der Punkt steht für einen versteckten Ordner "XmlTest".
-        val storageDirectory = Paths.get(userHome, ".Weather2b", "storage", "favorites")
+        val storageDirectory = Paths.get(userHome, ".Weather2b", "storage")
 
         if (!Files.exists(storageDirectory)) {
             Files.createDirectories(storageDirectory)

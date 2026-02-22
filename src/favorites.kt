@@ -1,13 +1,21 @@
 import javafx.scene.image.Image
+import java.io.Serializable
 
-data class Favorite(
-    var location: Location = Location(),
-    var name: String = "",
-    var temperature: Double = 0.0,
-    var iconFileName : String = "") {
+class Favorite: Serializable {
+    var location: Location = Location()
+    var name: String = ""
+    var temperature: Double = 0.0
+    var iconFileName: String = ""
+
+    constructor()
+
+    constructor(location: Location, name: String) {
+        this.location = location
+        this.name = name
+    }
 
     val icon: Image
-        get(){
+        get() {
             return if (iconFileName.isEmpty()) {
                 loadIcon("umbrella.png")
             } else {
@@ -15,6 +23,7 @@ data class Favorite(
             }
         }
 }
+
 
 
 

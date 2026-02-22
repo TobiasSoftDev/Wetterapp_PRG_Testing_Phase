@@ -15,8 +15,6 @@ import javafx.scene.paint.Color
 import javafx.scene.shape.SVGPath
 import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
-import javafx.scene.text.Font
-import javafx.scene.text.FontWeight
 import kotlin.apply
 import kotlin.collections.forEach
 
@@ -27,7 +25,6 @@ object guiFavorites {
         alignment = Pos.TOP_CENTER
         isFillWidth = true
         maxHeight = 250.0
-
     }
 
     val favoriteIcon = SVGPath().apply {
@@ -40,9 +37,8 @@ object guiFavorites {
         strokeLineJoin = StrokeLineJoin.ROUND
     }
 
-
     private val lblCount = Label().apply {
-        font = Font.font("Outfit", 12.0)
+        font = appStyle.FONT_12
         style = "-fx-text-fill: gray;"
         padding = Insets(10.0, 0.0, 0.0, 0.0)
     }
@@ -55,12 +51,10 @@ object guiFavorites {
             alignment = Pos.TOP_CENTER
 
             val ttlFavorites = Label("Meine Orte ⭐ ").apply {
-                font = Font.font("Outfit", FontWeight.BOLD, 28.0)
+                font = appStyle.FONT_24
                 padding = Insets(0.0, 0.0, 5.0, 0.0)
-
             }
             VBox.setVgrow(favoriteConstruct, Priority.NEVER)
-
             children.addAll(ttlFavorites, favoriteConstruct, lblCount)
         }
         manager.getFavoritesObservableList().addListener(ListChangeListener {
@@ -69,28 +63,37 @@ object guiFavorites {
         updateFavoritesList(onHomeClick)
 
         return favoriteBox
-
     }
 
     fun createFavoriteList(favorite: Favorite, onHomeClick: (Location) -> Unit): HBox {
         val boxList = HBox(5.0).apply {
-            padding = Insets(0.0, 5.0, 0.0, 5.0)
-            alignment = Pos.TOP_RIGHT
-            style = "-fx-background-color: transparent; -fx-background-radius: 8;"
-
+            padding = Insets(0.0, 8.0, 0.0, 8.0)
+            alignment = Pos.CENTER_LEFT
+            style = "-fx-background-color: transparent; -fx-background-radius: 5;"
 
             val locationName = Label(favorite.name).apply {
-                font = Font.font("Outfit", FontWeight.LIGHT, 16.0)
-                minWidth = 120.0
+                font = appStyle.FONT_16
+                minWidth = 180.0
                 isWrapText = false
+                cursor = Cursor.HAND
+                padding = Insets(2.0, 5.0, 2.0, 5.0)
+
+                setOnMouseClicked{
+                    onHomeClick(favorite.location)
+                }
+                setOnMouseEntered {
+                    style = "-fx-border-color: #232F48; -fx-border-radius: 5; -fx-background-color: #E1F5FE; -fx-background-radius: 5;"
+                }
+                setOnMouseExited {
+                    style = "-fx-border-color: transparent;"
+                }
             }
 
-            val lblTemperature = Label("  ${favorite.temperature}°").apply {
-                font = Font.font("Outfit", FontWeight.LIGHT, 20.0)
+            val lblTemperature = Label("${favorite.temperature}°").apply {
+                font = appStyle.FONT_18
                 alignment = Pos.CENTER
-                textFill = Color.RED
+                textFill = appStyle.MAIN_FONT_COLOR
                 minWidth = 45.0
-
             }
 
             val lblWeatherIcon = ImageView(favorite.icon).apply {
@@ -104,13 +107,6 @@ object guiFavorites {
                 HBox.setHgrow(this, Priority.ALWAYS)
             }
 
-            val btnSetHome = Button("🏠").apply {
-                style =
-                    "-fx-background-color: transparent; -fx-text-fill: #ff6b6b; -fx-font-weight: bold; -fx-cursor: hand;"
-                isVisible = false
-                setOnAction { onHomeClick(favorite.location) }
-            }
-
             val btnRemoveFavorite = Button("❎").apply {
                 style =
                     "-fx-background-color: transparent;-fx-text-fill: #ff6b6b; -fx-font-weight: bold; -fx-cursor: hand;"
@@ -119,23 +115,16 @@ object guiFavorites {
                     manager.removeFavorites(favorite.location)
                 }
             }
-
             setOnMouseEntered {
-                btnSetHome.isVisible = true
                 btnRemoveFavorite.isVisible = true
             }
             setOnMouseExited {
-                btnSetHome.isVisible = false
                 btnRemoveFavorite.isVisible = false
             }
-
-
-            children.addAll(locationName, lblTemperature, lblWeatherIcon, spacer,btnSetHome, btnRemoveFavorite)
+            children.addAll(locationName, lblTemperature, lblWeatherIcon, spacer, btnRemoveFavorite)
         }
         return boxList
-
     }
-
 
     fun updateFavoritesList(onHomeClick: (Location) -> Unit) {
         favoriteConstruct.children.clear()
@@ -157,9 +146,7 @@ object guiFavorites {
             }
             favoriteConstruct.children.add(lblNoneFavorites)
         }
-
     }
-
 
     fun createAddButton(activeLocation: () -> Location?, activeWeather: () -> Weather?): Button {
 
@@ -183,7 +170,6 @@ object guiFavorites {
                                 title = "Limit erreicht"
                                 contentText = "Du kannst maximal 5 Favoriten speichern."
                             }.showAndWait()
-
                         }
                         updateStarColor(location)
                     }

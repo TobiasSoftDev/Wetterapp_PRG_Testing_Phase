@@ -9,47 +9,27 @@ class Manager() : Logic {
     private val apiHandler: Api = ApiHandler()
     private var fetchedWeather: Weather? = null
     private var fetchedLocations: MutableList<Location> = mutableListOf()
-//    private val weatherCodes: WeatherCode = WeatherCode.SONNIG
     private var hourlyWeather: MutableList<WeatherData> = mutableListOf()
-    //private var favoritesList: MutableList<Favorite> = mutableListOf()
     private val favoritesList: ObservableList<Favorite> = FXCollections.observableArrayList()
     private val fileHandler: Storabledata = WeatherData()
 
-
-    //    fun getCurrentWeather(location: Location): List<Any> {
-//        fetchedWeather = apiHandler.fetchWeather(location)
-//        return fetchedWeather!!.getCurrentWeatherDataAll()
-//    }
-    /*init {
-        val savedFavorites = fileHandler.getAllFavorites()
-        favoritesList.addAll(savedFavorites)
-        println("Favoriten aus XML-File geladen")
-    } */
     init {
-        val loadedFavorites = fileHandler.getAllFavorites()
-        favoritesList.setAll(loadedFavorites)
-
-        val currentFavorites = loadedFavorites.map { oldFav ->
-           val freshFavorites = apiHandler.fetchWeather(oldFav.location)
-
-               // val currentWeather = getCurrentWeather(oldFav.location)
-                if (freshFavorites != null){
-                    Favorite(
-                        oldFav.location,
-                        oldFav.name,
-                        freshFavorites.getTemperature(),
-                        freshFavorites.getWeatherCode().iconName,
-                    )
-            }else{
-            oldFav
-        }
-        }
-        updateFavoriteFile()
-        println("es wird die Favoritenliste aktualisiert nach dem neustart")
-        favoritesList.setAll(currentFavorites)
+        refreshFavorites()
     }
 
-
+    fun refreshFavorites(){
+        val savedFavorites = fileHandler.getAllFavorites()
+        val freshFavorites = savedFavorites.map { fav ->
+            val weather = apiHandler.fetchWeather(fav.location)
+            if (weather != null) {
+                fav.temperature = weather.getTemperature()
+                fav.iconFileName = weather.getWeatherCode().iconName
+            }
+            fav
+        }
+        println("es wird die Favoritenliste aktualisiert nach dem neustart")
+        favoritesList.setAll(freshFavorites)
+    }
 
     override fun getLocations(searchText: String): MutableList<Location> {
         fetchedLocations = apiHandler.getLocations(searchText)
@@ -73,19 +53,15 @@ class Manager() : Logic {
 
     override fun addFavorites(location: Location, weather: Weather): Boolean {
         if (favoritesList.size < 5 && !checkForFavorites(location)) {
-            val favorite = Favorite(
-                location,
-                location.name,
-                weather.getTemperature(),
-                weather.getWeatherCode().iconName)
-
-            val success = favoritesList.add(favorite)
-
-            if (success) {
-                fileHandler.storeFavorites(favorite)
-                println("Favorite persistent gespeichert")
+            val favorite = Favorite(location, location.name).apply {
+                this.temperature = weather.getTemperature()
+                this.iconFileName = weather.getWeatherCode().iconName
             }
-            return success
+            favoritesList.add(0,favorite)
+            fileHandler.storeFavorites(favorite)
+            updateFavoriteFile()
+
+            return true
         }
         return false
     }
@@ -99,7 +75,7 @@ class Manager() : Logic {
         return removeFavorite
     }
 
-    private fun updateFavoriteFile() {
+    override fun updateFavoriteFile() {
         val userHome = System.getProperty("user.home")
         val file = File(userHome,".Weather2b/storage/favorites/favoritesList.xml")
         if (file.exists()) {
@@ -108,25 +84,9 @@ class Manager() : Logic {
         }
     }
 
-
     override fun checkForFavorites(location: Location): Boolean {
         return favoritesList.any {
             it.location.id == location.id
         }
     }
 }
-
-
-
-//    fun storeWeatherData(weather: Weather) : MutableList<Location> {
-//        hourlyWeather = fetchedWeather.getHourlyWeatherDataAll()
-//        return hourlyWeather
-//    }
-
-  //  private fun storeWeather() {
-  //  }
-
-   // private fun storeLocation() {
-   // }
-
-    // }

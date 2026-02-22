@@ -73,17 +73,18 @@ class Gui : Application() {
         }
     }
 
-    var isFavorite = SimpleBooleanProperty(false)
-
-   private var selectedLocation: Location? = null
-    private var selectedLocationWeather: Weather? = null
-
     private val onHomeClick = { location: Location ->
-        Gui.selectedLocation = location
-        Gui.selectedLocationWeather = manager.getCurrentWeather(location)
-        fillInLocationData(Gui.selectedLocation)
-        fillInWeatherData(Gui.selectedLocationWeather)
-        searchbar.tflSucheingabe.text = location.name
+        selectedLocation = location
+        selectedLocationWeather = manager.getCurrentWeather(location)
+        fillInLocationData(selectedLocation)
+        fillInWeatherData(selectedLocationWeather)
+        val favList = manager.getFavoritesObservableList()
+        val activeLocation = favList.find { it.location.id == location.id }
+        if (activeLocation != null) {
+            favList.remove(activeLocation)
+            favList.add(0,activeLocation)
+            manager.updateFavoriteFile()
+        }
     }
 
     private val lblProzent = Label("98%").apply {
@@ -172,7 +173,6 @@ class Gui : Application() {
                 VBox.setVgrow(this, Priority.NEVER)
             }
             HBox.setHgrow(dayView.hBoxDayView, Priority.ALWAYS)
-
             HBox.setMargin(favBox, Insets(0.0, 0.0, 0.0, 100.0))
             children.addAll(dayView.hBoxDayView, favBox)
         }
@@ -182,16 +182,9 @@ class Gui : Application() {
         guiFavorites.manager = this.manager
         dayView.favorites = guiFavorites
         dayView.addFavoriteButtonToBox()
-
-        val storage: Storabledata = WeatherData()
-        val loadedFavorites = storage.getAllFavorites()
-        manager.getFavoritesObservableList().setAll(loadedFavorites)
-
         guiFavorites.updateFavoritesList(onHomeClick)
         manager.getFavoritesObservableList().addListener(javafx.collections.ListChangeListener{
-            guiFavorites.updateFavoritesList(onHomeClick)
-        })
-
+            guiFavorites.updateFavoritesList(onHomeClick)})
 
         val root = BorderPane().apply {
             top = hBoxSucheGuete
@@ -214,6 +207,11 @@ class Gui : Application() {
             show()
             root.requestFocus()     // mit Tab-Taste krallt sich Textfeld wieder an die Aufmerksamkeit -> Cursor...
         }
+        val currentFavorites = manager.getFavoritesObservableList()
+        if (currentFavorites.isNotEmpty()) {
+            val topFavorite = currentFavorites[0]
+            onHomeClick(topFavorite.location)
+        }
     }
 
     fun popupLogic(ownerStage: Stage) {
@@ -225,13 +223,13 @@ class Gui : Application() {
         }
         resultsList.selectionModel.selectedItemProperty().addListener { observable, oldValue, newValue ->
             if (newValue != null) {
-                Gui.selectedLocation = newValue
-                Gui.selectedLocationWeather = manager.getCurrentWeather(newValue)
-                fillInLocationData(Gui.selectedLocation)
-                fillInWeatherData(Gui.selectedLocationWeather)
+                selectedLocation = newValue
+                selectedLocationWeather = manager.getCurrentWeather(newValue)
+                fillInLocationData(selectedLocation)
+                fillInWeatherData(selectedLocationWeather)
                 // Create and refresh the current weather file in "currentData"
                 val storage: Storabledata = WeatherData()
-                println("Current: ${storage.storeWeatherData(Gui.selectedLocationWeather)}")
+                println("Current: ${storage.storeWeatherData(selectedLocationWeather)}")
 
 //                // Create and refresh the current weather file in "currentData"
 //                val storage: Storabledata = WeatherData()
@@ -286,7 +284,7 @@ class Gui : Application() {
 
             dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
         }
-        guiFavorites.updateStarColor(Gui.selectedLocation)
+        guiFavorites.updateStarColor(selectedLocation)
         dayView.btnAddFavorite.isVisible = true
 
         // API-Daten neu laden für Plotter Line Chart und erste 7 Werte auslesen
@@ -307,6 +305,4 @@ class Gui : Application() {
         var selectedLocation: Location? = null
         var selectedLocationWeather: Weather? = null
     }
-
-
 }

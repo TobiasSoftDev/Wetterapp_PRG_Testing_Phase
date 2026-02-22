@@ -15,7 +15,6 @@ import java.time.format.DateTimeFormatter
 object dayView {
     lateinit var favorites: guiFavorites
 
-
     val btnAddFavorite by lazy {
         favorites.createAddButton(
             activeLocation = { Gui.selectedLocation },
@@ -49,34 +48,6 @@ object dayView {
         alignment = Pos.CENTER_LEFT
         font = Font.font("Outfit-Regular", FontWeight.SEMI_BOLD, 36.0)
     }
-
-    /* private val favoriteIcon = SVGPath().apply {
-         content = "M21.2302 12.0054L17.6428 4.22806C17.3897 3.67919 16.6096 3.67919 16.3564 4.22806L12.7691 12.0054C12.6659 12.2291 12.4539 12.3832 12.2093 12.4122L3.70398 13.4206C3.10374 13.4918 2.86269 14.2337 3.30646 14.644L9.59463 20.4592C9.77549 20.6264 9.85646 20.8756 9.80845 21.1173L8.13926 29.5179C8.02146 30.1107 8.65256 30.5693 9.17999 30.274L16.6536 26.0906C16.8686 25.9703 17.1306 25.9703 17.3456 26.0906L24.8193 30.274C25.3467 30.5693 25.9778 30.1107 25.86 29.5179L24.1908 21.1173C24.1428 20.8756 24.2238 20.6264 24.4046 20.4592L30.6928 14.644C31.1366 14.2337 30.8955 13.4918 30.2953 13.4206L21.79 12.4122C21.5454 12.3832 21.3334 12.2291 21.2302 12.0054Z"
-         stroke = AppStyle.FAVORITE_YELLOW
-         fill = AppStyle.TRANSPARENT
-         strokeWidth = 2.0
-         strokeLineCap = StrokeLineCap.ROUND
-         strokeLineJoin = StrokeLineJoin.ROUND
-     }
-
- //    private fun setFavoriteIcon() {
- //        if (favList.isNotEmpty()) {
- //            favoriteIcon.fill = AppStyle.FAVORITE_YELLOW
- //        } else {
- //            favoriteIcon.fill = AppStyle.TRANSPARENT
- //        }
- //    }
-
-     val btnSetFavorite = Button().apply {
-         graphic = favoriteIcon
-         background = Background.EMPTY
-         cursor = Cursor.HAND
-         isVisible = false
-         setOnAction { event -> println("Favoriten-Action: addFavorite()..")
-             //isFavorite = !isFavorite
-             //setFavoriteIcon()
-         }
-     }*/
 
     private val locationHbox = HBox().apply {
         alignment = Pos.CENTER_LEFT

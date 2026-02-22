@@ -7,4 +7,5 @@ interface Logic {
     fun removeFavorites(location: Location): Boolean
     fun checkForFavorites(location: Location): Boolean
     fun getFavoritesObservableList(): ObservableList<Favorite>
+    fun updateFavoriteFile()
 }
