@@ -11,12 +11,12 @@ object accuracyBox {
 
     val percentLbl = Label("").apply {
         alignment = Pos.CENTER
-        font = AppStyle.FONT_16
+        font = appStyle.FONT_16
         //background = Background(BackgroundFill(Color.BLUE, null, null))
     }
 
     val accuracyLbl = Label("Prognosequalität").apply {
-        font = AppStyle.FONT_18
+        font = appStyle.FONT_18
     }
 
     private val upperHbox = HBox().apply {
@@ -37,7 +37,7 @@ object accuracyBox {
     }
 
     val descriptionLbl = Label("exzellent").apply {
-        font = AppStyle.FONT_14
+        font = appStyle.FONT_14
     }
 
     private val lowerHbox = HBox().apply {

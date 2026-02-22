@@ -8,19 +8,17 @@
 
 interface Storabledata {
     // DataDaily --> 14 days weather forecast
-    fun storeWeatherDataDaily(weather: Weather?): List<HourlyWeather>?
+//    fun storeWeatherDataDaily(weather: Weather?): List<HourlyWeather>?
     // DataHourly --> 24h weather of current day
-    fun storeWeatherDataHourly(weather: Weather?): List<HourlyWeather>?
+//    fun storeWeatherDataHourly(weather: Weather?): List<HourlyWeather>?
     // WeatherData --> current weather, is being rewritten with every search request
-    fun storeWeatherData(weather: Weather?): List<Any>?
     fun storeFavorites(favorite: Favorite): Favorite
-    fun getAllFavorites(): List<Favorite>
-    fun readWeatherDataDaily()
-    fun readWeatherDataHourly()
-    fun readWeatherData()
+//    fun readWeatherDataDaily()
+//    fun readWeatherDataHourly()
+//    fun readWeatherData()
     fun readFavorites()
-    fun checkAccuracy()
-
+//    fun checkAccuracy()
+    fun getAllFavorites(): List<Favorite>
 //    fun readWeatherDataDaily()
 //    fun readWeatherDataHourly()
 //    fun readWeatherData()
@@ -28,6 +26,6 @@ interface Storabledata {
     //fun checkAccuracy(id: Int, currentWeather: Weather)
 
     fun getEntriesForLocation(locationID: Int): List<WeatherData>
-    fun storeWedderData(weather: Weather?)
-    fun getWedderHistoryFromLocation(locationID: Int): List<WeatherData>
+    fun storeWeatherData(weather: Weather?)
+    fun getWeatherHistoryFromLocation(locationID: Int): List<WeatherData>
 }

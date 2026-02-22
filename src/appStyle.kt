@@ -52,7 +52,6 @@ object appStyle {
             font = FONT_14_BOLD
             padding = Insets(5.0, 5.0, 0.0, 5.0)
             minWidth = Region.USE_PREF_SIZE
-
         }
     }
 

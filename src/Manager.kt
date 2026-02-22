@@ -6,7 +6,6 @@ import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalAdjusters
 import kotlin.String
 import kotlin.math.abs
 
@@ -89,8 +88,6 @@ class Manager() : Logic {
         println("Favoriten aus XML-File geladen")
     }
 
-
-
     override fun getLocations(searchText: String): MutableList<Location> {
         fetchedLocations = apiHandler.getLocations(searchText)
         return fetchedLocations
@@ -100,10 +97,10 @@ class Manager() : Logic {
         fetchedWeather = apiHandler.fetchWeather(location)
         if (fetchedWeather != null){
 
-            fileHandler.getWedderHistoryFromLocation(location.getLocationID().toInt())
+            fileHandler.getWeatherHistoryFromLocation(location.id)
 
             // prüfen ob Ort in Favoriten? Wenn ja: Wetterabfrage im Speicher speichern.
-            fileHandler.storeWedderData(fetchedWeather)
+            fileHandler.storeWeatherData(fetchedWeather)
         }
 
         return fetchedWeather

@@ -85,7 +85,7 @@ class Gui : Application() {
         selectedLocationWeather = manager.getCurrentWeather(location)
         fillInLocationData(selectedLocation)
         fillInWeatherData(selectedLocationWeather)
-        searchbar.tflSucheingabe.text = location.getLocationName()
+        searchbar.tflSucheingabe.text = location.name
     }
 
     private val lblProzent = Label("").apply {
@@ -199,8 +199,8 @@ class Gui : Application() {
             textAlignment = TextAlignment.CENTER
             isWrapText = true
             padding = Insets(10.0, 0.0, 0.0, 0.0)
-            font = AppStyle.FONT_16
-            textFill = AppStyle.MAIN_FONT_COLOR
+            font = appStyle.FONT_16
+            textFill = appStyle.MAIN_FONT_COLOR
         }
 
         val contentBox = VBox().apply {
@@ -250,11 +250,12 @@ class Gui : Application() {
     }
 
     private fun fillInLocationData(location: Location?) {
-        dayView.lblLocation.text = Gui.selectedLocation?.getLocationName()
-        if (location != null) {
-            dayView.pinPosition(dayView.calculatePosition(location.getLatitude(), location.getLongitude()))
-            detailsView.lblDetailsTitle.text = "Details für ${location.getLocationName()}"
-        }
+            dayView.lblLocation.text = Gui.selectedLocation?.name
+            if (location != null) {
+                dayView.pinPosition(dayView.calculatePosition(location.latitude, location.longitude))
+                detailsView.lblDetailsTitle.text = "Details für ${location.name}"
+            }
+
     }
 
     private fun fillInWeatherData(weather: Weather?) {
