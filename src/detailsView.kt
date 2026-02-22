@@ -161,9 +161,7 @@ object detailsView {
 
     }
 
-    fun getView(): ScrollPane {
-        return scrollPane
-    }
+    fun getView(): ScrollPane = scrollPane
 
     private fun animateWindDirection(degrees: Int, image: ImageView) {
         image.isVisible = true

@@ -12,7 +12,6 @@ import javafx.application.Application.*
 
 
 fun main(){
-
     launch(Gui::class.java)
 }
 

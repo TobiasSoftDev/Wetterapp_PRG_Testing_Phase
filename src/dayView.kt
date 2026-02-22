@@ -21,6 +21,7 @@ object dayView {
             activeLocation = { Gui.selectedLocation },
             activeWeather = { Gui.selectedLocationWeather }
         )
+
     }
 
     fun addFavoriteButtonToBox() {
@@ -99,13 +100,13 @@ object dayView {
     private val lblMaximum = Label("max").apply {
         prefWidth = 30.0
         minWidth = Label.USE_PREF_SIZE
-        alignment = Pos.CENTER_LEFT
+        alignment = Pos.CENTER_RIGHT
 
     }
     private val lblMinimum = Label("min").apply {
         prefWidth = 30.0
         minWidth = Label.USE_PREF_SIZE
-        alignment = Pos.CENTER_LEFT
+        alignment = Pos.CENTER_RIGHT
     }
 
     val lblMaxTemperature = Label("-").apply {

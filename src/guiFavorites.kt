@@ -78,7 +78,6 @@ object guiFavorites {
             alignment = Pos.TOP_RIGHT
             style = "-fx-background-color: transparent; -fx-background-radius: 8;"
 
-
             val locationName = Label(favorite.name).apply {
                 font = Font.font("Outfit", FontWeight.LIGHT, 16.0)
                 minWidth = 120.0
@@ -90,7 +89,6 @@ object guiFavorites {
                 alignment = Pos.CENTER
                 textFill = Color.RED
                 minWidth = 45.0
-
             }
 
             val lblWeatherIcon = ImageView(favorite.icon).apply {
@@ -133,7 +131,6 @@ object guiFavorites {
             children.addAll(locationName, lblTemperature, lblWeatherIcon, spacer,btnSetHome, btnRemoveFavorite)
         }
         return boxList
-
     }
 
 

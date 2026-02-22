@@ -1,4 +1,3 @@
-import javafx.scene.image.Image
 import java.time.LocalDateTime
 
 data class HourlyWeather(
@@ -10,7 +9,10 @@ data class HourlyWeather(
     private val windSpeed: Double,
     private val windDirection: Int,
     private val freezingLevel: Double,
-    private val weatherCode: WeatherCodes)
+    private val weatherCode: WeatherCodes) {
+    fun getWeatherCodes(): WeatherCodes = weatherCode
+    fun getTemperature2M(): Double = temperature2M
+}
 
 
 
