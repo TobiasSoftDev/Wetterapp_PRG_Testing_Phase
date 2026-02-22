@@ -1,5 +1,5 @@
 import java.io.Serializable
 
-class FavoriteWrapper : Serializable{
+class FavoriteWrapper {
     var favorites: MutableList<Favorite> = mutableListOf()
 }

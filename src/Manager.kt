@@ -20,10 +20,33 @@ class Manager() : Logic {
 //        fetchedWeather = apiHandler.fetchWeather(location)
 //        return fetchedWeather!!.getCurrentWeatherDataAll()
 //    }
-    init {
+    /*init {
         val savedFavorites = fileHandler.getAllFavorites()
         favoritesList.addAll(savedFavorites)
         println("Favoriten aus XML-File geladen")
+    } */
+    init {
+        val loadedFavorites = fileHandler.getAllFavorites()
+        favoritesList.setAll(loadedFavorites)
+
+        val currentFavorites = loadedFavorites.map { oldFav ->
+           val freshFavorites = apiHandler.fetchWeather(oldFav.location)
+
+               // val currentWeather = getCurrentWeather(oldFav.location)
+                if (freshFavorites != null){
+                    Favorite(
+                        oldFav.location,
+                        oldFav.name,
+                        freshFavorites.getTemperature(),
+                        freshFavorites.getWeatherCode().iconName,
+                    )
+            }else{
+            oldFav
+        }
+        }
+        updateFavoriteFile()
+        println("es wird die Favoritenliste aktualisiert nach dem neustart")
+        favoritesList.setAll(currentFavorites)
     }
 
 

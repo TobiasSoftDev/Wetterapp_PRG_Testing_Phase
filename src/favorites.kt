@@ -9,7 +9,6 @@ data class Favorite(
     val icon: Image
         get(){
             return if (iconFileName.isEmpty()) {
-                // Fallback, falls der Name leer ist (z.B. altes XML-Format)
                 loadIcon("umbrella.png")
             } else {
                 loadIcon(iconFileName)
