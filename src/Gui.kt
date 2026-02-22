@@ -75,10 +75,10 @@ class Gui : Application() {
         }
     }
 
-    var isFavorite = SimpleBooleanProperty(false)
+  //  var isFavorite = SimpleBooleanProperty(false)
 
-   private var selectedLocation: Location? = null
-    private var selectedLocationWeather: Weather? = null
+   //private var selectedLocation: Location? = null
+   // private var selectedLocationWeather: Weather? = null
 
     private val onHomeClick = { location: Location ->
         selectedLocation = location
@@ -87,6 +87,7 @@ class Gui : Application() {
         fillInWeatherData(selectedLocationWeather)
         searchbar.tflSucheingabe.text = location.name
     }
+
 
     private val lblProzent = Label("").apply {
         alignment = Pos.CENTER
@@ -225,10 +226,10 @@ class Gui : Application() {
         }
         resultsList.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             if (newValue != null) {
-                Gui.selectedLocation = newValue
-                Gui.selectedLocationWeather = manager.getCurrentWeather(newValue)
-                fillInLocationData(Gui.selectedLocation)
-                fillInWeatherData(Gui.selectedLocationWeather)
+                selectedLocation = newValue
+                selectedLocationWeather = manager.getCurrentWeather(newValue)
+                fillInLocationData(selectedLocation)
+                fillInWeatherData(selectedLocationWeather)
                 popupStage.close()
             }
         }
@@ -250,7 +251,7 @@ class Gui : Application() {
     }
 
     private fun fillInLocationData(location: Location?) {
-            dayView.lblLocation.text = Gui.selectedLocation?.name
+            dayView.lblLocation.text = selectedLocation?.name
             if (location != null) {
                 dayView.pinPosition(dayView.calculatePosition(location.latitude, location.longitude))
                 detailsView.lblDetailsTitle.text = "Details für ${location.name}"
@@ -282,7 +283,7 @@ class Gui : Application() {
                 plot("Min Temperatur", day.getTemperatureMin().toInt())
             }
         }
-        guiFavorites.updateStarColor(Gui.selectedLocation)
+        guiFavorites.updateStarColor(selectedLocation)
         dayView.btnAddFavorite.isVisible = true
 
     }
