@@ -75,18 +75,20 @@ class Gui : Application() {
         }
     }
 
-    var isFavorite = SimpleBooleanProperty(false)
-
-   private var selectedLocation: Location? = null
-    private var selectedLocationWeather: Weather? = null
-
     private val onHomeClick = { location: Location ->
         selectedLocation = location
         selectedLocationWeather = manager.getCurrentWeather(location)
         fillInLocationData(selectedLocation)
         fillInWeatherData(selectedLocationWeather)
-        searchbar.tflSucheingabe.text = location.name
+        val favList = manager.getFavoritesObservableList()
+        val activeLocation = favList.find { it.location.id == location.id }
+        if (activeLocation != null) {
+            favList.remove(activeLocation)
+            favList.add(0,activeLocation)
+            manager.updateFavoriteFile()
+        }
     }
+
 
     private val lblProzent = Label("").apply {
         alignment = Pos.CENTER
@@ -154,15 +156,9 @@ class Gui : Application() {
         guiFavorites.manager = this.manager
         dayView.favorites = guiFavorites
         dayView.addFavoriteButtonToBox()
-
-        val storage: Storabledata = WeatherData()
-        val loadedFavorites = storage.getAllFavorites()
-        manager.getFavoritesObservableList().setAll(loadedFavorites)
-
         guiFavorites.updateFavoritesList(onHomeClick)
         manager.getFavoritesObservableList().addListener(javafx.collections.ListChangeListener{
-            guiFavorites.updateFavoritesList(onHomeClick)
-        })
+            guiFavorites.updateFavoritesList(onHomeClick)})
 
         val root = BorderPane().apply {
             top = hBoxSearchAccuracy
@@ -184,6 +180,11 @@ class Gui : Application() {
             //setOnCloseRequest { exit() }
             show()
             root.requestFocus()     // mit Tab-Taste krallt sich Textfeld wieder an die Aufmerksamkeit -> Cursor...
+        }
+        val currentFavorites = manager.getFavoritesObservableList()
+        if (currentFavorites.isNotEmpty()) {
+            val topFavorite = currentFavorites[0]
+            onHomeClick(topFavorite.location)
         }
     }
 
@@ -225,10 +226,10 @@ class Gui : Application() {
         }
         resultsList.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             if (newValue != null) {
-                Gui.selectedLocation = newValue
-                Gui.selectedLocationWeather = manager.getCurrentWeather(newValue)
-                fillInLocationData(Gui.selectedLocation)
-                fillInWeatherData(Gui.selectedLocationWeather)
+                selectedLocation = newValue
+                selectedLocationWeather = manager.getCurrentWeather(newValue)
+                fillInLocationData(selectedLocation)
+                fillInWeatherData(selectedLocationWeather)
                 popupStage.close()
             }
         }
@@ -250,7 +251,7 @@ class Gui : Application() {
     }
 
     private fun fillInLocationData(location: Location?) {
-            dayView.lblLocation.text = Gui.selectedLocation?.name
+            dayView.lblLocation.text = selectedLocation?.name
             if (location != null) {
                 dayView.pinPosition(dayView.calculatePosition(location.latitude, location.longitude))
                 detailsView.lblDetailsTitle.text = "Details für ${location.name}"
@@ -282,7 +283,7 @@ class Gui : Application() {
                 plot("Min Temperatur", day.getTemperatureMin().toInt())
             }
         }
-        guiFavorites.updateStarColor(Gui.selectedLocation)
+        guiFavorites.updateStarColor(selectedLocation)
         dayView.btnAddFavorite.isVisible = true
 
     }
@@ -318,6 +319,4 @@ class Gui : Application() {
         var selectedLocation: Location? = null
         var selectedLocationWeather: Weather? = null
     }
-
-
 }

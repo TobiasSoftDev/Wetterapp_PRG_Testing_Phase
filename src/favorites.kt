@@ -1,21 +1,29 @@
 import javafx.scene.image.Image
+import java.io.Serializable
 
-data class Favorite(
-    var location: Location = Location(),
-    var name: String = "",
-    var temperature: Double = 0.0,
-    var iconFileName : String = "") {
+class Favorite: Serializable {
+    var location: Location = Location()
+    var name: String = ""
+    var temperature: Double = 0.0
+    var iconFileName: String = ""
+
+    constructor()
+
+    constructor(location: Location, name: String) {
+        this.location = location
+        this.name = name
+    }
 
     val icon: Image
-        get(){
+        get() {
             return if (iconFileName.isEmpty()) {
-                // Fallback, falls der Name leer ist (z.B. altes XML-Format)
                 loadIcon("umbrella.png")
             } else {
                 loadIcon(iconFileName)
             }
         }
 }
+
 
 
 
