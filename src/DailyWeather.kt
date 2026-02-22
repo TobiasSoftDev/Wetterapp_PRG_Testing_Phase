@@ -22,4 +22,5 @@ data class DailyWeather(
     fun getSunrise(): LocalTime? = sunrise.toLocalTime()
     fun getSunsetLocalDateTime(): LocalDateTime = sunset
     fun getSunriseLocalDateTime(): LocalDateTime = sunrise
+    fun getWeatherCode(): WeatherCodes = weatherCode
 }
