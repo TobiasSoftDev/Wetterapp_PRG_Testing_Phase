@@ -7,7 +7,6 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.chart.XYChart.Series
 import javafx.scene.control.Label
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -30,38 +29,21 @@ object plotterLineChart {
     private val weekDays = mutableListOf<String>()
     private val series: MutableList<Series<String, Number>> = mutableListOf()
     private val yAxis = NumberAxis()
-    private val weather = Gui.selectedLocationWeather?.getDailyWeatherDataAll()
+    private val weather = Gui.selectedLocationWeather?.getDailyList()
 
-    /*Die init Block Funktion um das aktuelle Datum und den Wochentag
+    /*Die init Block Funktion um das aktuelle Datum und den Wochentag sowie diese
     auf der X-Achsenbeschreibung anzuzeigen, wurde mittels Unterstützung von Claude AI erstellt.*/
 
     init {
-        val dateFormatter = DateTimeFormatter.ofPattern("dd.MM")
 
-        // Startet bei heute und fügt 7 Tage hinzu
-        for (i in 0..6) {
-            val tag = heute.plusDays(i.toLong())
-            val weekDayName = tag.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.GERMAN)
-            val datum = tag.format(DateTimeFormatter.ofPattern("dd.MM"))
-
-            // Hier wird der WeatherCode aus weather ausgelesen (in dieser Version der SW noch nicht verwendet)
-            val dailyWeather = weather?.getOrNull(i)
-            val weatherCode = if (dailyWeather != null) {
-                WeatherCodes.fromCode(
-                    code = TODO(),
-                    weather = TODO()
-                )
-            } else {
-                WeatherCodes.UNBEKANNT
+        // Startet bei heute und fügt 7 Tage hinzu noch ohne bereits Daten der Serien anzeigen
+            for (i in 0..6) {
+                val tag = heute.plusDays(i.toLong())
+                val weekDayName = tag.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.GERMAN)
+                val datum = tag.format(DateTimeFormatter.ofPattern("dd.MM"))
+                weekDays.add("$weekDayName\n$datum\n")
             }
-
-            /* Wochenverlauf Plotter Linie inklusive WetterCode anzeigen, in dieser Version noch deaktiviert
-               da nur textuell möglich, nicht als ICON */
-
-//          weekDays.add("$weekDayName\n$datum\n\n$weatherCode\n")
-            weekDays.add("$weekDayName\n$datum\n")
         }
-    }
 
     private val xAxis = CategoryAxis(FXCollections.observableArrayList(weekDays))
     private var chart = LineChart(xAxis, yAxis)
@@ -71,7 +53,7 @@ object plotterLineChart {
         xAxis.label = "7 Tage Wettervorhersage [day/date]"
         yAxis.label = "Temperatur [°C]"
 
-        // Bei X-, und Y-Achse Labels die gewuenschte Schriftgroesse von appStyle verwenden
+        // Bei X- und Y-Achse Labels die gewuenschte Schriftgroesse von appStyle verwenden
         runLater {
             (xAxis.lookup(".axis-label") as? Label)?.let {appStyle.layoutLabelBottomRight(it) }
             (yAxis.lookup(".axis-label") as? Label)?.let {appStyle.layoutLabelBottomRight(it) }
