@@ -29,7 +29,7 @@ object plotterLineChart {
     private val weekDays = mutableListOf<String>()
     private val series: MutableList<Series<String, Number>> = mutableListOf()
     private val yAxis = NumberAxis()
-    private val weather = Gui.selectedLocationWeather?.getDailyWeatherDataAll()
+    private val weather = Gui.selectedLocationWeather?.getDailyList()
 
     /*Die init Block Funktion um das aktuelle Datum und den Wochentag sowie diese
     auf der X-Achsenbeschreibung anzuzeigen, wurde mittels Unterstützung von Claude AI erstellt.*/
