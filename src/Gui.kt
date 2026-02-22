@@ -75,17 +75,18 @@ class Gui : Application() {
         }
     }
 
-  //  var isFavorite = SimpleBooleanProperty(false)
-
-   //private var selectedLocation: Location? = null
-   // private var selectedLocationWeather: Weather? = null
-
     private val onHomeClick = { location: Location ->
         selectedLocation = location
         selectedLocationWeather = manager.getCurrentWeather(location)
         fillInLocationData(selectedLocation)
         fillInWeatherData(selectedLocationWeather)
-        searchbar.tflSucheingabe.text = location.name
+        val favList = manager.getFavoritesObservableList()
+        val activeLocation = favList.find { it.location.id == location.id }
+        if (activeLocation != null) {
+            favList.remove(activeLocation)
+            favList.add(0,activeLocation)
+            manager.updateFavoriteFile()
+        }
     }
 
 
@@ -155,15 +156,9 @@ class Gui : Application() {
         guiFavorites.manager = this.manager
         dayView.favorites = guiFavorites
         dayView.addFavoriteButtonToBox()
-
-        val storage: Storabledata = WeatherData()
-        val loadedFavorites = storage.getAllFavorites()
-        manager.getFavoritesObservableList().setAll(loadedFavorites)
-
         guiFavorites.updateFavoritesList(onHomeClick)
         manager.getFavoritesObservableList().addListener(javafx.collections.ListChangeListener{
-            guiFavorites.updateFavoritesList(onHomeClick)
-        })
+            guiFavorites.updateFavoritesList(onHomeClick)})
 
         val root = BorderPane().apply {
             top = hBoxSearchAccuracy
@@ -185,6 +180,11 @@ class Gui : Application() {
             //setOnCloseRequest { exit() }
             show()
             root.requestFocus()     // mit Tab-Taste krallt sich Textfeld wieder an die Aufmerksamkeit -> Cursor...
+        }
+        val currentFavorites = manager.getFavoritesObservableList()
+        if (currentFavorites.isNotEmpty()) {
+            val topFavorite = currentFavorites[0]
+            onHomeClick(topFavorite.location)
         }
     }
 
@@ -319,6 +319,4 @@ class Gui : Application() {
         var selectedLocation: Location? = null
         var selectedLocationWeather: Weather? = null
     }
-
-
 }

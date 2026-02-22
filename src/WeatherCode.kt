@@ -1,7 +1,5 @@
 import javafx.scene.image.Image
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 
 fun loadIcon(fileName : String): Image {
     val path = "/icons/weatherIcons/$fileName"
@@ -11,7 +9,7 @@ fun loadIcon(fileName : String): Image {
         Image(resource)
     } else {
         println("Iconpfad nicht gefunden!")
-        Image("/icons/weatherIcons/umbrella.png")// Image("https://via.placeholder.com/64")
+        Image("/icons/weatherIcons/umbrella.png")
     }
 }
 
@@ -40,26 +38,17 @@ enum class WeatherCodes(
 
     UNBEKANNT(-1, "Unbekannt", "umbrella.png");
 
-   //val icon: Image get() = loadIcon(iconName)
-
     companion object {
         fun fromCode(code: Int, weather: DailyWeather): WeatherCodes {
             var weatherCode = code
+            val currentTime = LocalDateTime.now()
+            val sunrise = weather.getSunriseLocalDateTime()
+            val sunset = weather.getSunsetLocalDateTime()
 
-           // if (weather != null) {
-                val currentTime = LocalDateTime.now() //.format(DateTimeFormatter.ofPattern("HH:/mm"))
-                val sunrise = weather.getSunriseLocalDateTime()
-                val sunset = weather.getSunsetLocalDateTime()
-                //   val sunrise = LocalTime.of(7,0)
-                // val sunset = LocalTime.of(18,0)
-                if (currentTime.isBefore(sunrise) || currentTime.isAfter(sunset)) {
+            if (currentTime.isBefore(sunrise) || currentTime.isAfter(sunset)) {
                     weatherCode += 100
-                    //       println("Zeit = nach oder vor Sonnenuntergang")
-               // }
-
             }
 
-                // Dann Range-Checks für Bereiche
                 return when (weatherCode) {
                     0 -> SONNIG
                     in 1..2 -> LEICHT_BEWOELKT
