@@ -19,7 +19,7 @@ data class Weather(
     fun getApparentTemperature(): Double = apparentTemperature
     fun getHourlyList(): List<HourlyWeather> = hourlyList
     fun getDailyList(): List<DailyWeather> = dailyList
-    fun getLocationID(): Int = location.hashCode()
+    fun getLocationID(): Int = location.getLocationID().toInt()
     fun getLongitude(): Double = location.getLongitude()
     fun getLatitude(): Double = location.getLatitude()
 
@@ -41,7 +41,6 @@ data class Weather(
         return myList
     }
 
-    fun getCurrentWeatherDataAll() : List<Any> = listOf(temperature, apparentTemperature, humidity, precipitation, windSpeed, windDirection)
     fun getDailyWeatherDataAll() = dailyList
 
     val weatherTemperature: Double

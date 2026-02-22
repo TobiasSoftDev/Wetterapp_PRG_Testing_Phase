@@ -7,9 +7,11 @@ import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.Node
 import javafx.scene.Scene
+import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
+import javafx.scene.control.TextField
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.Border
@@ -100,43 +102,26 @@ class Gui : Application() {
         children.addAll(detailsView.getView(), plotterLineChart.getView())
     }
 
-    private val lblGuete = Label("Güte der Vorhersage").apply {
-        font = appStyle.FONT_18
-    }
-
-    private val hBoxGuete = HBox().apply {
-        alignment = Pos.CENTER_RIGHT
-        spacing = 8.0
-        children.addAll(lblProzent, lblGuete)
-    }
-
-    private val hBoxSucheGuete = HBox().apply {
+    private val hBoxSearchAccuracy = HBox().apply {
         alignment = Pos.CENTER_LEFT
         spacing = 8.0
         padding = Insets(30.0)
         // Breite der Sucheingabe = Breite der Detailsansicht (Haarlinie)
         searchbar.tflSucheingabe.prefWidthProperty().bind(detailsView.getView().widthProperty().subtract(45.0))
-        hBoxGuete.prefWidthProperty().bind(this.widthProperty().multiply(0.5))
+        accuracyBox.getView().prefWidthProperty().bind(this.widthProperty().multiply(0.5))
+        accuracyBox.infoBtn.onAction = EventHandler {event ->
+            val source = (event.source as Node).scene.window as Stage
+            showInfoPopup(source)
+        }
         searchbar.tflSucheingabe.minWidthProperty().bind(searchbar.tflSucheingabe.prefWidthProperty())
         searchbar.tflSucheingabe.maxWidthProperty().bind(searchbar.tflSucheingabe.prefWidthProperty())
-        //border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
 
-        with(searchbar.btnSuche) {
-            onAction = EventHandler { event ->
-                fillSearchResults(searchbar.tflSucheingabe.text)
-                val source = (event.source as Node).scene.window as Stage
-                popupLogic(source)
-            }
-        }
+        search(searchbar.btnSuche)
+        searchTfl(searchbar.tflSucheingabe)
 
-        with(searchbar.tflSucheingabe) {
-            setOnAction { event -> fillSearchResults(this.text)
-                val source = (event.source as Node).scene.window as Stage
-                popupLogic(source)
-            }
-        }
-        children.addAll(searchbar.getView(), hBoxGuete)
+        children.addAll(searchbar.getView(), accuracyBox.getView())
     }
+
 
 //    private val vBoxFavorites = VBox().apply {
 //        alignment = Pos.TOP_RIGHT
@@ -179,9 +164,8 @@ class Gui : Application() {
             guiFavorites.updateFavoritesList(onHomeClick)
         })
 
-
         val root = BorderPane().apply {
-            top = hBoxSucheGuete
+            top = hBoxSearchAccuracy
             bottom = hBoxBottom
             center = hBoxDayViewFavorites
             background = Background(BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets(0.0, 0.0, 0.0, 0.0)))
@@ -202,6 +186,35 @@ class Gui : Application() {
             root.requestFocus()     // mit Tab-Taste krallt sich Textfeld wieder an die Aufmerksamkeit -> Cursor...
         }
     }
+
+    fun showInfoPopup(ownerStage: Stage) {
+        val popupStage = Stage().apply {
+            title = "Was ist die Prognosequalität?"
+            initModality(Modality.APPLICATION_MODAL)
+            initOwner(ownerStage)
+            isResizable = false
+        }
+
+        val titleLbl = Label("Wie wird die Prognosequalität berechnet?").apply {
+            textAlignment = TextAlignment.CENTER
+            isWrapText = true
+            padding = Insets(10.0, 0.0, 0.0, 0.0)
+            font = AppStyle.FONT_16
+            textFill = AppStyle.MAIN_FONT_COLOR
+        }
+
+        val contentBox = VBox().apply {
+            alignment = Pos.TOP_CENTER
+            padding = Insets(10.0)
+            children.addAll(titleLbl)
+        }
+
+        popupStage.close()
+        popupStage.scene = Scene(contentBox, 400.0, 500.0)
+        popupStage.showAndWait()
+
+    }
+
 
     fun popupLogic(ownerStage: Stage) {
         val popupStage = Stage().apply {
@@ -246,7 +259,8 @@ class Gui : Application() {
 
     private fun fillInWeatherData(weather: Weather?) {
         if (weather != null) {
-            lblProzent.text = "${manager.checkAccuracy(weather.locationID.toInt(),weather)} %"
+            accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
+
             dayView.lblWeatherCode.text = weather.getWeatherCode().description
             dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
             dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
@@ -279,6 +293,26 @@ class Gui : Application() {
             locationsModel.add(result)
         }
     }
+
+    fun search(with: Button) {
+        with(with) {
+            onAction = EventHandler { event ->
+                fillSearchResults(searchbar.tflSucheingabe.text)
+                val source = (event.source as Node).scene.window as Stage
+                popupLogic(source)
+            }
+        }
+    }
+
+    fun searchTfl(field: TextField) {
+        with(field) {
+            onAction = EventHandler { event -> fillSearchResults(this.text)
+                val source = (event.source as Node).scene.window as Stage
+                popupLogic(source)
+            }
+        }
+    }
+
     companion object {
         var selectedLocation: Location? = null
         var selectedLocationWeather: Weather? = null
