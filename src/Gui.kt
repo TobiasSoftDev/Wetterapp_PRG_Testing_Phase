@@ -22,6 +22,7 @@ import javafx.scene.layout.BorderWidths
 import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
+import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Text
@@ -125,12 +126,6 @@ class Gui : Application() {
         children.addAll(searchbar.getView(), accuracyBox.getView())
     }
 
-
-//    private val vBoxFavorites = VBox().apply {
-//        alignment = Pos.TOP_RIGHT
-//        border = Border(BorderStroke(Color.BLUE, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths(1.0)))
-//    }
-
     private val hBoxDayViewFavorites by lazy {
         HBox().apply {
             alignment = Pos.TOP_LEFT
@@ -138,16 +133,24 @@ class Gui : Application() {
             isFillHeight = false
             val favBox = guiFavorites.createFavoriteBox(onHomeClick)
             favBox.apply {
-                maxWidth = 350.0
-                maxHeight = 100.0
-                maxHeightProperty().bind(dayView.hBoxDayView.heightProperty())
+                minHeight = Region.USE_PREF_SIZE
+                maxHeight = Region.USE_PREF_SIZE
+                style = """
+                -fx-background-color: #fcfcfc; 
+                -fx-background-radius: 20; 
+                -fx-border-color: #e0e0e0; 
+                -fx-border-radius: 20;
+                -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+            """.trimIndent()
+                //padding = Insets(.0)
+                //maxHeightProperty().bind(dayView.hBoxDayView.heightProperty())
                 alignment = Pos.TOP_CENTER
                 VBox.setVgrow(this, Priority.NEVER)
             }
             HBox.setHgrow(dayView.hBoxDayView, Priority.ALWAYS)
-            HBox.setHgrow(favBox, Priority.ALWAYS)
+            //HBox.setHgrow(favBox, Priority.ALWAYS)
             dayView.hBoxDayView.maxWidthProperty().bind(this.widthProperty().multiply(0.5))
-            favBox.maxWidthProperty().bind(this.widthProperty().multiply(0.5))
+            //favBox.maxWidthProperty().bind(this.widthProperty().multiply(0.5))
             HBox.setMargin(favBox, Insets(0.0, 0.0, 0.0, 100.0))
             children.addAll(dayView.hBoxDayView, favBox)
         }

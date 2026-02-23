@@ -24,7 +24,7 @@ object guiFavorites {
     private val favoriteConstruct = VBox(5.0).apply {
         alignment = Pos.TOP_CENTER
         isFillWidth = true
-        maxHeight = 250.0
+        minHeight = Region.USE_PREF_SIZE
     }
 
     val favoriteIcon = SVGPath().apply {
@@ -37,25 +37,20 @@ object guiFavorites {
         strokeLineJoin = StrokeLineJoin.ROUND
     }
 
-    private val lblCount = Label().apply {
-        font = appStyle.FONT_12
-        style = "-fx-text-fill: gray;"
-        padding = Insets(10.0, 0.0, 0.0, 0.0)
-    }
-
     fun createFavoriteBox(onHomeClick: (Location) -> Unit): VBox {
 
         val favoriteBox = VBox(5.0).apply {
-            padding = Insets(10.0)
+            padding = Insets(5.0)
             prefWidth = 350.0
             alignment = Pos.TOP_CENTER
+            minHeight = Region.USE_PREF_SIZE
+            maxHeight = Region.USE_PREF_SIZE
 
-            val ttlFavorites = Label("Meine Orte ⭐ ").apply {
+
+            val ttlFavorites = Label("Meine Favoriten ⭐ ").apply {
                 font = appStyle.FONT_24
-                padding = Insets(0.0, 0.0, 5.0, 0.0)
             }
-            VBox.setVgrow(favoriteConstruct, Priority.NEVER)
-            children.addAll(ttlFavorites, favoriteConstruct, lblCount)
+            children.addAll(ttlFavorites, favoriteConstruct)
         }
         manager.getFavoritesObservableList().addListener(ListChangeListener {
             updateFavoritesList(onHomeClick)
@@ -73,7 +68,7 @@ object guiFavorites {
 
             val locationName = Label(favorite.name).apply {
                 font = appStyle.FONT_16
-                minWidth = 180.0
+                minWidth = 200.0
                 isWrapText = false
                 cursor = Cursor.HAND
                 padding = Insets(2.0, 5.0, 2.0, 5.0)
@@ -104,10 +99,6 @@ object guiFavorites {
                 isCache = true
             }
 
-            val spacer = Region().apply {
-                HBox.setHgrow(this, Priority.ALWAYS)
-            }
-
             val btnRemoveFavorite = Button("❎").apply {
                 style =
                     "-fx-background-color: transparent;-fx-text-fill: #ff6b6b; -fx-font-weight: bold; -fx-cursor: hand;"
@@ -122,7 +113,7 @@ object guiFavorites {
             setOnMouseExited {
                 btnRemoveFavorite.isVisible = false
             }
-            children.addAll(locationName, lblTemperature, lblWeatherIcon, spacer, btnRemoveFavorite)
+            children.addAll(locationName, lblTemperature, lblWeatherIcon, btnRemoveFavorite)
         }
         return boxList
     }

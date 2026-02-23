@@ -86,7 +86,7 @@ class Manager() : Logic {
 
     fun refreshFavorites(){
         val savedFavorites = fileHandler.getAllFavorites()
-        val freshFavorites = savedFavorites.map { fav ->
+        val freshFavorites = savedFavorites.take(5).map { fav ->
             val weather = apiHandler.fetchWeather(fav.location)
             if (weather != null) {
                 fav.temperature = weather.getTemperature()
@@ -96,6 +96,10 @@ class Manager() : Logic {
         }
         println("es wird die Favoritenliste aktualisiert nach dem neustart")
         favoritesList.setAll(freshFavorites)
+
+        if (savedFavorites.size >5){
+            updateFavoriteFile()
+        }
     }
 
     override fun getLocations(searchText: String): MutableList<Location> {
