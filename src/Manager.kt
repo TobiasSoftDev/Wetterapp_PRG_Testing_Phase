@@ -76,7 +76,7 @@ class Manager() : Logic {
 
             }
         }
-        return if (scores.isEmpty()) -1.0 else scores.average()
+        return if (scores.isEmpty()) -1.0 else "%.2f".format(scores.average()).toDouble()
     }
 
 
