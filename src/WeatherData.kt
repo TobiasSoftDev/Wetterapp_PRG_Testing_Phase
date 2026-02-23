@@ -28,6 +28,18 @@ data class WeatherData(
     var hourlyForecasts: MutableList<HourlyWrapper> = mutableListOf(),
     var weatherCode: Int = 0) : Storabledata {
 
+    override fun removeStoredWeatherData(from: Location) {
+        val file = getStorageFileReference() ?: return
+        if (!file.exists()) return
+
+        val history = loadHistory(file)
+        history.dataList.removeIf { it.id == from.id }
+
+        val encoder = XMLEncoder(BufferedOutputStream(FileOutputStream(file)))
+        encoder.writeObject(history)
+        encoder.close()
+    }
+
     override fun storeWeatherData(weather: Weather?) {
 
         if (weather != null) {
@@ -39,7 +51,7 @@ data class WeatherData(
                 weather.getTemperature(),
                 weather.getHourlyForecasts()
             )
-            val file = getStorageFile()
+            val file = getStorageFileReference()
             if (file != null) {
                 val history = if (file.exists()) loadHistory(file) else FileWrapper()
                 val entriesForLocation = history.dataList
@@ -63,15 +75,16 @@ data class WeatherData(
     }
 
     override fun getEntriesForLocation(locationID: Int): List<WeatherData> {
-        val file = getStorageFile() ?: return emptyList()
+        val file = getStorageFileReference() ?: return emptyList()
         if (!file.exists()) return emptyList()
         return loadHistory(file).dataList
             .filter { it.id == locationID }
             .sortedBy { it.timestamp }
     }
 
-    private fun getStorageFile(): File? {
+    private fun getStorageFileReference(): File? {
         return try {
+
             // Holt den Pfad des globalen Benutzerordners (bspw. Mac: /users/peterkoch)
             val userHome = System.getProperty("user.home")
             // erstellt einen Ordner im Dateiensystem des Nutzers. Der Punkt steht für einen versteckten Ordner "XmlTest".
@@ -102,13 +115,6 @@ data class WeatherData(
         return FileWrapper()
     }
 
-        override fun getWeatherHistoryFromLocation(locationID: Int): List<WeatherData> {
-            val file = getStorageFile()
-            if (file == null || !file.exists()) return emptyList()
-            val history = loadHistory(file)
-            println("History des gesuchten Orts: ${history.dataList.filter { it.id == locationID }}")
-            return history.dataList.filter { it.id == locationID }
-        }
 
     private fun getFavoritesStorageFile(): File {
         // Holt den Pfad des globalen Benutzerordners

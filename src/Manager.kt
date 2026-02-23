@@ -16,6 +16,7 @@ class Manager() : Logic {
     private var hourlyWeather: MutableList<WeatherData> = mutableListOf()
     private val favoritesList: ObservableList<Favorite> = FXCollections.observableArrayList()
     private val fileHandler: Storabledata = WeatherData()
+    private var lastSavedDate: LocalDate? = null
 
     private val weatherCodeCategories = listOf(
         listOf(0),                          // sonnig, klar
@@ -49,37 +50,36 @@ class Manager() : Logic {
         val storedWeatherEntries = fileHandler.getEntriesForLocation(id)
         val startOfCurrentDay = LocalDate.now().atStartOfDay()      // 0 Uhr des aktuellen Tages
         val currentHour = LocalDateTime.now().hour
-        println("aktuelle Stunde: ${currentHour}")
-        for (past in storedWeatherEntries) {
-            val pastTime = LocalDateTime.parse(past.timestamp).toLocalDate().atStartOfDay()
-            println("past time: ${pastTime}")
-            val hoursAhead = ChronoUnit.HOURS.between(pastTime, startOfCurrentDay)
-            println("Stunden vor Messung: ${hoursAhead}")
-            // Schutzbedingung: Prüfung ob Stunden in Range liegen. Die erste Messung muss mindestens 24 Stunden alt sein.
-            if (hoursAhead !in 24..<past.hourlyForecasts.size) continue
-            // Prognose-Wertepaare für diese Stunde holen
-            val forecast = past.hourlyForecasts[currentHour]
-            // Temperaturdifferenz ab 2º C => 0% Güte!
-            val limit = 2.0
-            val error = abs(forecast.wrapperTemperature - currentWeather.getTemperature())
-            println("Temp-Prognose: $forecast")
-            println("Temp-aktuell: ${currentWeather.getTemperature()}")
-            // Prozentsatz der Temperaturgenauigkeit
-            val temperatureScore = ((1-(error-limit)).coerceIn(0.0, 1.0) * 100)
-            println("TempScore: ${temperatureScore}")
-            val weatherCodesScore = weatherCodeScore(forecast.wrapperWeatherCode, currentWeather.getWeatherCode().code)
-            println("WeatherScore: ${weatherCodesScore}")
-            // Durchschnitt beider Prozentsätze
-            scores.add((temperatureScore + weatherCodesScore) / 2)
+        if (checkForFavorites(id)) {
+            println("aktuelle Stunde: ${currentHour}")
+            for (past in storedWeatherEntries) {
+                val pastTime = LocalDateTime.parse(past.timestamp).toLocalDate().atStartOfDay()
+                println("past time: ${pastTime}")
+                val hoursAhead = ChronoUnit.HOURS.between(pastTime, startOfCurrentDay)
+                println("Stunden vor Messung: ${hoursAhead}")
+                // Schutzbedingung: Prüfung ob Stunden in Range liegen. Die erste Messung muss mindestens 24 Stunden alt sein.
+                if (hoursAhead !in 24..<past.hourlyForecasts.size) continue
+                // Prognose-Wertepaare für diese Stunde holen
+                val forecast = past.hourlyForecasts[currentHour]
+                // Temperaturdifferenz ab 2º C => 0% Güte!
+                val limit = 2.0
+                val error = abs(forecast.wrapperTemperature - currentWeather.getTemperature())
+                println("Temp-Prognose: $forecast")
+                println("Temp-aktuell: ${currentWeather.getTemperature()}")
+                // Prozentsatz der Temperaturgenauigkeit
+                val temperatureScore = ((1-(error-limit)).coerceIn(0.0, 1.0) * 100)
+                println("TempScore: ${temperatureScore}")
+                val weatherCodesScore = weatherCodeScore(forecast.wrapperWeatherCode, currentWeather.getWeatherCode().code)
+                println("WeatherScore: ${weatherCodesScore}")
+                // Durchschnitt beider Prozentsätze
+                scores.add((temperatureScore + weatherCodesScore) / 2)
 
+            }
         }
-        return if (scores.isEmpty()) 0.0 else scores.average()
+        return if (scores.isEmpty()) -1.0 else scores.average()
     }
 
-    //    fun getCurrentWeather(location: Location): List<Any> {
-//        fetchedWeather = apiHandler.fetchWeather(location)
-//        return fetchedWeather!!.getCurrentWeatherDataAll()
-//    }
+
     init {
         refreshFavorites()
     }
@@ -105,30 +105,33 @@ class Manager() : Logic {
 
     override fun getCurrentWeather(location: Location): Weather? {
         fetchedWeather = apiHandler.fetchWeather(location)
-        if (fetchedWeather != null){
-
-            fileHandler.getWeatherHistoryFromLocation(location.id)
-
-            // prüfen ob Ort in Favoriten? Wenn ja: Wetterabfrage im Speicher speichern.
-            fileHandler.storeWeatherData(fetchedWeather)
-        }
-
-        return fetchedWeather
+        val weather = fetchedWeather ?: return null
+            // prüfen ob Ort in Favoriten? Wenn ja: Wetterdaten speichern. Nur eine Speicherung pro Tag möglich.
+            if (favoritesList.any { it.location.id == location.id }) {
+                val today = LocalDate.now()
+                if (lastSavedDate != today) {
+                    fileHandler.storeWeatherData(weather)
+                    lastSavedDate = today
+                }
+            }
+        return weather
     }
+
+
 
     override fun getFavoritesObservableList(): ObservableList<Favorite> = favoritesList
 
     override fun addFavorites(location: Location, weather: Weather): Boolean {
 
-        if (favoritesList.size < 5 && !checkForFavorites(location)) {
+        if (favoritesList.size < 5 && !checkForFavorites(location.id)) {
             val favorite = Favorite(location, location.name).apply {
                 this.temperature = weather.getTemperature()
                 this.iconFileName = weather.getWeatherCode().iconName
             }
             favoritesList.add(0,favorite)
             fileHandler.storeFavorites(favorite)
+            fileHandler.storeWeatherData(weather)
             updateFavoriteFile()
-
             return true
         }
         return false
@@ -138,6 +141,7 @@ class Manager() : Logic {
         val removeFavorite = favoritesList.removeIf { it.location.id == location.id }
         if (removeFavorite) {
             updateFavoriteFile()
+            fileHandler.removeStoredWeatherData(location)
             println("Favorit wurde entfernt und XMl Datei aktualisiert")
         }
         return removeFavorite
@@ -152,9 +156,9 @@ class Manager() : Logic {
         }
     }
 
-    override fun checkForFavorites(location: Location): Boolean {
+    override fun checkForFavorites(location: Int): Boolean {
         return favoritesList.any {
-            it.location.id == location.id
+            it.location.id == location
         }
     }
 }

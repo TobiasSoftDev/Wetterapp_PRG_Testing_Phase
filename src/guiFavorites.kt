@@ -162,10 +162,11 @@ object guiFavorites {
                 val weather = activeWeather()
 
                 if (location != null) {
-                    if (manager.checkForFavorites(location)) {
+                    if (manager.checkForFavorites(location.id)) {
                         manager.removeFavorites(location)
                     } else if (weather != null) {
                         val successCheck = manager.addFavorites(location, weather)
+
                         if (!successCheck && manager.getFavoritesObservableList().size >= 5) {
                             Alert(Alert.AlertType.WARNING).apply {
                                 title = "Limit erreicht"
@@ -188,7 +189,7 @@ object guiFavorites {
             favoriteIcon.fill = Color.TRANSPARENT
             return
         }
-        if (manager.checkForFavorites(location)) {
+        if (manager.checkForFavorites(location.id)) {
             favoriteIcon.fill = Color.YELLOW
         } else {
             favoriteIcon.fill = Color.TRANSPARENT

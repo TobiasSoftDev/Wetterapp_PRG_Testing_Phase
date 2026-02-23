@@ -24,6 +24,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
+import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
 import javafx.stage.Modality
 import javafx.stage.Stage
@@ -167,7 +168,6 @@ class Gui : Application() {
             background = Background(BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets(0.0, 0.0, 0.0, 0.0)))
             isFocusTraversable = true   // Nimmt den Cursor aus dem Textfeld. Textfeld will Aufmerksamkeit haben...
         }
-
         dayView.getView().prefWidthProperty().bind(root.widthProperty().multiply(0.50))
         dayView.getView().minWidth = 200.0
         hBoxBottom.prefHeightProperty().bind(root.heightProperty().multiply(0.45))
@@ -190,32 +190,70 @@ class Gui : Application() {
 
     fun showInfoPopup(ownerStage: Stage) {
         val popupStage = Stage().apply {
-            title = "Was ist die Prognosequalität?"
+            title = "Prognosequalität"
             initModality(Modality.APPLICATION_MODAL)
             initOwner(ownerStage)
             isResizable = false
         }
 
-        val titleLbl = Label("Wie wird die Prognosequalität berechnet?").apply {
-            textAlignment = TextAlignment.CENTER
+        val titleLbl = Label("Was ist die Prognosequalität und wie wird sie berechnet?").apply {
+            textAlignment = TextAlignment.LEFT
             isWrapText = true
-            padding = Insets(10.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_16
-            textFill = appStyle.MAIN_FONT_COLOR
+            padding = Insets(20.0, 0.0, 8.0, 0.0)
+            font = appStyle.FONT_14
+        }
+
+        val intro = Text("Sobald du einen Favoriten hinzugefügt hast, werden dessen Wetterprognosen pro Abruf (einmal pro Tag) gespeichert. Um die Genauigkeit einer Prognose zu messen, wird sie mit dem tatsächlich eingetroffenen Wetter verglichen — frühestens 24 Stunden nach der Vorhersage.\n\nFür jede gespeicherte Prognose werden zwei Werte verglichen:").apply {
+            wrappingWidth = 345.0
+            lineSpacing = 1.0
+            font = appStyle.FONT_12
+        }
+
+        val temperatureTitle = Label("Temperatur").apply{
+            padding = Insets(16.0, 0.0, 0.0, 0.0)
+            font = appStyle.FONT_12_BOLD
+        }
+
+        val temperatureText = Text("Weicht die vorhergesagte Temperatur um mehr als 2 °C vom tatsächlichen Wert ab, beträgt die Genauigkeit 0%. Je kleiner die Abweichung, desto höher der Wert.").apply{
+            wrappingWidth = 345.0
+            lineSpacing = 1.0
+            font = appStyle.FONT_12
+        }
+
+        val weatherTitle = Label("Wetterzustand").apply {
+            padding = Insets(16.0, 0.0, 0.0, 0.0)
+            font = appStyle.FONT_12_BOLD
+        }
+
+        val weatherText = Text("Der vorhergesagte Wetterzustand (z.B. bewölkt, Regen, etc.) wird als Wettercode gespeichert und mit dem aktuellen verglichen. Die Übereinstimmung fliesst als Prozentwert in die Gesamtbewertung ein.").apply {
+            wrappingWidth = 345.0
+            lineSpacing = 1.0
+            font = appStyle.FONT_12
+        }
+
+        val scoreTitle = Label("Gesamtwert (Prognosequalität)").apply {
+            padding = Insets(16.0, 0.0, 0.0, 0.0)
+            font = appStyle.FONT_12_BOLD
+        }
+
+        val scoreText = Text("Der angezeigte Prozentwert ist der Durchschnitt dieser beiden Werte über alle verfügbaren Vergleichsdaten.").apply {
+            wrappingWidth = 345.0
+            lineSpacing = 1.0
+            font = appStyle.FONT_12
         }
 
         val contentBox = VBox().apply {
-            alignment = Pos.TOP_CENTER
-            padding = Insets(10.0)
-            children.addAll(titleLbl)
+            alignment = Pos.TOP_LEFT
+            spacing = 5.0
+            padding = Insets(20.0)
+            children.addAll(titleLbl, intro, temperatureTitle, temperatureText, weatherTitle, weatherText, scoreTitle, scoreText)
         }
 
         popupStage.close()
-        popupStage.scene = Scene(contentBox, 400.0, 500.0)
+        popupStage.scene = Scene(contentBox, 400.0, 450.0)
         popupStage.showAndWait()
 
     }
-
 
     fun popupLogic(ownerStage: Stage) {
         val popupStage = Stage().apply {
@@ -256,12 +294,14 @@ class Gui : Application() {
                 dayView.pinPosition(dayView.calculatePosition(location.latitude, location.longitude))
                 detailsView.lblDetailsTitle.text = "Details für ${location.name}"
             }
-
     }
 
     private fun fillInWeatherData(weather: Weather?) {
         if (weather != null) {
-            accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
+            if (manager.checkAccuracy(weather.getLocationID(), weather) > -1.0) {
+                accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
+                accuracyBox.descriptionLbl.text = fillAccuracyLabel(manager.checkAccuracy(weather.getLocationID(),weather))
+            }
 
             dayView.lblWeatherCode.text = weather.getWeatherCode().description
             dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
@@ -315,8 +355,22 @@ class Gui : Application() {
         }
     }
 
+    fun fillAccuracyLabel(score: Double): String {
+        return when (score) {
+            in 99.5..100.0 -> "exzellent"
+            in 95.0..99.4999  -> "sehr gut"
+            in 93.5..94.9999 -> "gut"
+            in 90.0..93.4999 -> "genügend"
+            in 80.0..89.9999 -> "verbesserungswürdig"
+            in 40.0..79.9999 -> "Ist etwas schief gelaufen?"
+            // Hier noch richtig machen...
+            else -> "Es sind noch keine Daten ausgewertet worden."
+        }
+    }
+
     companion object {
         var selectedLocation: Location? = null
         var selectedLocationWeather: Weather? = null
     }
+
 }
