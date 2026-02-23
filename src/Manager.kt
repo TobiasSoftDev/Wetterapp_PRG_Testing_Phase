@@ -123,7 +123,7 @@ class Manager() : Logic {
 
     override fun addFavorites(location: Location, weather: Weather): Boolean {
 
-        if (favoritesList.size < 5 && !checkForFavorites(location)) {
+        if (favoritesList.size < 5 && !checkForFavorites(location.id)) {
             val favorite = Favorite(location, location.name).apply {
                 this.temperature = weather.getTemperature()
                 this.iconFileName = weather.getWeatherCode().iconName
@@ -131,23 +131,7 @@ class Manager() : Logic {
             favoritesList.add(0,favorite)
             fileHandler.storeFavorites(favorite)
             updateFavoriteFile()
-
             return true
-        if (favoritesList.size < 5 && !checkForFavorites(location.id)) {
-            val favorite = Favorite(
-                location,
-                location.name,
-                weather.getTemperature(),
-                weather.getWeatherCode().iconName)
-
-            val success = favoritesList.add(favorite)
-
-            if (success) {
-                fileHandler.storeFavorites(favorite)
-                fileHandler.storeWeatherData(weather)
-                println("Favorite persistent gespeichert")
-            }
-            return success
         }
         return false
     }
@@ -170,8 +154,6 @@ class Manager() : Logic {
             favoritesList.forEach { fileHandler.storeFavorites(it) }
         }
     }
-
-    override fun checkForFavorites(location: Location): Boolean {
 
     override fun checkForFavorites(location: Int): Boolean {
         return favoritesList.any {
