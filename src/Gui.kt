@@ -190,7 +190,7 @@ class Gui : Application() {
 
     fun showInfoPopup(ownerStage: Stage) {
         val popupStage = Stage().apply {
-            title = "Was ist die Prognosequalität?"
+            title = "Prognosequalität"
             initModality(Modality.APPLICATION_MODAL)
             initOwner(ownerStage)
             isResizable = false
@@ -203,13 +203,13 @@ class Gui : Application() {
             font = appStyle.FONT_14
         }
 
-        val intro = Text("Die App speichert täglich Wetterprognosen für deine Favoriten. Um die Genauigkeit einer Prognose zu messen, wird sie mit dem tatsächlich eingetroffenen Wetter verglichen — frühestens 24 Stunden nach der Vorhersage.\n\nFür jede gespeicherte Prognose werden zwei Werte verglichen:").apply {
+        val intro = Text("Sobald du einen Favoriten hinzugefügt hast, werden dessen Wetterprognosen pro Abruf (einmal pro Tag) gespeichert. Um die Genauigkeit einer Prognose zu messen, wird sie mit dem tatsächlich eingetroffenen Wetter verglichen — frühestens 24 Stunden nach der Vorhersage.\n\nFür jede gespeicherte Prognose werden zwei Werte verglichen:").apply {
             wrappingWidth = 345.0
             lineSpacing = 1.0
             font = appStyle.FONT_12
         }
 
-        val temperatureTitle = Label("Temperatur 🌡️").apply{
+        val temperatureTitle = Label("Temperatur").apply{
             padding = Insets(16.0, 0.0, 0.0, 0.0)
             font = appStyle.FONT_12_BOLD
         }
@@ -220,7 +220,7 @@ class Gui : Application() {
             font = appStyle.FONT_12
         }
 
-        val weatherTitle = Label("Wetterzustand 🌤️").apply {
+        val weatherTitle = Label("Wetterzustand").apply {
             padding = Insets(16.0, 0.0, 0.0, 0.0)
             font = appStyle.FONT_12_BOLD
         }
@@ -231,7 +231,7 @@ class Gui : Application() {
             font = appStyle.FONT_12
         }
 
-        val scoreTitle = Label("Gesamtwert (Prognosequalität) 📊").apply {
+        val scoreTitle = Label("Gesamtwert (Prognosequalität)").apply {
             padding = Insets(16.0, 0.0, 0.0, 0.0)
             font = appStyle.FONT_12_BOLD
         }
@@ -298,8 +298,10 @@ class Gui : Application() {
 
     private fun fillInWeatherData(weather: Weather?) {
         if (weather != null) {
-            accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
-            accuracyBox.descriptionLbl.text = fillAccuracyLabel(manager.checkAccuracy(weather.getLocationID(),weather))
+            if (manager.checkAccuracy(weather.getLocationID(), weather) > -1.0) {
+                accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
+                accuracyBox.descriptionLbl.text = fillAccuracyLabel(manager.checkAccuracy(weather.getLocationID(),weather))
+            }
 
             dayView.lblWeatherCode.text = weather.getWeatherCode().description
             dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
@@ -360,7 +362,9 @@ class Gui : Application() {
             in 93.5..94.9999 -> "gut"
             in 90.0..93.4999 -> "genügend"
             in 80.0..89.9999 -> "verbesserungswürdig"
-            else -> "ist etwas schief gelaufen?"
+            in 40.0..79.9999 -> "Ist etwas schief gelaufen?"
+            // Hier noch richtig machen...
+            else -> "Es sind noch keine Daten ausgewertet worden."
         }
     }
 

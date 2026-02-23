@@ -5,6 +5,7 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
+import javafx.scene.layout.Region
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
@@ -124,8 +125,8 @@ object dayView {
     private val vBoxDayView = VBox().apply {
         alignment = Pos.TOP_LEFT
         spacing = 27.0
-        maxWidth = Double.MAX_VALUE
-        HBox.setHgrow(this, Priority.ALWAYS)
+        minWidth = Region.USE_PREF_SIZE
+        //HBox.setHgrow(this, Priority.ALWAYS)
         children.addAll(vBoxDayTime, vBoxCurrentLocationTemp)
     }
 
@@ -145,12 +146,13 @@ object dayView {
     }
 
     val imageViewContainer = StackPane(mapView).apply {
-        alignment = Pos.CENTER_LEFT
+        alignment = Pos.CENTER
         children.addAll(pinView)
     }
 
     val hBoxDayView = HBox().apply {
         alignment = Pos.CENTER_LEFT
+        spacing = 50.0
         children.addAll(vBoxDayView, imageViewContainer)
     }
 

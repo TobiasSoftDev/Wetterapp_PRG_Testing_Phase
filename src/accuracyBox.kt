@@ -36,13 +36,13 @@ object accuracyBox {
             fitWidth = 20.0
             fitHeight = 20.0
         }
-        style = "-fx-background-color: transparent; -fx-padding: 0;"
+        style = "-fx-background-color: transparent; -fx-padding: 1; -fx-background-radius: 500;"
 
         setOnMouseEntered {
-            style = "-fx-background-color: transparent; -fx-padding: 0; -fx-opacity: 1.6; -fx-cursor: hand;"
+            style = "-fx-background-color: #D6E8FF; -fx-padding: 1; -fx-background-radius: 500; -fx-opacity: 1.0; -fx-cursor: hand;"
         }
         setOnMouseExited {
-            style = "-fx-background-color: transparent; -fx-padding: 0; -fx-opacity: 1.0;"
+            style = "-fx-background-color: transparent; -fx-padding: 1; -fx-opacity: 1.0;"
         }
     }
 

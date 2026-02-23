@@ -76,7 +76,7 @@ class Manager() : Logic {
 
             }
         }
-        return if (scores.isEmpty()) 0.0 else scores.average()
+        return if (scores.isEmpty()) -1.0 else scores.average()
     }
 
 
@@ -130,6 +130,7 @@ class Manager() : Logic {
             }
             favoritesList.add(0,favorite)
             fileHandler.storeFavorites(favorite)
+            fileHandler.storeWeatherData(weather)
             updateFavoriteFile()
             return true
         }
