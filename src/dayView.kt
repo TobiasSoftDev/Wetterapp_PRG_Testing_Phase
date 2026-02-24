@@ -1,6 +1,9 @@
+import appStyle.FONT_24_BOLD
+import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.Label
+import javafx.scene.control.Tooltip
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
@@ -10,8 +13,12 @@ import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
+import javafx.scene.text.TextAlignment
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import javax.tools.Tool
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 object dayView {
     lateinit var favorites: guiFavorites
@@ -46,8 +53,18 @@ object dayView {
     }
 
     val lblLocation = Label().apply {
+        val myTip = Tooltip()
+        myTip.textProperty().bind(this.textProperty())
+        this.tooltip = myTip
+        myTip.showDelay = javafx.util.Duration.millis(100.0)
         alignment = Pos.CENTER_LEFT
-        font = Font.font("Outfit-Regular", FontWeight.SEMI_BOLD, 36.0)
+        font = appStyle.FONT_36_LIGHT
+        onMouseEntered = EventHandler {
+            if (this.layoutBounds.width < this.minWidth(-1.0)) {
+                myTip.show(this, it.screenX, it.screenY+10)
+            }
+        }
+        onMouseExited = EventHandler { myTip.hide() }
     }
 
     private val locationHbox = HBox().apply {
@@ -118,6 +135,7 @@ object dayView {
 
     private val vBoxCurrentLocationTemp = VBox().apply {
         alignment = Pos.CENTER_LEFT
+        prefWidth = 300.0
         spacing = 16.0
         children.addAll(locationHbox, lblWeatherCode, hBoxTemperatures)
     }
