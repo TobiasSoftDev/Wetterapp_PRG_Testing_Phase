@@ -8,7 +8,6 @@ import javafx.scene.control.Label
 import javafx.scene.image.ImageView
 import javafx.scene.layout.Background
 import javafx.scene.layout.HBox
-import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
@@ -100,6 +99,8 @@ object guiFavorites {
             }
 
             val btnRemoveFavorite = Button("❎").apply {
+                minWidth = 40.0
+                minHeight = 30.0
                 style =
                     "-fx-background-color: transparent;-fx-text-fill: #ff6b6b; -fx-font-weight: bold; -fx-cursor: hand;"
                 isVisible = false

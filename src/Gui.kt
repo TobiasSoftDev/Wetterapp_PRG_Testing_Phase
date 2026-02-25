@@ -1,5 +1,4 @@
 import javafx.application.Application
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
 import javafx.event.EventHandler
 import javafx.geometry.Insets
@@ -14,11 +13,7 @@ import javafx.scene.control.ListView
 import javafx.scene.control.TextField
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
-import javafx.scene.layout.Border
 import javafx.scene.layout.BorderPane
-import javafx.scene.layout.BorderStroke
-import javafx.scene.layout.BorderStrokeStyle
-import javafx.scene.layout.BorderWidths
 import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
@@ -131,6 +126,11 @@ class Gui : Application() {
             alignment = Pos.TOP_LEFT
             padding = Insets(30.0)
             isFillHeight = false
+
+            val spacer = Region().apply {
+                HBox.setHgrow(this, Priority.ALWAYS)
+            }
+
             val favBox = guiFavorites.createFavoriteBox(onHomeClick)
             favBox.apply {
                 minHeight = Region.USE_PREF_SIZE
@@ -142,17 +142,14 @@ class Gui : Application() {
                 -fx-border-radius: 20;
                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
             """.trimIndent()
-                //padding = Insets(.0)
-                //maxHeightProperty().bind(dayView.hBoxDayView.heightProperty())
-                alignment = Pos.TOP_CENTER
                 VBox.setVgrow(this, Priority.NEVER)
             }
-            HBox.setHgrow(dayView.hBoxDayView, Priority.ALWAYS)
+            //HBox.setHgrow(dayView.hBoxDayView, Priority.ALWAYS)
             //HBox.setHgrow(favBox, Priority.ALWAYS)
-            dayView.hBoxDayView.maxWidthProperty().bind(this.widthProperty().multiply(0.5))
+            dayView.hBoxDayView.maxWidthProperty().bind(this.widthProperty().multiply(0.6))
             //favBox.maxWidthProperty().bind(this.widthProperty().multiply(0.5))
-            HBox.setMargin(favBox, Insets(0.0, 0.0, 0.0, 100.0))
-            children.addAll(dayView.hBoxDayView, favBox)
+           // HBox.setMargin(favBox, Insets(0.0, 0.0, 0.0, 200.0))
+            children.addAll(dayView.hBoxDayView,spacer, favBox)
         }
     }
 
@@ -171,7 +168,7 @@ class Gui : Application() {
             background = Background(BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets(0.0, 0.0, 0.0, 0.0)))
             isFocusTraversable = true   // Nimmt den Cursor aus dem Textfeld. Textfeld will Aufmerksamkeit haben...
         }
-        dayView.getView().prefWidthProperty().bind(root.widthProperty().multiply(0.50))
+        //dayView.getView().prefWidthProperty().bind(root.widthProperty().multiply(0.50))
         dayView.getView().minWidth = 200.0
         hBoxBottom.prefHeightProperty().bind(root.heightProperty().multiply(0.45))
         hBoxBottom.minHeight = 100.0
@@ -248,12 +245,14 @@ class Gui : Application() {
         val contentBox = VBox().apply {
             alignment = Pos.TOP_LEFT
             spacing = 5.0
+            minHeight = Region.USE_PREF_SIZE
+            maxHeight = Region.USE_PREF_SIZE
             padding = Insets(20.0)
             children.addAll(titleLbl, intro, temperatureTitle, temperatureText, weatherTitle, weatherText, scoreTitle, scoreText)
         }
 
         popupStage.close()
-        popupStage.scene = Scene(contentBox, 400.0, 450.0)
+        popupStage.scene = Scene(contentBox)
         popupStage.showAndWait()
 
     }
