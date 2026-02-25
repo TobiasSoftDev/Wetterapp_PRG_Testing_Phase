@@ -25,6 +25,8 @@ object appStyle {
     val FONT_18 = Font.font("Helvetica", 18.0)
     val FONT_24 = Font("Helvetica", 24.0)
     val FONT_24_BOLD = Font.font("Helvetica", FontWeight.BOLD, 24.0)
+    val FONT_36_LIGHT = Font.font("Helvetica", FontWeight.LIGHT, 36.0)
+    val FONT_36_BOLD = Font.font("Helvetica", FontWeight.BOLD, 36.0)
     val FONT_64 = Font.font("Helvetica", 64.0)
     val FONT_64_BOLD = Font.font("Helvetica", FontWeight.BOLD, 64.0)
 

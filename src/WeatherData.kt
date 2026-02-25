@@ -7,6 +7,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -29,57 +30,75 @@ data class WeatherData(
     var weatherCode: Int = 0) : Storabledata {
 
     override fun removeStoredWeatherData(from: Location) {
-        val file = getStorageFileReference() ?: return
-        if (!file.exists()) return
+        try {
+            val file = getStorageFileReference() ?: return
+            if (!file.exists()) return
 
-        val history = loadHistory(file)
-        history.dataList.removeIf { it.id == from.id }
+            val history = loadHistory(file)
+            history.dataList.removeIf { it.id == from.id }
 
-        val encoder = XMLEncoder(BufferedOutputStream(FileOutputStream(file)))
-        encoder.writeObject(history)
-        encoder.close()
+            val encoder = XMLEncoder(BufferedOutputStream(FileOutputStream(file)))
+            encoder.writeObject(history)
+            encoder.close()
+        } catch (e: Exception) {
+            System.err.println("Fehler bei der Löschung von Wetterobjekten aus dem XML-Storagefile")
+            e.printStackTrace()
+        }
     }
 
     override fun storeWeatherData(weather: Weather?) {
-
-        if (weather != null) {
-            val dataset = WeatherData(
-                LocalDateTime.now().toString(),
-                weather.getLatitude(),
-                weather.getLongitude(),
-                weather.getLocationID(),
-                weather.getTemperature(),
-                weather.getHourlyForecasts()
-            )
-            val file = getStorageFileReference()
-            if (file != null) {
-                val history = if (file.exists()) loadHistory(file) else FileWrapper()
-                val entriesForLocation = history.dataList
-                    .filter { it.id == dataset.id }
-                    .sortedBy { it.timestamp }
-                // Maxmal-Anzahl von Ortswetterdaten, die gespeichert werden = 4
-                if (entriesForLocation.size >= 4) {
-                    history.dataList.remove(entriesForLocation.first())
-                }
-                history.dataList.add(dataset)
-
-                val encoder = XMLEncoder(               // Stream bereitstellen
-                    BufferedOutputStream(
-                        FileOutputStream(file)
-                    )
+        try {
+            if (weather != null) {
+                val dataset = WeatherData(
+                    LocalDateTime.now().toString(),
+                    weather.getLatitude(),
+                    weather.getLongitude(),
+                    weather.getLocationID(),
+                    weather.getTemperature(),
+                    weather.getHourlyForecasts()
                 )
-                encoder.writeObject(history)            // Objekt speichern
-                encoder.close()                         // Stream schliessen
+                val file = getStorageFileReference()
+                if (file != null) {
+                    val history = if (file.exists()) loadHistory(file) else FileWrapper()
+                    val allEntriesForLocation = history.dataList
+                        .filter { it.id == dataset.id }
+                        .sortedBy { it.timestamp }
+                    val alreadyStoredToday = allEntriesForLocation.any { it.timestamp.startsWith(LocalDate.now().toString()) }
+                    if (alreadyStoredToday) return
+
+                    // Maximal-Anzahl von Ortswetterdaten, die gespeichert werden = 4
+                    if (allEntriesForLocation.size >= 4) {
+                        history.dataList.remove(allEntriesForLocation.first())
+                    }
+                    history.dataList.add(dataset)
+
+                    val encoder = XMLEncoder(               // Stream bereitstellen
+                        BufferedOutputStream(
+                            FileOutputStream(file)
+                        )
+                    )
+                    encoder.writeObject(history)            // Objekt speichern
+                    encoder.close()                         // Stream schliessen
+                }
             }
+        } catch (e: Exception) {
+            System.err.println("Fehler bei der Speicherung eines Wetterobjekts ins XML-Storagefile: ${e.message}")
+            e.printStackTrace()
         }
     }
 
     override fun getEntriesForLocation(locationID: Int): List<WeatherData> {
-        val file = getStorageFileReference() ?: return emptyList()
-        if (!file.exists()) return emptyList()
-        return loadHistory(file).dataList
-            .filter { it.id == locationID }
-            .sortedBy { it.timestamp }
+        try {
+            val file = getStorageFileReference() ?: return emptyList()
+            if (!file.exists()) return emptyList()
+            return loadHistory(file).dataList
+                .filter { it.id == locationID }
+                .sortedBy { it.timestamp }
+        } catch (e: NullPointerException) {
+            System.err.println("Fehler bei der XML-Abfrage: ${e.message}")
+            e.printStackTrace()
+            return emptyList()
+        }
     }
 
     private fun getStorageFileReference(): File? {
@@ -95,24 +114,24 @@ data class WeatherData(
             }
             storageDirectory.resolve("storageFile.xml").toFile()
         } catch (e: Exception) {
-            System.err.println("Fehler beim Datenzugriff: ${e.message}")
+            System.err.println("Fehler beim XML-Datenzugriff: ${e.message}")
             e.printStackTrace()
             null
         }
     }
 
     private fun loadHistory(file: File): FileWrapper {
-        try {
+        return try {
             val decoder = XMLDecoder(
                 BufferedInputStream(
                     FileInputStream(file)))
 
             val storedObject = decoder.readObject() as FileWrapper
-            return storedObject
+            storedObject
         } catch (e: Exception) {
             e.printStackTrace()
+            FileWrapper()
         }
-        return FileWrapper()
     }
 
 
