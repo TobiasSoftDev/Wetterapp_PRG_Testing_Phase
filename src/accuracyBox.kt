@@ -6,6 +6,7 @@ import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
+import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
@@ -130,11 +131,13 @@ object accuracyBox {
         val contentBox = VBox().apply {
             alignment = Pos.TOP_LEFT
             spacing = 5.0
+            minHeight = Region.USE_PREF_SIZE
+            maxHeight = Region.USE_PREF_SIZE
             padding = Insets(20.0)
             children.addAll(titleLbl, intro, temperatureTitle, temperatureText, weatherTitle, weatherText, scoreTitle, scoreText)
         }
 
-        popupStage.scene = Scene(contentBox, 400.0, 450.0)
+        popupStage.scene = Scene(contentBox)
         popupStage.showAndWait()
 
     }
