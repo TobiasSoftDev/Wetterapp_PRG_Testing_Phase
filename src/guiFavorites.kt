@@ -108,6 +108,8 @@ object guiFavorites {
             }
 
             val btnRemoveFavorite = Button("❎").apply {
+                minWidth = 40.0
+                minHeight = 30.0
                 style =
                     "-fx-background-color: transparent;-fx-text-fill: #ff6b6b; -fx-font-weight: bold; -fx-cursor: hand;"
                 isVisible = false
