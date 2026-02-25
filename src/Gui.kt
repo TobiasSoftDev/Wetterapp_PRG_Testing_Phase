@@ -29,6 +29,7 @@ import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
 import javafx.stage.Modality
 import javafx.stage.Stage
+import kotlinx.coroutines.*
 import plotterLineChart.plot
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -42,6 +43,7 @@ import kotlin.math.round
 //}
 class Gui : Application() {
     private val manager: Logic = Manager()
+
     //private val favorites: guiFavorites = GuiFavorites(manager)
     private var locationsModel = FXCollections.observableArrayList<Location>()
     private val resultsList = ListView<Location>().apply {
@@ -78,17 +80,19 @@ class Gui : Application() {
     }
 
     private val onHomeClick = { location: Location ->
-        selectedLocation = location
-        selectedLocationWeather = manager.getCurrentWeather(location)
-        fillInLocationData(selectedLocation)
-        fillInWeatherData(selectedLocationWeather)
-        val favList = manager.getFavoritesObservableList()
-        val activeLocation = favList.find { it.location.id == location.id }
-        if (activeLocation != null) {
-            favList.remove(activeLocation)
-            favList.add(0,activeLocation)
-            manager.updateFavoriteFile()
-        }
+
+            selectedLocation = location
+            selectedLocationWeather = manager.getCurrentWeather(location)
+            fillInLocationData(selectedLocation)
+            fillInWeatherData(selectedLocationWeather)
+
+            val favList = manager.getFavoritesObservableList()
+            val activeLocation = favList.find { it.location.id == location.id }
+            if (activeLocation != null) {
+                favList.remove(activeLocation)
+                favList.add(0, activeLocation)
+                manager.updateFavoriteFile()
+            }
     }
 
 
@@ -211,21 +215,22 @@ class Gui : Application() {
     }
 
     private fun fillAccuracyBox(weather: Weather) {
-        if (manager.checkAccuracy(weather.getLocationID(), weather) != null) {
-            accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
-            accuracyBox.descriptionLbl.text = accuracyBox.fillAccuracyLabel(manager.checkAccuracy(weather.getLocationID(),weather))
-        } else {
-            accuracyBox.percentLbl.text = ""
-            accuracyBox.descriptionLbl.text = "Es ist noch keine Berechnung erfolgt."
-        }
+        val score = manager.checkAccuracy(weather.getLocationID(), weather)
+            if (score != null) {
+                accuracyBox.percentLbl.text = "$score%"
+                accuracyBox.descriptionLbl.text = accuracyBox.fillAccuracyLabel(score)
+            } else {
+                accuracyBox.percentLbl.text = ""
+                accuracyBox.descriptionLbl.text = "Es ist noch keine Berechnung erfolgt."
+            }
     }
 
     private fun fillDayView(weather: Weather) {
-        dayView.lblWeatherCode.text = weather.getWeatherCode().description
-        dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
-        dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
-        dayView.lblMinTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMin()).toInt()}º"
-        dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
+                dayView.lblWeatherCode.text = weather.getWeatherCode().description
+                dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
+                dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
+                dayView.lblMinTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMin()).toInt()}º"
+                dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
     }
 
     private fun fillDetailsView(weather: Weather) {
@@ -248,10 +253,10 @@ class Gui : Application() {
     }
 
     private fun fillSearchResults(string: String) {
-        val search = manager.getLocations(string)
-        locationsModel.clear()
-        for (result in search) {
-            locationsModel.add(result)
+            val search = manager.getLocations(string)
+            locationsModel.clear()
+            for (result in search) {
+                locationsModel.add(result)
         }
     }
 

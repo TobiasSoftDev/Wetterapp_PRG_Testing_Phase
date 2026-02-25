@@ -1,5 +1,7 @@
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 import java.io.File
 
@@ -46,37 +48,37 @@ class Manager() : Logic {
     }
 
     override fun checkAccuracy(id: Int, currentWeather: Weather): Double? {
-            val scores = mutableListOf<Double>()
-            val storedWeatherEntries = fileHandler.getEntriesForLocation(id)
-            val startOfCurrentDay = LocalDate.now().atStartOfDay()
-            val currentHour = LocalDateTime.now().hour
-            if (checkForFavorites(id)) {
-                for (past in storedWeatherEntries) {
-                    val pastTime = LocalDateTime.parse(past.timestamp).toLocalDate().atStartOfDay()
-                    println("past time: ${pastTime}")
-                    val hoursAhead = ChronoUnit.HOURS.between(pastTime, startOfCurrentDay)
-                    println("Stunden vor Messung: ${hoursAhead}")
-                    // Schutzbedingung: Prüfung ob Stunden in Range liegen. Die erste Messung muss mindestens 24 Stunden alt sein.
-                    if (hoursAhead !in 24..<past.hourlyForecasts.size) continue
-                    // Prognose-Wertepaare für diese Stunde holen
-                    val forecast = past.hourlyForecasts[currentHour]
-                    // Temperaturdifferenz ab 2º C => 0% Güte!
-                    val limit = 5.0
-                    val error = abs(forecast.wrapperTemperature - currentWeather.getTemperature())
-                    println("Temp-Prognose: $forecast, an Stelle: $currentHour in ${past.id} -> $error")
-                    println("Temp-aktuell: ${currentWeather.getTemperature()}")
-                    // Prozentsatz der Temperaturgenauigkeit
-                    val temperatureScore = ((1-(error/limit)).coerceIn(0.0, 1.0) * 100)
-                    println("TempScore: ${temperatureScore}")
-                    val weatherCodesScore = weatherCodeScore(forecast.wrapperWeatherCode, currentWeather.getWeatherCode().code)
-                    println("WeatherScore: ${weatherCodesScore}")
-                    // Durchschnitt beider Prozentsätze
-                    scores.add((temperatureScore + weatherCodesScore) / 2)
-                    println("Güte: ${scores.average()}")
+        val scores = mutableListOf<Double>()
+                val storedWeatherEntries = fileHandler.getEntriesForLocation(id)
+                val startOfCurrentDay = LocalDate.now().atStartOfDay()
+                val currentHour = LocalDateTime.now().hour
+                if (checkForFavorites(id)) {
+                    for (past in storedWeatherEntries) {
+                        val pastTime = LocalDateTime.parse(past.timestamp).toLocalDate().atStartOfDay()
+                        println("past time: ${pastTime}")
+                        val hoursAhead = ChronoUnit.HOURS.between(pastTime, startOfCurrentDay)
+                        println("Stunden vor Messung: ${hoursAhead}")
+                        // Schutzbedingung: Prüfung ob Stunden in Range liegen. Die erste Messung muss mindestens 24 Stunden alt sein.
+                        if (hoursAhead !in 24..<past.hourlyForecasts.size) continue
+                        // Prognose-Wertepaare für diese Stunde holen
+                        val forecast = past.hourlyForecasts[currentHour]
+                        // Temperaturdifferenz ab 2º C => 0% Güte!
+                        val limit = 5.0
+                        val error = abs(forecast.wrapperTemperature - currentWeather.getTemperature())
+                        println("Temp-Prognose: $forecast, an Stelle: $currentHour in ${past.id} -> $error")
+                        println("Temp-aktuell: ${currentWeather.getTemperature()}")
+                        // Prozentsatz der Temperaturgenauigkeit
+                        val temperatureScore = ((1-(error/limit)).coerceIn(0.0, 1.0) * 100)
+                        println("TempScore: ${temperatureScore}")
+                        val weatherCodesScore = weatherCodeScore(forecast.wrapperWeatherCode, currentWeather.getWeatherCode().code)
+                        println("WeatherScore: ${weatherCodesScore}")
+                        // Durchschnitt beider Prozentsätze
+                        scores.add((temperatureScore + weatherCodesScore) / 2)
+                        println("Güte: ${scores.average()}")
+                    }
                 }
-            }
-            return if (scores.isEmpty()) null else "%.2f".format(scores.average()).toDouble()
-    }
+                return if (scores.isEmpty()) null else "%.2f".format(scores.average()).toDouble()
+        }
 
     init {
         refreshFavorites()
