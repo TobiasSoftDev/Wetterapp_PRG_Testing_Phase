@@ -1,4 +1,5 @@
 import javafx.application.Application
+import javafx.application.Platform
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
 import javafx.event.EventHandler
@@ -29,10 +30,15 @@ import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
 import javafx.stage.Modality
 import javafx.stage.Stage
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import plotterLineChart.plot
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.coroutines.CoroutineContext
 import kotlin.math.round
 
 //fun exit() {
@@ -41,9 +47,8 @@ import kotlin.math.round
 //        showAndWait()
 //    }
 //}
-class Gui : Application() {
+class Gui : Application(), CoroutineScope {
     private val manager: Logic = Manager()
-
     //private val favorites: guiFavorites = GuiFavorites(manager)
     private var locationsModel = FXCollections.observableArrayList<Location>()
     private val resultsList = ListView<Location>().apply {
@@ -80,26 +85,22 @@ class Gui : Application() {
     }
 
     private val onHomeClick = { location: Location ->
-
-            selectedLocation = location
-            selectedLocationWeather = manager.getCurrentWeather(location)
-            fillInLocationData(selectedLocation)
-            fillInWeatherData(selectedLocationWeather)
-
-            val favList = manager.getFavoritesObservableList()
-            val activeLocation = favList.find { it.location.id == location.id }
-            if (activeLocation != null) {
-                favList.remove(activeLocation)
-                favList.add(0, activeLocation)
-                manager.updateFavoriteFile()
+        launch {
+            val wetter = manager.getCurrentWeather(location)
+            Platform.runLater {
+                selectedLocation = location
+                selectedLocationWeather = wetter
+                fillInLocationData(selectedLocation)
+                fillInWeatherData(selectedLocationWeather)
             }
-    }
-
-
-    private val lblProzent = Label("").apply {
-        alignment = Pos.CENTER
-        font = appStyle.FONT_16
-        //background = Background(BackgroundFill(Color.BLUE, null, null))
+        }
+        val favList = manager.getFavoritesObservableList()
+        val activeLocation = favList.find { it.location.id == location.id }
+        if (activeLocation != null) {
+            favList.remove(activeLocation)
+            favList.add(0,activeLocation)
+            manager.updateFavoriteFile()
+        }
     }
 
     private val hBoxBottom = HBox().apply {
@@ -215,22 +216,21 @@ class Gui : Application() {
     }
 
     private fun fillAccuracyBox(weather: Weather) {
-        val score = manager.checkAccuracy(weather.getLocationID(), weather)
-            if (score != null) {
-                accuracyBox.percentLbl.text = "$score%"
-                accuracyBox.descriptionLbl.text = accuracyBox.fillAccuracyLabel(score)
-            } else {
-                accuracyBox.percentLbl.text = ""
-                accuracyBox.descriptionLbl.text = "Es ist noch keine Berechnung erfolgt."
-            }
+        if (manager.checkAccuracy(weather.getLocationID(), weather) != null) {
+            accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
+            accuracyBox.descriptionLbl.text = accuracyBox.fillAccuracyLabel(manager.checkAccuracy(weather.getLocationID(),weather))
+        } else {
+            accuracyBox.percentLbl.text = ""
+            accuracyBox.descriptionLbl.text = "Es ist noch keine Berechnung erfolgt."
+        }
     }
 
     private fun fillDayView(weather: Weather) {
-                dayView.lblWeatherCode.text = weather.getWeatherCode().description
-                dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
-                dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
-                dayView.lblMinTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMin()).toInt()}º"
-                dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
+        dayView.lblWeatherCode.text = weather.getWeatherCode().description
+        dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
+        dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
+        dayView.lblMinTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMin()).toInt()}º"
+        dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
     }
 
     private fun fillDetailsView(weather: Weather) {
@@ -253,10 +253,14 @@ class Gui : Application() {
     }
 
     private fun fillSearchResults(string: String) {
+        launch {
             val search = manager.getLocations(string)
-            locationsModel.clear()
-            for (result in search) {
-                locationsModel.add(result)
+            Platform.runLater {
+                locationsModel.clear()
+                for (result in search) {
+                    locationsModel.add(result)
+                }
+            }
         }
     }
 
@@ -287,6 +291,9 @@ class Gui : Application() {
             }
         }
     }
+    val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Default + job
 
     companion object {
         var selectedLocation: Location? = null
