@@ -12,6 +12,13 @@ import javafx.scene.layout.VBox
 import javafx.scene.layout.VBox.setMargin
 import javafx.util.Duration
 
+/*
+  Projekt:      Wetterapp
+  Firma:        ABB Technikerschule
+  Autor:        P.Koch
+
+  Beschreibung: In Day View wird das Feld unter der Suchleiste erstellt und mit den aktuellen Wetterdaten gefüllt.
+ */
 
 object detailsView {
 

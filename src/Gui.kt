@@ -1,5 +1,4 @@
 import javafx.application.Application
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
 import javafx.event.EventHandler
 import javafx.geometry.Insets
@@ -7,42 +6,34 @@ import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.Node
 import javafx.scene.Scene
+import javafx.scene.control.Alert
 import javafx.scene.control.Button
-import javafx.scene.control.Label
 import javafx.scene.control.ListCell
 import javafx.scene.control.ListView
 import javafx.scene.control.TextField
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
-import javafx.scene.layout.Border
 import javafx.scene.layout.BorderPane
-import javafx.scene.layout.BorderStroke
-import javafx.scene.layout.BorderStrokeStyle
-import javafx.scene.layout.BorderWidths
 import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
-import javafx.scene.text.Text
-import javafx.scene.text.TextAlignment
-import javafx.stage.Modality
 import javafx.stage.Stage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 import plotterLineChart.plot
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.round
 
-//fun exit() {
-//    with(Alert(Alert.AlertType.INFORMATION)) {
-//        contentText = "Wenn du die App schliessen willst, drücke auf «OK»."
-//        showAndWait()
-//    }
-//}
+
 class Gui : Application() {
-    private val manager: Logic = Manager()
-    //private val favorites: guiFavorites = GuiFavorites(manager)
+    private val manager: Guilogic = Manager()
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var locationsModel = FXCollections.observableArrayList<Location>()
     private val resultsList = ListView<Location>().apply {
         prefWidth = 400.0
@@ -78,24 +69,24 @@ class Gui : Application() {
     }
 
     private val onHomeClick = { location: Location ->
-        selectedLocation = location
-        selectedLocationWeather = manager.getCurrentWeather(location)
-        fillInLocationData(selectedLocation)
-        fillInWeatherData(selectedLocationWeather)
-        val favList = manager.getFavoritesObservableList()
-        val activeLocation = favList.find { it.location.id == location.id }
-        if (activeLocation != null) {
-            favList.remove(activeLocation)
-            favList.add(0,activeLocation)
-            manager.updateFavoriteFile()
+        scope.launch {
+            selectedLocation = location
+            val weather = withContext(Dispatchers.IO) {
+                manager.getCurrentWeather(location)
+            }
+            selectedLocationWeather = weather
+            fillInLocationData(selectedLocation)
+            fillInWeatherData(selectedLocationWeather)
+            val favList = manager.getFavoritesObservableList()
+            val activeLocation = favList.find { it.location.id == location.id }
+            if (activeLocation != null) {
+                favList.remove(activeLocation)
+                favList.add(0, activeLocation)
+                withContext(Dispatchers.IO) {
+                    manager.updateFavoriteFile()
+                }
+            }
         }
-    }
-
-
-    private val lblProzent = Label("").apply {
-        alignment = Pos.CENTER
-        font = appStyle.FONT_16
-        //background = Background(BackgroundFill(Color.BLUE, null, null))
     }
 
     private val hBoxBottom = HBox().apply {
@@ -111,19 +102,19 @@ class Gui : Application() {
         spacing = 8.0
         padding = Insets(30.0)
         // Breite der Sucheingabe = Breite der Detailsansicht (Haarlinie)
-        searchbar.tflSucheingabe.prefWidthProperty().bind(detailsView.getView().widthProperty().subtract(45.0))
+        guiSearchbar.tflSucheingabe.prefWidthProperty().bind(detailsView.getView().widthProperty().subtract(45.0))
         accuracyBox.getView().prefWidthProperty().bind(this.widthProperty().multiply(0.5))
         accuracyBox.infoBtn.onAction = EventHandler {event ->
             val source = (event.source as Node).scene.window as Stage
-            showInfoPopup(source)
+            accuracyBox.showInfoPopup(source)
         }
-        searchbar.tflSucheingabe.minWidthProperty().bind(searchbar.tflSucheingabe.prefWidthProperty())
-        searchbar.tflSucheingabe.maxWidthProperty().bind(searchbar.tflSucheingabe.prefWidthProperty())
+        guiSearchbar.tflSucheingabe.minWidthProperty().bind(guiSearchbar.tflSucheingabe.prefWidthProperty())
+        guiSearchbar.tflSucheingabe.maxWidthProperty().bind(guiSearchbar.tflSucheingabe.prefWidthProperty())
 
-        search(searchbar.btnSuche)
-        searchTfl(searchbar.tflSucheingabe)
+        search(guiSearchbar.btnSuche)
+        searchTfl(guiSearchbar.tflSucheingabe)
 
-        children.addAll(searchbar.getView(), accuracyBox.getView())
+        children.addAll(guiSearchbar.getView(), accuracyBox.getView())
     }
 
     private val hBoxDayViewFavorites by lazy {
@@ -162,7 +153,7 @@ class Gui : Application() {
         dayView.addFavoriteButtonToBox()
         guiFavorites.updateFavoritesList(onHomeClick)
         manager.getFavoritesObservableList().addListener(javafx.collections.ListChangeListener{
-            guiFavorites.updateFavoritesList(onHomeClick)})
+        guiFavorites.updateFavoritesList(onHomeClick)})
 
         val root = BorderPane().apply {
             top = hBoxSearchAccuracy
@@ -180,7 +171,7 @@ class Gui : Application() {
             scene = Scene(root)
             title = "Weather2B"
             isMaximized = true
-            //setOnCloseRequest { exit() }
+            setOnCloseRequest { exit() }
             show()
             root.requestFocus()     // mit Tab-Taste krallt sich Textfeld wieder an die Aufmerksamkeit -> Cursor...
         }
@@ -191,104 +182,9 @@ class Gui : Application() {
         }
     }
 
-    fun showInfoPopup(ownerStage: Stage) {
-        val popupStage = Stage().apply {
-            title = "Prognosequalität"
-            initModality(Modality.APPLICATION_MODAL)
-            initOwner(ownerStage)
-            isResizable = false
-        }
-
-        val titleLbl = Label("Was ist die Prognosequalität und wie wird sie berechnet?").apply {
-            textAlignment = TextAlignment.LEFT
-            isWrapText = true
-            padding = Insets(20.0, 0.0, 8.0, 0.0)
-            font = appStyle.FONT_14
-        }
-
-        val intro = Text("Sobald du einen Favoriten hinzugefügt hast, werden dessen Wetterprognosen pro Abruf (einmal pro Tag) gespeichert. Um die Genauigkeit einer Prognose zu messen, wird sie mit dem tatsächlich eingetroffenen Wetter verglichen — frühestens 24 Stunden nach der Vorhersage.\n\nFür jede gespeicherte Prognose werden zwei Werte verglichen:").apply {
-            wrappingWidth = 345.0
-            lineSpacing = 1.0
-            font = appStyle.FONT_12
-        }
-
-        val temperatureTitle = Label("Temperatur").apply{
-            padding = Insets(16.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_12_BOLD
-        }
-
-        val temperatureText = Text("Weicht die vorhergesagte Temperatur um mehr als 2 °C vom tatsächlichen Wert ab, beträgt die Genauigkeit 0%. Je kleiner die Abweichung, desto höher der Wert.").apply{
-            wrappingWidth = 345.0
-            lineSpacing = 1.0
-            font = appStyle.FONT_12
-        }
-
-        val weatherTitle = Label("Wetterzustand").apply {
-            padding = Insets(16.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_12_BOLD
-        }
-
-        val weatherText = Text("Der vorhergesagte Wetterzustand (z.B. bewölkt, Regen, etc.) wird als Wettercode gespeichert und mit dem aktuellen verglichen. Die Übereinstimmung fliesst als Prozentwert in die Gesamtbewertung ein.").apply {
-            wrappingWidth = 345.0
-            lineSpacing = 1.0
-            font = appStyle.FONT_12
-        }
-
-        val scoreTitle = Label("Gesamtwert (Prognosequalität)").apply {
-            padding = Insets(16.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_12_BOLD
-        }
-
-        val scoreText = Text("Der angezeigte Prozentwert ist der Durchschnitt dieser beiden Werte über alle verfügbaren Vergleichsdaten.").apply {
-            wrappingWidth = 345.0
-            lineSpacing = 1.0
-            font = appStyle.FONT_12
-        }
-
-        val contentBox = VBox().apply {
-            alignment = Pos.TOP_LEFT
-            spacing = 5.0
-            padding = Insets(20.0)
-            children.addAll(titleLbl, intro, temperatureTitle, temperatureText, weatherTitle, weatherText, scoreTitle, scoreText)
-        }
-
-        popupStage.close()
-        popupStage.scene = Scene(contentBox, 400.0, 450.0)
-        popupStage.showAndWait()
-
-    }
-
-    fun popupLogic(ownerStage: Stage) {
-        val popupStage = Stage().apply {
-            title = "Welchen Ort suchst du genau?"
-            initModality(Modality.APPLICATION_MODAL)
-            initOwner(ownerStage)
-            isResizable = false
-        }
-        resultsList.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
-            if (newValue != null) {
-                selectedLocation = newValue
-                selectedLocationWeather = manager.getCurrentWeather(newValue)
-                fillInLocationData(selectedLocation)
-                fillInWeatherData(selectedLocationWeather)
-                popupStage.close()
-            }
-        }
-
-        val hintLbl = Label("Solltest du deinen gewünschten Ort nicht finden,\nversuche es mit einem in der Nähe.").apply {
-            textAlignment = TextAlignment.CENTER
-            isWrapText = true
-            padding = Insets(10.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_14
-            textFill = appStyle.MAIN_FONT_COLOR
-        }
-        val resultsBox = VBox().apply {
-            alignment = Pos.CENTER
-            padding = Insets(10.0)
-            children.addAll(resultsList, hintLbl)
-        }
-        popupStage.scene = Scene(resultsBox, 400.0, 500.0)
-        popupStage.showAndWait()
+    override fun stop() {
+        scope.cancel()
+        super.stop()
     }
 
     private fun fillInLocationData(location: Location?) {
@@ -301,75 +197,102 @@ class Gui : Application() {
 
     private fun fillInWeatherData(weather: Weather?) {
         if (weather != null) {
-            if (manager.checkAccuracy(weather.getLocationID(), weather) > -1.0) {
-                accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
-                accuracyBox.descriptionLbl.text = fillAccuracyLabel(manager.checkAccuracy(weather.getLocationID(),weather))
-            }
-
-            dayView.lblWeatherCode.text = weather.getWeatherCode().description
-            dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
-            dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
-            dayView.lblMinTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMin()).toInt()}º"
-
-            detailsView.lblHumidityValue.text = "${weather.getHumidity()}%"
-            detailsView.lblPrecipitationValue.text = "${weather.getPrecipitation()} mm"
-            detailsView.lblSunriseValue.text = "${weather.getDailyList()[0].getSunrise()} Uhr"
-            detailsView.lblSunsetValue.text = "${weather.getDailyList()[0].getSunset()} Uhr"
-            detailsView.lblWindSpeedValue.text = "${weather.getWindSpeed()} km/h"
-            detailsView.updateWindDirection(weather.getWindDirection())
-            detailsView.lblApparentTemperatureValue.text = "${round(weather.getApparentTemperature()).toInt()}º"
-
-            dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
-            // API-Daten neu laden für Plotter Line Chart und erste 7 Werte auslesen
-            weather.getDailyWeatherDataAll().take(7).forEach { day ->
-                plot("Max Temperatur", day.getTemperatureMax().toInt())
-                plot("Min Temperatur", day.getTemperatureMin().toInt())
-            }
+            fillAccuracyBox(weather)
+            fillDayView(weather)
+            fillDetailsView(weather)
+            fillPlotterView(weather)
         }
         guiFavorites.updateStarColor(selectedLocation)
         dayView.btnAddFavorite.isVisible = true
-
     }
 
-    fun fillSearchResults(string: String) {
-        val search = manager.getLocations(string)
-        locationsModel.clear()
-        for (result in search) {
-            locationsModel.add(result)
-        }
-    }
-
-    fun search(with: Button) {
-        with(with) {
-            onAction = EventHandler { event ->
-                fillSearchResults(searchbar.tflSucheingabe.text)
-                val source = (event.source as Node).scene.window as Stage
-                popupLogic(source)
+    private fun fillAccuracyBox(weather: Weather) {
+        scope.launch {
+            val score = withContext(Dispatchers.Default) {
+                manager.checkAccuracy(weather.getLocationID(), weather)
+            }
+            if (score != null) {
+                accuracyBox.percentLbl.text = "$score%"
+                accuracyBox.descriptionLbl.text =
+                    accuracyBox.fillAccuracyLabel(score)
+            } else {
+                accuracyBox.percentLbl.text = ""
+                accuracyBox.descriptionLbl.text = "Es ist noch keine Berechnung erfolgt."
             }
         }
     }
 
-    fun searchTfl(field: TextField) {
+    private fun fillDayView(weather: Weather) {
+        dayView.lblWeatherCode.text = weather.getWeatherCode().description
+        dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
+        dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
+        dayView.lblMinTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMin()).toInt()}º"
+        dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
+    }
+
+    private fun fillDetailsView(weather: Weather) {
+        detailsView.lblHumidityValue.text = "${weather.getHumidity()}%"
+        detailsView.lblPrecipitationValue.text = "${weather.getPrecipitation()} mm"
+        detailsView.lblSunriseValue.text = "${weather.getDailyList()[0].getSunrise()} Uhr"
+        detailsView.lblSunsetValue.text = "${weather.getDailyList()[0].getSunset()} Uhr"
+        detailsView.lblWindSpeedValue.text = "${weather.getWindSpeed()} km/h"
+        detailsView.updateWindDirection(weather.getWindDirection())
+        detailsView.lblApparentTemperatureValue.text = "${round(weather.getApparentTemperature()).toInt()}º"
+
+    }
+
+    private fun fillPlotterView(weather: Weather) {
+        // API-Daten neu laden für Plotter Line Chart und erste 7 Werte auslesen
+        weather.getDailyWeatherDataAll().take(7).forEach { day ->
+            plot("Max Temperatur", day.getTemperatureMax().toInt())
+            plot("Min Temperatur", day.getTemperatureMin().toInt())
+        }
+    }
+
+    private fun fillSearchResults(string: String) {
+        scope.launch {
+            val results = withContext(Dispatchers.IO) {
+                manager.getLocations(string)
+            }
+            locationsModel.clear()
+            results.forEach { locationsModel.add(it) }
+        }
+    }
+
+    private fun useSearchbar(stage: Stage) {
+        guiSearchbar.popupLogic(stage, resultsList) { selected ->
+            selectedLocation = selected
+            selectedLocationWeather = manager.getCurrentWeather(selected)
+            fillInLocationData(selectedLocation)
+            fillInWeatherData(selectedLocationWeather)
+        }
+    }
+
+    private fun search(with: Button) {
+        with(with) {
+            onAction = EventHandler { event ->
+                fillSearchResults(guiSearchbar.tflSucheingabe.text)
+                val source = (event.source as Node).scene.window as Stage
+                useSearchbar(source)
+            }
+        }
+    }
+
+    private fun searchTfl(field: TextField) {
         with(field) {
             onAction = EventHandler { event -> fillSearchResults(this.text)
                 val source = (event.source as Node).scene.window as Stage
-                popupLogic(source)
+                useSearchbar(source)
             }
         }
     }
 
-    fun fillAccuracyLabel(score: Double): String {
-        return when (score) {
-            in 99.5..100.0 -> "exzellent"
-            in 95.0..99.4999  -> "sehr gut"
-            in 93.5..94.9999 -> "gut"
-            in 90.0..93.4999 -> "genügend"
-            in 80.0..89.9999 -> "verbesserungswürdig"
-            in 40.0..79.9999 -> "Ist etwas schief gelaufen?"
-            // Hier noch richtig machen...
-            else -> "Es sind noch keine Daten ausgewertet worden."
-        }
+    fun exit() {
+        with(Alert(Alert.AlertType.INFORMATION)) {
+        contentText = "Wenn du die App schliessen willst, drücke auf «OK»."
+        showAndWait()
     }
+}
 
     companion object {
         var selectedLocation: Location? = null

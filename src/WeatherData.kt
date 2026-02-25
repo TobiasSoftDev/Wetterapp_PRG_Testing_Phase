@@ -1,3 +1,4 @@
+import kotlinx.coroutines.sync.Mutex
 import java.beans.XMLDecoder
 import java.beans.XMLEncoder
 import java.io.BufferedInputStream
@@ -7,6 +8,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -15,8 +17,7 @@ import java.time.format.DateTimeFormatter
   Firma:        ABB Technikerschule
   Autor:        Tobias Graf
 
-  Beschreibung: Arbeitsdaten werden hier gespeichert
-  und die Guetepruefung durchgeführt
+  Beschreibung: Arbeitsdaten werden in Files Remanent abgespeichert
  */
 
 data class WeatherData(
@@ -27,64 +28,82 @@ data class WeatherData(
     var temperature: Double = 0.0,
     var hourlyForecasts: MutableList<HourlyWrapper> = mutableListOf(),
     var weatherCode: Int = 0) : Storabledata {
+    private val mutex = Mutex()
 
     override fun removeStoredWeatherData(from: Location) {
-        val file = getStorageFileReference() ?: return
-        if (!file.exists()) return
+        try {
+            val file = getStorageFileReference() ?: return
+            if (!file.exists()) return
 
-        val history = loadHistory(file)
-        history.dataList.removeIf { it.id == from.id }
+            val history = loadHistory(file)
+            history.dataList.removeIf { it.id == from.id }
 
-        val encoder = XMLEncoder(BufferedOutputStream(FileOutputStream(file)))
-        encoder.writeObject(history)
-        encoder.close()
-    }
-
-    override fun storeWeatherData(weather: Weather?) {
-
-        if (weather != null) {
-            val dataset = WeatherData(
-                LocalDateTime.now().toString(),
-                weather.getLatitude(),
-                weather.getLongitude(),
-                weather.getLocationID(),
-                weather.getTemperature(),
-                weather.getHourlyForecasts()
-            )
-            val file = getStorageFileReference()
-            if (file != null) {
-                val history = if (file.exists()) loadHistory(file) else FileWrapper()
-                val entriesForLocation = history.dataList
-                    .filter { it.id == dataset.id }
-                    .sortedBy { it.timestamp }
-                // Maxmal-Anzahl von Ortswetterdaten, die gespeichert werden = 4
-                if (entriesForLocation.size >= 4) {
-                    history.dataList.remove(entriesForLocation.first())
-                }
-                history.dataList.add(dataset)
-
-                val encoder = XMLEncoder(               // Stream bereitstellen
-                    BufferedOutputStream(
-                        FileOutputStream(file)
-                    )
-                )
-                encoder.writeObject(history)            // Objekt speichern
-                encoder.close()                         // Stream schliessen
-            }
+            val encoder = XMLEncoder(BufferedOutputStream(FileOutputStream(file)))
+            encoder.writeObject(history)
+            encoder.close()
+        } catch (e: Exception) {
+            System.err.println("Fehler bei der Löschung von Wetterobjekten aus dem XML-Storagefile")
+            e.printStackTrace()
         }
     }
 
+    override fun storeWeatherData(weather: Weather?) {
+            try {
+                if (weather != null) {
+                    val dataset = WeatherData(
+                        LocalDateTime.now().toString(),
+                        weather.getLatitude(),
+                        weather.getLongitude(),
+                        weather.getLocationID(),
+                        weather.getTemperature(),
+                        weather.getHourlyForecasts()
+                    )
+                    val file = getStorageFileReference()
+                    if (file != null) {
+                        val history = if (file.exists()) loadHistory(file) else FileWrapper()
+                        val allEntriesForLocation = history.dataList
+                            .filter { it.id == dataset.id }
+                            .sortedBy { it.timestamp }
+                        val alreadyStoredToday = allEntriesForLocation.any { it.timestamp.startsWith(LocalDate.now().toString()) }
+                        if (alreadyStoredToday) return
+
+                        // Maximal-Anzahl von Ortswetterdaten, die gespeichert werden = 4
+                        if (allEntriesForLocation.size >= 4) {
+                            history.dataList.remove(allEntriesForLocation.first())
+                        }
+                        history.dataList.add(dataset)
+
+                        val encoder = XMLEncoder(               // Stream bereitstellen
+                            BufferedOutputStream(
+                                FileOutputStream(file)
+                            )
+                        )
+                        encoder.writeObject(history)            // Objekt speichern
+                        encoder.close()                         // Stream schliessen
+                    }
+                }
+            } catch (e: Exception) {
+                System.err.println("Fehler bei der Speicherung eines Wetterobjekts ins XML-Storagefile: ${e.message}")
+                e.printStackTrace()
+            }
+    }
+
     override fun getEntriesForLocation(locationID: Int): List<WeatherData> {
-        val file = getStorageFileReference() ?: return emptyList()
-        if (!file.exists()) return emptyList()
-        return loadHistory(file).dataList
-            .filter { it.id == locationID }
-            .sortedBy { it.timestamp }
+        try {
+            val file = getStorageFileReference() ?: return emptyList()
+            if (!file.exists()) return emptyList()
+            return loadHistory(file).dataList
+                .filter { it.id == locationID }
+                .sortedBy { it.timestamp }
+        } catch (e: NullPointerException) {
+            System.err.println("Fehler bei der XML-Abfrage: ${e.message}")
+            e.printStackTrace()
+            return emptyList()
+        }
     }
 
     private fun getStorageFileReference(): File? {
         return try {
-
             // Holt den Pfad des globalen Benutzerordners (bspw. Mac: /users/peterkoch)
             val userHome = System.getProperty("user.home")
             // erstellt einen Ordner im Dateiensystem des Nutzers. Der Punkt steht für einen versteckten Ordner "XmlTest".
@@ -95,24 +114,24 @@ data class WeatherData(
             }
             storageDirectory.resolve("storageFile.xml").toFile()
         } catch (e: Exception) {
-            System.err.println("Fehler beim Datenzugriff: ${e.message}")
+            System.err.println("Fehler beim XML-Datenzugriff: ${e.message}")
             e.printStackTrace()
             null
         }
     }
 
     private fun loadHistory(file: File): FileWrapper {
-        try {
+        return try {
             val decoder = XMLDecoder(
                 BufferedInputStream(
                     FileInputStream(file)))
 
             val storedObject = decoder.readObject() as FileWrapper
-            return storedObject
+            storedObject
         } catch (e: Exception) {
             e.printStackTrace()
+            FileWrapper()
         }
-        return FileWrapper()
     }
 
 
@@ -183,7 +202,7 @@ data class WeatherData(
                 )
                 encoder.writeObject(wrapper)            // Objekt speichern
                 encoder.close()                         // Stream schliessen
-                println("Favorit gespeichert in XML: ${favorite.location.name}")
+//                println("Favorit gespeichert in XML: ${favorite.location.name}")
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -191,28 +210,4 @@ data class WeatherData(
         }
 
     }
-
-
-//    override fun readWeatherDataDaily() {
-//        val file = File("resources/dailyData/DailyWeatherData$date.txt")
-//
-//        val lines = file.readLines()
-//        for (line in lines) {
-//            print(line)
-//        }
-//        return emptyList()
-//    }
-
-  /*  override fun readFavorites() {
-        val file = File("resources/favoriteLocationData/Favorites.xml")
-
-        val lines = file.readLines()
-        for (line in lines) {
-            print (line)
-        }
-    } */
-
-//    override fun checkAccuracy() {
-//
-//    }
 

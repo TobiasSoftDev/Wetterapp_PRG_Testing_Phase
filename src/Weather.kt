@@ -1,3 +1,11 @@
+/*
+  Projekt:      Wetterapp
+  Firma:        ABB Technikerschule
+  Autor:        P.Koch, P.Theiler und T.Graf
+
+  Beschreibung: Wetter Klasse um daraus Wetter Objekte zu bilden
+ */
+
 data class Weather(
     private val location: Location,
     private val temperature: Double,

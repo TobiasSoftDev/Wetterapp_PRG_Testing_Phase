@@ -1,15 +1,12 @@
-
 import javafx.application.Application.*
-
 
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
-  Autor:        Tobias Graf
+  Autor:        T.Graf
 
   Beschreibung: Main
 */
-
 
 fun main(){
     launch(Gui::class.java)

@@ -1,6 +1,14 @@
 import javafx.scene.image.Image
 import java.time.LocalDateTime
 
+/*
+  Projekt:      Wetterapp
+  Firma:        ABB Technikerschule
+  Autor:        P.Theiler
+
+  Beschreibung: Definition der Wetter Codes und Icons welche im GUI angezeigt werden
+ */
+
 fun loadIcon(fileName : String): Image {
     val path = "/icons/weatherIcons/$fileName"
     val resource = WeatherCodes::class.java.getResourceAsStream(path)

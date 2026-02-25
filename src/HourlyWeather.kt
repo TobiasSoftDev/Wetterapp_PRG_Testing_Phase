@@ -1,5 +1,13 @@
 import java.time.LocalDateTime
 
+/*
+  Projekt:      Wetterapp
+  Firma:        ABB Technikerschule
+  Autor:        P.Koch
+
+  Beschreibung: Stündliche Wetterdaten
+ */
+
 data class HourlyWeather(
     private val times: LocalDateTime,
     private val temperature2M: Double,

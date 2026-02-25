@@ -1,3 +1,11 @@
+/*
+  Projekt:      Wetterapp
+  Firma:        ABB Technikerschule
+  Autor:        P.Theiler
+
+  Beschreibung: Funktion um Location Angaben aus der Suchfunktion auszulesen und im Code bereitzustellen.
+ */
+
 data class Location(
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
@@ -8,16 +16,8 @@ data class Location(
     var elevation: Double = 0.0,
     var id: Int = 0){
 
-    //fun getLocationDataAll(): List<Any> = listOf(latitude, longitude, name, kanton, bezirk, gemeinde, elevation)
    fun getLocationForSearchResult() = "$name ($kanton), Gemeinde: $gemeinde"
-    /*fun getLocationName() = name
-    fun getLongitude(): Double = longitude
-    fun getLatitude(): Double = latitude
-    fun getName(): String = name
-    fun getLocationID(): Int = id */
 
-  //  private var isFavorite = false
-   // fun toggleFavorite() { isFavorite = !isFavorite }
 
 
 

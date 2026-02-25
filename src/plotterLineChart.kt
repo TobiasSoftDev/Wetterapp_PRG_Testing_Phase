@@ -15,7 +15,7 @@ import java.util.Locale
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
-  Autor:        Tobias Graf
+  Autor:        T.Graf
 
   Beschreibung: Tag und Temperatur als LineChart anzeigen
  */

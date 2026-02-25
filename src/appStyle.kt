@@ -1,4 +1,3 @@
-
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.Label
@@ -7,13 +6,20 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
 
+/*
+  Projekt:      Wetterapp
+  Firma:        ABB Technikerschule
+  Autor:        P.Koch, P.Theiler und T.Graf
+
+  Beschreibung: Textformate für diverse Anzeigen auf dem IDU werden hier zur verfügung gestellt.
+ */
+
 object appStyle {
     val MAIN_FONT_COLOR = Color.web("#232F48")
     val ACCENT_FONT_COLOR = Color.web("#3D90FD")
     val ACCENT_COLOR_LIGHT = Color.web("#D6E8FF")
     val FAVORITE_YELLOW = Color.web("#FCC029")
     val TRANSPARENT = Color.TRANSPARENT
-    val GOLDEN_RATIO = 1.618
     val RED = Color.RED
     val BLUE = Color.BLUE
     val FONT_12 = Font("Helvetica", 12.0)
@@ -21,11 +27,9 @@ object appStyle {
     val FONT_14 = Font("Helvetica", 14.0)
     val FONT_14_BOLD = Font.font("Helvetica", FontWeight.BOLD, 14.0)
     val FONT_16 = Font("Helvetica", 16.0)
-    val FONT_16_BOLD = Font.font("Helvetica", FontWeight.BOLD, 16.0)
     val FONT_18 = Font.font("Helvetica", 18.0)
     val FONT_24 = Font("Helvetica", 24.0)
-    val FONT_24_BOLD = Font.font("Helvetica", FontWeight.BOLD, 24.0)
-    val FONT_64 = Font.font("Helvetica", 64.0)
+    val FONT_36_LIGHT = Font.font("Helvetica", FontWeight.LIGHT, 36.0)
     val FONT_64_BOLD = Font.font("Helvetica", FontWeight.BOLD, 64.0)
 
     fun layoutLabelLeft(label: Label) {

@@ -8,6 +8,14 @@ import org.json.JSONObject
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+/*
+  Projekt:      Wetterapp
+  Firma:        ABB Technikerschule
+  Autor:        P.Koch
+
+  Beschreibung: API Wetter und Location Daten werden vom Netz eingelesen und die Wetterobjekte gebildet.
+ */
+
 class ApiHandler() : Api {
 
     override fun fetchWeather(location: Location): Weather? {
