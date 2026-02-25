@@ -22,6 +22,11 @@ class Manager() : Guilogic {
     private val favoritesList: ObservableList<Favorite> = FXCollections.observableArrayList()
     private val fileHandler: Storabledata = WeatherData()
 
+    init {
+        refreshFavorites()
+    }
+
+
     private val weatherCodeCategories = listOf(
         listOf(0, 100),
         (1..39).toList() + (101..139).toList(),
@@ -89,10 +94,6 @@ class Manager() : Guilogic {
                 }
             }
             return if (scores.isEmpty()) null else "%.2f".format(scores.average()).toDouble()
-    }
-
-    init {
-        refreshFavorites()
     }
 
     fun refreshFavorites(){
