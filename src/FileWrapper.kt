@@ -1,7 +1,7 @@
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
-  Autor:        T.Theiler
+  Autor:        P.Theiler
 
   Beschreibung: Hier werden die Wetterdaten für das Speichern in den Files in Listen gebuendelt und abgepackt.
  */

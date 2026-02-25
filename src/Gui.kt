@@ -30,6 +30,13 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.round
 
+/*
+  Projekt:      Wetterapp
+  Firma:        ABB Technikerschule
+  Autor:        P.Koch P.Theiler und T.Graf
+
+  Beschreibung: Gui Funktionen und Aufrufe diverser Anzeigeelemente
+ */
 
 class Gui : Application() {
     private val manager: Guilogic = Manager()

@@ -21,7 +21,7 @@ import kotlin.collections.forEach
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
-  Autor:        T.Theiler
+  Autor:        P.Theiler
 
   Beschreibung: Hier werden die Favoriten mittels Gui Eingabe hinzugefügt und aufbereitet.
  */

@@ -1,7 +1,7 @@
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
-  Autor:        Tobias Graf
+  Autor:        T.Graf
 
   Beschreibung: Interface für das Speichern der Daten
 */

@@ -4,7 +4,7 @@ import java.io.Serializable
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
-  Autor:        T.Theiler
+  Autor:        P.Theiler
 
   Beschreibung: Hier wird die Favoriten Klasse definiert.
  */

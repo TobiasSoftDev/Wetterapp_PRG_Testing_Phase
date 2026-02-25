@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
-  Autor:        Tobias Graf
+  Autor:        T.Graf
 
   Beschreibung: Arbeitsdaten werden in Files Remanent abgespeichert
  */
