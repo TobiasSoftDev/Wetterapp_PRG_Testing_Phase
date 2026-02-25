@@ -115,7 +115,7 @@ class Gui : Application() {
         accuracyBox.getView().prefWidthProperty().bind(this.widthProperty().multiply(0.5))
         accuracyBox.infoBtn.onAction = EventHandler {event ->
             val source = (event.source as Node).scene.window as Stage
-            showInfoPopup(source)
+            accuracyBox.showInfoPopup(source)
         }
         searchbar.tflSucheingabe.minWidthProperty().bind(searchbar.tflSucheingabe.prefWidthProperty())
         searchbar.tflSucheingabe.maxWidthProperty().bind(searchbar.tflSucheingabe.prefWidthProperty())
@@ -191,106 +191,6 @@ class Gui : Application() {
         }
     }
 
-    fun showInfoPopup(ownerStage: Stage) {
-        val popupStage = Stage().apply {
-            title = "Prognosequalität"
-            initModality(Modality.APPLICATION_MODAL)
-            initOwner(ownerStage)
-            isResizable = false
-        }
-
-        val titleLbl = Label("Was ist die Prognosequalität und wie wird sie berechnet?").apply {
-            textAlignment = TextAlignment.LEFT
-            isWrapText = true
-            padding = Insets(20.0, 0.0, 8.0, 0.0)
-            font = appStyle.FONT_14
-        }
-
-        val intro = Text("Sobald du einen Favoriten hinzugefügt hast, werden dessen Wetterprognosen pro Abruf (einmal pro Tag) gespeichert. Um die Genauigkeit einer Prognose zu messen, wird sie mit dem tatsächlich eingetroffenen Wetter verglichen — frühestens 24 Stunden nach der Vorhersage.\n\nFür jede gespeicherte Prognose werden zwei Werte verglichen:").apply {
-            wrappingWidth = 345.0
-            lineSpacing = 1.0
-            font = appStyle.FONT_12
-        }
-
-        val temperatureTitle = Label("Temperatur").apply{
-            padding = Insets(16.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_12_BOLD
-        }
-
-        val temperatureText = Text("Weicht die vorhergesagte Temperatur um mehr als 5°C vom tatsächlichen Wert ab, beträgt die Genauigkeit 0%. Je kleiner die Abweichung, desto höher der Wert.").apply{
-            wrappingWidth = 345.0
-            lineSpacing = 1.0
-            font = appStyle.FONT_12
-        }
-
-        val weatherTitle = Label("Wetterzustand").apply {
-            padding = Insets(16.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_12_BOLD
-        }
-
-        val weatherText = Text("Der vorhergesagte Wetterzustand (z.B. bewölkt, Regen, etc.) wird als Wettercode gespeichert und mit dem aktuellen verglichen. Die Übereinstimmung fliesst als Prozentwert in die Gesamtbewertung ein.").apply {
-            wrappingWidth = 345.0
-            lineSpacing = 1.0
-            font = appStyle.FONT_12
-        }
-
-        val scoreTitle = Label("Gesamtwert (Prognosequalität)").apply {
-            padding = Insets(16.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_12_BOLD
-        }
-
-        val scoreText = Text("Der angezeigte Prozentwert ist der Durchschnitt dieser beiden Werte über alle verfügbaren Vergleichsdaten.").apply {
-            wrappingWidth = 345.0
-            lineSpacing = 1.0
-            font = appStyle.FONT_12
-        }
-
-        val contentBox = VBox().apply {
-            alignment = Pos.TOP_LEFT
-            spacing = 5.0
-            padding = Insets(20.0)
-            children.addAll(titleLbl, intro, temperatureTitle, temperatureText, weatherTitle, weatherText, scoreTitle, scoreText)
-        }
-
-        popupStage.close()
-        popupStage.scene = Scene(contentBox, 400.0, 450.0)
-        popupStage.showAndWait()
-
-    }
-
-    fun popupLogic(ownerStage: Stage) {
-        val popupStage = Stage().apply {
-            title = "Welchen Ort suchst du genau?"
-            initModality(Modality.APPLICATION_MODAL)
-            initOwner(ownerStage)
-            isResizable = false
-        }
-        resultsList.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
-            if (newValue != null) {
-                selectedLocation = newValue
-                selectedLocationWeather = manager.getCurrentWeather(newValue)
-                fillInLocationData(selectedLocation)
-                fillInWeatherData(selectedLocationWeather)
-                popupStage.close()
-            }
-        }
-
-        val hintLbl = Label("Solltest du deinen gewünschten Ort nicht finden,\nversuche es mit einem in der Nähe.").apply {
-            textAlignment = TextAlignment.CENTER
-            isWrapText = true
-            padding = Insets(10.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_14
-            textFill = appStyle.MAIN_FONT_COLOR
-        }
-        val resultsBox = VBox().apply {
-            alignment = Pos.CENTER
-            padding = Insets(10.0)
-            children.addAll(resultsList, hintLbl)
-        }
-        popupStage.scene = Scene(resultsBox, 400.0, 500.0)
-        popupStage.showAndWait()
-    }
-
     private fun fillInLocationData(location: Location?) {
             dayView.lblLocation.text = selectedLocation?.name
             if (location != null) {
@@ -301,39 +201,53 @@ class Gui : Application() {
 
     private fun fillInWeatherData(weather: Weather?) {
         if (weather != null) {
-            if (manager.checkAccuracy(weather.getLocationID(), weather) != null) {
-                accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
-                accuracyBox.descriptionLbl.text = fillAccuracyLabel(manager.checkAccuracy(weather.getLocationID(),weather))
-            } else {
-                accuracyBox.percentLbl.text = ""
-                accuracyBox.descriptionLbl.text = "Es ist noch keine Berechnung erfolgt."
-            }
-
-            dayView.lblWeatherCode.text = weather.getWeatherCode().description
-            dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
-            dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
-            dayView.lblMinTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMin()).toInt()}º"
-
-            detailsView.lblHumidityValue.text = "${weather.getHumidity()}%"
-            detailsView.lblPrecipitationValue.text = "${weather.getPrecipitation()} mm"
-            detailsView.lblSunriseValue.text = "${weather.getDailyList()[0].getSunrise()} Uhr"
-            detailsView.lblSunsetValue.text = "${weather.getDailyList()[0].getSunset()} Uhr"
-            detailsView.lblWindSpeedValue.text = "${weather.getWindSpeed()} km/h"
-            detailsView.updateWindDirection(weather.getWindDirection())
-            detailsView.lblApparentTemperatureValue.text = "${round(weather.getApparentTemperature()).toInt()}º"
-
-            dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
-            // API-Daten neu laden für Plotter Line Chart und erste 7 Werte auslesen
-            weather.getDailyWeatherDataAll().take(7).forEach { day ->
-                plot("Max Temperatur", day.getTemperatureMax().toInt())
-                plot("Min Temperatur", day.getTemperatureMin().toInt())
-            }
+            fillAccuracyBox(weather)
+            fillDayView(weather)
+            fillDetailsView(weather)
+            fillPlotterView(weather)
         }
         guiFavorites.updateStarColor(selectedLocation)
         dayView.btnAddFavorite.isVisible = true
     }
 
-    fun fillSearchResults(string: String) {
+    private fun fillAccuracyBox(weather: Weather) {
+        if (manager.checkAccuracy(weather.getLocationID(), weather) != null) {
+            accuracyBox.percentLbl.text = "${manager.checkAccuracy(weather.getLocationID(),weather)} %"
+            accuracyBox.descriptionLbl.text = accuracyBox.fillAccuracyLabel(manager.checkAccuracy(weather.getLocationID(),weather))
+        } else {
+            accuracyBox.percentLbl.text = ""
+            accuracyBox.descriptionLbl.text = "Es ist noch keine Berechnung erfolgt."
+        }
+    }
+
+    private fun fillDayView(weather: Weather) {
+        dayView.lblWeatherCode.text = weather.getWeatherCode().description
+        dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
+        dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
+        dayView.lblMinTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMin()).toInt()}º"
+        dayView.lblUpdateTime.text = "aktualisiert um: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))} Uhr"
+    }
+
+    private fun fillDetailsView(weather: Weather) {
+        detailsView.lblHumidityValue.text = "${weather.getHumidity()}%"
+        detailsView.lblPrecipitationValue.text = "${weather.getPrecipitation()} mm"
+        detailsView.lblSunriseValue.text = "${weather.getDailyList()[0].getSunrise()} Uhr"
+        detailsView.lblSunsetValue.text = "${weather.getDailyList()[0].getSunset()} Uhr"
+        detailsView.lblWindSpeedValue.text = "${weather.getWindSpeed()} km/h"
+        detailsView.updateWindDirection(weather.getWindDirection())
+        detailsView.lblApparentTemperatureValue.text = "${round(weather.getApparentTemperature()).toInt()}º"
+
+    }
+
+    private fun fillPlotterView(weather: Weather) {
+        // API-Daten neu laden für Plotter Line Chart und erste 7 Werte auslesen
+        weather.getDailyWeatherDataAll().take(7).forEach { day ->
+            plot("Max Temperatur", day.getTemperatureMax().toInt())
+            plot("Min Temperatur", day.getTemperatureMin().toInt())
+        }
+    }
+
+    private fun fillSearchResults(string: String) {
         val search = manager.getLocations(string)
         locationsModel.clear()
         for (result in search) {
@@ -341,36 +255,32 @@ class Gui : Application() {
         }
     }
 
-    fun search(with: Button) {
+    private fun useSearchbar(stage: Stage) {
+        searchbar.popupLogic(stage, resultsList) { selected ->
+            selectedLocation = selected
+            selectedLocationWeather = manager.getCurrentWeather(selected)
+            fillInLocationData(selectedLocation)
+            fillInWeatherData(selectedLocationWeather)
+        }
+    }
+
+    private fun search(with: Button) {
         with(with) {
             onAction = EventHandler { event ->
                 fillSearchResults(searchbar.tflSucheingabe.text)
                 val source = (event.source as Node).scene.window as Stage
-                popupLogic(source)
+                useSearchbar(source)
             }
         }
     }
 
-    fun searchTfl(field: TextField) {
+    private fun searchTfl(field: TextField) {
         with(field) {
             onAction = EventHandler { event -> fillSearchResults(this.text)
                 val source = (event.source as Node).scene.window as Stage
-                popupLogic(source)
+                useSearchbar(source)
             }
         }
-    }
-
-    fun fillAccuracyLabel(score: Double?): String {
-        score ?:  return "Die Prognosequalität kann nicht angezeigt werden."
-            return when (score) {
-                in 99.00..100.0 -> "exzellent"
-                in 95.00..99.49  -> "sehr gut"
-                in 93.50..94.99 -> "gut"
-                in 60.00..93.49 -> "genügend"
-                in 20.00..59.99 -> "verbesserungswürdig"
-                in 0.00..19.99 -> "Ist etwas schief gelaufen?"
-                else -> "Wert ungültig"
-            }
     }
 
     companion object {
