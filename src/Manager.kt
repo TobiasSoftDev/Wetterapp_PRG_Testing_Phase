@@ -106,7 +106,6 @@ class Manager() : Guilogic {
             }
             fav
         }
-        println("es wird die Favoritenliste aktualisiert nach dem neustart")
         favoritesList.setAll(freshFavorites)
 
         if (savedFavorites.size >5){

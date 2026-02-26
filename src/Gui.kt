@@ -79,9 +79,11 @@ class Gui : Application() {
             fillInWeatherData(selectedLocationWeather)
             val favList = manager.getFavoritesObservableList()
             val activeLocation = favList.find { it.location.id == location.id }
-            if (activeLocation != null) {
-                favList.remove(activeLocation)
-                favList.add(0, activeLocation)
+            if (activeLocation != null && weather != null) {
+                activeLocation.temperature = weather.getTemperature()
+                activeLocation.iconFileName = weather.getWeatherCode().iconName
+                val index = favList.indexOf(activeLocation)
+                favList[index] = activeLocation
                 withContext(Dispatchers.IO) {
                     manager.updateFavoriteFile()
                 }
@@ -140,11 +142,7 @@ class Gui : Application() {
             """.trimIndent()
                 VBox.setVgrow(this, Priority.NEVER)
             }
-            //HBox.setHgrow(dayView.hBoxDayView, Priority.ALWAYS)
-            //HBox.setHgrow(favBox, Priority.ALWAYS)
             dayView.hBoxDayView.maxWidthProperty().bind(this.widthProperty().multiply(0.6))
-            //favBox.maxWidthProperty().bind(this.widthProperty().multiply(0.5))
-           // HBox.setMargin(favBox, Insets(0.0, 0.0, 0.0, 200.0))
             children.addAll(dayView.hBoxDayView,spacer, favBox)
         }
     }
@@ -153,9 +151,7 @@ class Gui : Application() {
         guiFavorites.manager = this.manager
         dayView.favorites = guiFavorites
         dayView.addFavoriteButtonToBox()
-        guiFavorites.updateFavoritesList(onHomeClick)
-        manager.getFavoritesObservableList().addListener(javafx.collections.ListChangeListener{
-        guiFavorites.updateFavoritesList(onHomeClick)})
+        guiFavorites.setupListener(onHomeClick)
 
         val root = BorderPane().apply {
             top = hBoxSearchAccuracy
@@ -164,7 +160,6 @@ class Gui : Application() {
             background = Background(BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets(0.0, 0.0, 0.0, 0.0)))
             isFocusTraversable = true   // Nimmt den Cursor aus dem Textfeld. Textfeld will Aufmerksamkeit haben...
         }
-        //dayView.getView().prefWidthProperty().bind(root.widthProperty().multiply(0.50))
         dayView.getView().minWidth = 200.0
         hBoxBottom.prefHeightProperty().bind(root.heightProperty().multiply(0.45))
         hBoxBottom.minHeight = 100.0
@@ -173,7 +168,10 @@ class Gui : Application() {
             scene = Scene(root)
             title = "Weather2B"
             isMaximized = true
-            setOnCloseRequest { exit() }
+            setOnCloseRequest {event ->
+            exit()
+            event.consume()
+            }
             show()
             root.requestFocus()     // mit Tab-Taste krallt sich Textfeld wieder an die Aufmerksamkeit -> Cursor...
         }
@@ -225,6 +223,7 @@ class Gui : Application() {
     }
 
     private fun fillDayView(weather: Weather) {
+        dayView.lblWeatherIcon.image = weather.getWeatherCode().icon
         dayView.lblWeatherCode.text = weather.getWeatherCode().description
         dayView.lblTemperature.text = "${weather.getTemperature().toInt()}º"
         dayView.lblMaxTemperature.text = "${round(weather.getDailyList()[0].getTemperatureMax()).toInt()}º"
@@ -267,6 +266,7 @@ class Gui : Application() {
             selectedLocationWeather = manager.getCurrentWeather(selected)
             fillInLocationData(selectedLocation)
             fillInWeatherData(selectedLocationWeather)
+            guiSearchbar.tflSucheingabe.clear()
         }
     }
 
@@ -292,7 +292,10 @@ class Gui : Application() {
     fun exit() {
         with(Alert(Alert.AlertType.INFORMATION)) {
         contentText = "Wenn du die App schliessen willst, drücke auf «OK»."
-        showAndWait()
+        val result = showAndWait()
+            if (result.get() == javafx.scene.control.ButtonType.OK) {
+                javafx.application.Platform.exit()
+            }
     }
 }
 

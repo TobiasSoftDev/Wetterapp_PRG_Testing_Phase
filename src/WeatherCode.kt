@@ -26,6 +26,7 @@ enum class WeatherCodes(
     val description: String,
     val iconName: String) {
 
+
     SONNIG(0, "sonnig", "Sonnig.png"),
     LEICHT_BEWOELKT(1, "leicht bewölkt", "leichtbewölkt.png"),
     BEWOELKT(3, "bewölkt", "bewölkt.png"),
@@ -45,6 +46,8 @@ enum class WeatherCodes(
     GEWITTER_NACHT(191, "Gewitter", "Gewitter.png"),
 
     UNBEKANNT(-1, "Unbekannt", "umbrella.png");
+
+    val icon: Image get() = loadIcon(this.iconName)
 
     companion object {
         fun fromCode(code: Int, weather: DailyWeather): WeatherCodes {

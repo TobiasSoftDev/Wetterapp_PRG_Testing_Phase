@@ -79,6 +79,13 @@ object dayView {
         alignment = Pos.CENTER_LEFT
         font = appStyle.FONT_16
     }
+    val lblWeatherIcon = ImageView().apply {
+        fitWidth = 60.0
+        isPreserveRatio = true
+        translateY = -50.0
+        isSmooth = true
+        isCache = true
+    }
 
     val lblTemperature = Label().apply {
         alignment = Pos.CENTER_LEFT
@@ -105,7 +112,8 @@ object dayView {
         minWidth = Label.USE_PREF_SIZE
         font = appStyle.FONT_16
     }
-    private val hBoxTempMax = HBox().apply {
+
+        private val hBoxTempMax = HBox().apply {
         alignment = Pos.CENTER_LEFT
         spacing = 5.0
         children.addAll(lblMaximum, lblMaxTemperature)
@@ -133,12 +141,22 @@ object dayView {
         spacing = 8.0
         children.addAll(lblTemperature, vBoxMaxMin)
     }
+    private val vBoxTemperaturesWeatherCode = VBox().apply {
+        alignment = Pos.CENTER_LEFT
+        spacing = 8.0
+        children.addAll(lblWeatherCode, hBoxTemperatures)
+    }
+    private val hBoxTempWeatherCodeIcon = HBox().apply {
+        alignment = Pos.CENTER_LEFT
+        spacing = 8.0
+        children.addAll(vBoxTemperaturesWeatherCode, lblWeatherIcon)
+    }
 
     private val vBoxCurrentLocationTemp = VBox().apply {
         alignment = Pos.CENTER_LEFT
         prefWidth = 300.0
         spacing = 16.0
-        children.addAll(locationHbox, lblWeatherCode, hBoxTemperatures)
+        children.addAll(locationHbox,hBoxTempWeatherCodeIcon)
     }
 
     private val vBoxDayView = VBox().apply {
@@ -148,7 +166,6 @@ object dayView {
         //HBox.setHgrow(this, Priority.ALWAYS)
         children.addAll(vBoxDayTime, vBoxCurrentLocationTemp)
     }
-
 
     val mapImage = Image("/pictures/Schweiz.png", 1052.09, 668.54, true, false)
 
