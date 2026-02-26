@@ -183,10 +183,10 @@ class Location {
 }
 
 class Favorite {
-    location: Location
-    name: String
-    temperature: Double
-    iconFileName: String
+    + location: Location
+    + name: String
+    + temperature: Double
+    + iconFileName: String
 }
 
 enum WeatherCodes {
