@@ -1,16 +1,17 @@
-package weather2b
-
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
   Autor:        P.Koch und T.Graf
 
-  Beschreibung: In Daily weather2b.Weather werden die Daten der kommenden 14 Tage verarbeitet
+  Beschreibung: In Daily Weather werden die Daten der kommenden 14 Tage verarbeitet
  */
+
+package weather2b.data.sourcedata
+
+import weather2b.gui.design.WeatherCodes
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 data class DailyWeather(
     private val time: LocalDate,
@@ -20,7 +21,8 @@ data class DailyWeather(
     private val apparentTemperatureMax: Double,
     private val sunset: LocalDateTime,
     private val sunrise: LocalDateTime,
-    private val weatherCode: WeatherCodes ) {
+    private val weatherCode: WeatherCodes
+) {
 
     fun getTime(): LocalDate = time
     fun getTemperatureMin(): Double = temperatureMin

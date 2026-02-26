@@ -1,14 +1,15 @@
-package weather2b
-
-import java.time.LocalDateTime
-
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
   Autor:        P.Koch
 
-  Beschreibung: Stündliche Wetterdaten
+  Beschreibung: Stuendliche Wetterdaten
  */
+
+package weather2b.data.sourcedata
+
+import weather2b.gui.design.WeatherCodes
+import java.time.LocalDateTime
 
 data class HourlyWeather(
     private val times: LocalDateTime,
@@ -19,7 +20,8 @@ data class HourlyWeather(
     private val windSpeed: Double,
     private val windDirection: Int,
     private val freezingLevel: Double,
-    private val weatherCode: WeatherCodes) {
+    private val weatherCode: WeatherCodes
+) {
     fun getWeatherCodes(): WeatherCodes = weatherCode
     fun getTemperature2M(): Double = temperature2M
 }

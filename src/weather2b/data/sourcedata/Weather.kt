@@ -1,11 +1,15 @@
-package weather2b
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
   Autor:        P.Koch, P.Theiler und T.Graf
 
-  Beschreibung: Wetter Klasse um daraus Wetter Objekte zu bilden
+  Beschreibung: Wetter Klasse Daten zusammenfuehren um daraus Wetter Objekte zu bilden
  */
+
+package weather2b.data.sourcedata
+
+import weather2b.data.wrapper.HourlyWrapper
+import weather2b.gui.design.WeatherCodes
 
 data class Weather(
     private val location: Location,

@@ -1,7 +1,3 @@
-package weather2b
-
-import javafx.application.Application.*
-
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
@@ -9,6 +5,11 @@ import javafx.application.Application.*
 
   Beschreibung: Main
 */
+
+package weather2b
+
+import javafx.application.Application.*
+import weather2b.gui.Gui
 
 fun main(){
     launch(Gui::class.java)

@@ -1,8 +1,3 @@
-package weather2b
-
-import javafx.scene.image.Image
-import java.time.LocalDateTime
-
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
@@ -10,6 +5,14 @@ import java.time.LocalDateTime
 
   Beschreibung: Definition der Wetter Codes und Icons welche im GUI angezeigt werden
  */
+
+package weather2b.gui.design
+
+import javafx.scene.image.Image
+import weather2b.data.sourcedata.DailyWeather
+import java.time.LocalDateTime
+
+
 
 fun loadIcon(fileName : String): Image {
     val path = "/icons/weatherIcons/$fileName"

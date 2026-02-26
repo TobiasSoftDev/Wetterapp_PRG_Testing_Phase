@@ -1,8 +1,3 @@
-package weather2b
-
-import javafx.scene.image.Image
-import java.io.Serializable
-
 /*
   Projekt:      Wetterapp
   Firma:        ABB Technikerschule
@@ -10,6 +5,13 @@ import java.io.Serializable
 
   Beschreibung: Hier wird die Favoriten Klasse definiert.
  */
+
+package weather2b.gui.favorites
+
+import javafx.scene.image.Image
+import weather2b.data.sourcedata.Location
+import weather2b.gui.design.loadIcon
+import java.io.Serializable
 
 class Favorite: Serializable {
     var location: Location = Location()
