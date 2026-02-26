@@ -8,7 +8,7 @@
 
 package weather2b.data.wrapper
 
-import weather2b.gui.favorites.Favorite
+import weather2b.data.favorites.Favorite
 
 class FavoriteWrapper {
     var favorites: MutableList<Favorite> = mutableListOf()

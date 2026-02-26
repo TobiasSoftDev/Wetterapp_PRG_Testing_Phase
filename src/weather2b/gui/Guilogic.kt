@@ -11,7 +11,7 @@ package weather2b.gui
 import javafx.collections.ObservableList
 import weather2b.data.sourcedata.Location
 import weather2b.data.sourcedata.Weather
-import weather2b.gui.favorites.Favorite
+import weather2b.data.favorites.Favorite
 
 interface Guilogic {
     fun getLocations(searchText: String): MutableList<Location>

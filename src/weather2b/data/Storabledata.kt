@@ -10,7 +10,7 @@ package weather2b.data
 
 import weather2b.data.sourcedata.Location
 import weather2b.data.sourcedata.Weather
-import weather2b.gui.favorites.Favorite
+import weather2b.data.favorites.Favorite
 
 interface Storabledata {
     fun storeFavorites(favorite: Favorite): Favorite

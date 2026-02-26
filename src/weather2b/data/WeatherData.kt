@@ -14,7 +14,7 @@ import weather2b.data.sourcedata.Location
 import weather2b.data.sourcedata.Weather
 import weather2b.data.wrapper.FavoriteWrapper
 import weather2b.data.wrapper.FileWrapper
-import weather2b.gui.favorites.Favorite
+import weather2b.data.favorites.Favorite
 import java.beans.XMLDecoder
 import java.beans.XMLEncoder
 import java.io.BufferedInputStream

@@ -23,7 +23,7 @@ import javafx.scene.text.Font
 import javafx.util.Duration
 import weather2b.gui.Gui
 import weather2b.gui.design.appStyle
-import weather2b.gui.favorites.guiFavorites
+import weather2b.gui.view.guiFavorites
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

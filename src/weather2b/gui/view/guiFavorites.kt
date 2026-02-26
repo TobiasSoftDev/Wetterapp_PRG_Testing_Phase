@@ -6,7 +6,7 @@
   Beschreibung: Hier werden die Favoriten mittels Gui Eingabe hinzugefügt und aufbereitet.
  */
 
-package weather2b.gui.favorites
+package weather2b.gui.view
 
 import javafx.collections.ListChangeListener
 import javafx.geometry.Insets
@@ -25,10 +25,11 @@ import javafx.scene.shape.SVGPath
 import javafx.scene.shape.StrokeLineCap
 import javafx.scene.shape.StrokeLineJoin
 import kotlinx.coroutines.Job
-import weather2b.gui.Guilogic
 import weather2b.data.sourcedata.Location
 import weather2b.data.sourcedata.Weather
+import weather2b.gui.Guilogic
 import weather2b.gui.design.appStyle
+import weather2b.data.favorites.Favorite
 
 object guiFavorites {
     lateinit var manager : Guilogic

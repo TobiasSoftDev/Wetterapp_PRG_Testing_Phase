@@ -6,7 +6,7 @@
   Beschreibung: Hier wird die Favoriten Klasse definiert.
  */
 
-package weather2b.gui.favorites
+package weather2b.data.favorites
 
 import javafx.scene.image.Image
 import weather2b.data.sourcedata.Location

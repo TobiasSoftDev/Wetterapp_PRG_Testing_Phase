@@ -17,7 +17,7 @@ import weather2b.api.ApiHandler
 import weather2b.data.Storabledata
 import weather2b.data.WeatherData
 import weather2b.gui.Guilogic
-import weather2b.gui.favorites.Favorite
+import weather2b.data.favorites.Favorite
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -44,7 +44,7 @@ import weather2b.data.sourcedata.Weather
 import weather2b.gui.view.accuracyBox
 import weather2b.gui.view.dayView
 import weather2b.gui.view.detailsView
-import weather2b.gui.favorites.guiFavorites
+import weather2b.gui.view.guiFavorites
 import weather2b.gui.view.guiSearchbar
 import weather2b.gui.view.plotterLineChart
 import java.time.LocalDateTime
