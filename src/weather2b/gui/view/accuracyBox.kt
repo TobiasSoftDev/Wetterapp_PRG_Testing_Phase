@@ -21,6 +21,7 @@ import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
+import javafx.scene.text.TextFlow
 import javafx.stage.Modality
 import javafx.stage.Stage
 import weather2b.gui.design.appStyle
@@ -89,7 +90,7 @@ object accuracyBox {
             textAlignment = TextAlignment.LEFT
             isWrapText = true
             padding = Insets(20.0, 0.0, 8.0, 0.0)
-            font = appStyle.FONT_14
+            font = appStyle.FONT_14_BOLD
         }
 
         val intro = Text("Sobald du einen Favoriten hinzugefügt hast, werden dessen Wetterprognosen pro Abruf (einmal pro Tag) gespeichert. Um die Genauigkeit einer Prognose zu messen, wird sie mit dem tatsächlich eingetroffenen Wetter verglichen — frühestens 24 Stunden nach der Vorhersage.\n\nFür jede gespeicherte Prognose werden zwei Werte verglichen:").apply {
@@ -98,20 +99,20 @@ object accuracyBox {
             font = appStyle.FONT_12
         }
 
-        val temperatureTitle = Label("Temperatur").apply{
+        val temperatureTitle = Label("Temperatur 🌡️").apply{
             padding = Insets(16.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_12_BOLD
+            font = appStyle.FONT_14_BOLD
         }
 
-        val temperatureText = Text("Weicht die vorhergesagte Temperatur um mehr als 5°C vom tatsächlichen Wert ab, beträgt die Genauigkeit 0%. Je kleiner die Abweichung, desto höher der Wert.").apply{
+        val temperatureText = Text("Weicht die vorhergesagte Temperatur um mehr als 10°C vom tatsächlichen Wert ab, beträgt die Genauigkeit 0%. Je kleiner die Abweichung, desto höher die Güte der Temperaturmessung.").apply{
             wrappingWidth = 345.0
             lineSpacing = 1.0
             font = appStyle.FONT_12
         }
 
-        val weatherTitle = Label("Wetterzustand").apply {
+        val weatherTitle = Label("Wetterzustand 🌤️").apply {
             padding = Insets(16.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_12_BOLD
+            font = appStyle.FONT_14_BOLD
         }
 
         val weatherText = Text("Der vorhergesagte Wetterzustand (z.B. bewölkt, Regen, etc.) wird als Wettercode gespeichert und mit dem aktuellen verglichen. Die Übereinstimmung fliesst als Prozentwert in die Gesamtbewertung ein.").apply {
@@ -120,12 +121,26 @@ object accuracyBox {
             font = appStyle.FONT_12
         }
 
-        val scoreTitle = Label("Gesamtwert (Prognosequalität)").apply {
+        val scoreTitle = Label("Gesamtwert (Prognosequalität) 📊").apply {
             padding = Insets(16.0, 0.0, 0.0, 0.0)
-            font = appStyle.FONT_12_BOLD
+            font = appStyle.FONT_14_BOLD
         }
 
         val scoreText = Text("Der angezeigte Prozentwert ist der Durchschnitt dieser beiden Werte über alle verfügbaren Vergleichsdaten.").apply {
+            wrappingWidth = 345.0
+            lineSpacing = 1.0
+            font = appStyle.FONT_12
+        }
+
+        val exampleTitle = Label("Rechenbeispiel 🔎").apply {
+            padding = Insets(16.0, 0.0, 0.0, 0.0)
+            font = appStyle.FONT_14_BOLD
+        }
+
+        val exampleText = Text("Vor 24 Stunden wurden 20°C und 'klarer Himmel' vorhergesagt.\n\nTemperatur: Tatsächlich sind es 22°C.\n"+
+                "Die Abweichung beträgt 2°C. Dies ergibt eine Genauigkeit von 80% (1℃ Abweichung ≙ 10% Abzug).\n\n"+
+                "Wetterzustand: Tatsächlich ist es 'Leicht bewölkt'.\nDa beide Zustände zur selben Kategorie gehören, ergibt dies 100%.\n\n"+
+                "Ergebnis: Der Durchschnitt aus 80% und 100% ergibt eine Prognosegüte von 90% für diesen Messpunkt.").apply {
             wrappingWidth = 345.0
             lineSpacing = 1.0
             font = appStyle.FONT_12
@@ -137,7 +152,7 @@ object accuracyBox {
             minHeight = Region.USE_PREF_SIZE
             maxHeight = Region.USE_PREF_SIZE
             padding = Insets(20.0)
-            children.addAll(titleLbl, intro, temperatureTitle, temperatureText, weatherTitle, weatherText, scoreTitle, scoreText)
+            children.addAll(titleLbl, intro, temperatureTitle, temperatureText, weatherTitle, weatherText, scoreTitle, scoreText, exampleTitle, exampleText)
         }
 
         popupStage.scene = Scene(contentBox)
