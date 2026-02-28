@@ -333,7 +333,7 @@ class Gui : Application() {
     }
 
     fun exit() {
-        with(Alert(Alert.AlertType.INFORMATION)) {
+        with(Alert(Alert.AlertType.CONFIRMATION)) {
         contentText = "Wenn du die App schliessen willst, drücke auf «OK»."
         val result = showAndWait()
             if (result.get() == javafx.scene.control.ButtonType.OK) {
