@@ -20,6 +20,9 @@ Weather --> DailyWeather
 Manager --> WeatherCodes
 Favorite --> Location
 Manager --> Favorite
+FavoriteWrapper --> Favorite
+FileWrapper --> WeatherData
+WeatherData --> HourlyWrapper
 
 class Manager {
         - apiHandler: Api
@@ -108,6 +111,18 @@ class WeatherData {
         - loadFavorites(file: File): FavoriteWrapper
 }
 
+ class FavoriteWrapper {
+        + favorites: MutableList<Favorite>
+    }
+
+ class FileWrapper {
+        + dataList: MutableList<WeatherData>
+    }
+
+ class HourlyWrapper {
+        + wrapperTemperature: Double
+        + wrapperWeatherCode: Int
+    }
 
 class APIHandler {
          + fetchWeather(location: Location): Weather?
