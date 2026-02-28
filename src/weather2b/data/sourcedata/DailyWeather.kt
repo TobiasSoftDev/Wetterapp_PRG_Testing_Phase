@@ -22,15 +22,10 @@ data class DailyWeather(
     private val sunrise: LocalDateTime,
     private val weatherCode: WeatherCodes
 ) {
-
-    fun getTime(): LocalDate = time
     fun getTemperatureMin(): Double = temperatureMin
     fun getTemperatureMax(): Double = temperatureMax
-    fun getApparentTemperatureMin(): Double = apparentTemperatureMin
-    fun getApparentTemperatureMax(): Double = apparentTemperatureMax
     fun getSunset(): LocalTime? = sunset.toLocalTime()
     fun getSunrise(): LocalTime? = sunrise.toLocalTime()
     fun getSunsetLocalDateTime(): LocalDateTime = sunset
     fun getSunriseLocalDateTime(): LocalDateTime = sunrise
-    fun getWeatherCode(): WeatherCodes = weatherCode
 }

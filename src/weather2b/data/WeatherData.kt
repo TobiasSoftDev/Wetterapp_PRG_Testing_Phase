@@ -8,7 +8,6 @@
 
 package weather2b.data
 
-import kotlinx.coroutines.sync.Mutex
 import weather2b.data.wrapper.HourlyWrapper
 import weather2b.data.sourcedata.Location
 import weather2b.data.sourcedata.Weather
@@ -36,7 +35,6 @@ data class WeatherData(
     var temperature: Double = 0.0,
     var hourlyForecasts: MutableList<HourlyWrapper> = mutableListOf(),
     var weatherCode: Int = 0) : Storabledata {
-    private val mutex = Mutex()
 
     override fun removeStoredWeatherData(from: Location) {
         try {

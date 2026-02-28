@@ -22,198 +22,202 @@ Favorite --> Location
 Manager --> Favorite
 
 class Manager {
-    - apiHandler: Api
-    - fetchedWeather: Weather
-    - fetchedLocations: MutableList<Location>
-    - favoritesList: ObservableList<Favorite>
-    - fileHandler: Storabledata
-    - weatherCodeCategories: ListOf<ListOf>
-    getLocations()
-    getCurrentWeather()
-    addFavorites(location: Location, weather: Weather)
-    removeFavorites()
-    checkForFavorites()
-    getFavoritesObservableList()
-    checkAccuracy()
-    updateFavoriteFile()
-    fetchWeather(location: Location): Weather?
-    fetchLocations(searchText: String): MutableList<Location>
-    storeWeatherData(weather: Weather)
-    storeFavorites(favorite: Favorite)
-    readFavorites()
-    getAllFavorites()
-    updateALLFavorites()
-    removeStoredWeatherData(from: Location)
-    getEntriesForLocation(locationID: Int)
+        - apiHandler: Api
+        - fetchedWeather: Weather?
+        - fetchedLocations: MutableList<Location>
+        - favoritesList: ObservableList<Favorite>
+        - fileHandler: Storabledata
+        - weatherCodeCategories: List<List<Int>>
+        + getLocations(searchText: String): MutableList<Location>
+        + getCurrentWeather(location: Location): Weather?
+        + addFavorites(location: Location, weather: Weather): Boolean
+        + removeFavorites(location: Location): Boolean
+        + checkForFavorites(location: Int): Boolean
+        + getFavoritesObservableList(): ObservableList<Favorite>
+        + checkAccuracy(id: Int, currentWeather: Weather): Double?
+        + updateFavoriteFile()
+        + updateALLFavorites()
+        + refreshFavorites()
+        - weatherCodeScore(forecasted: Int, actual: Int): Double
 }
 
 interface Storabledata {
-    storeWeatherData(weather: Weather)
-    storeFavorites(favorite: Favorite)
-    readFavorites()
-    getAllFavorites()
-    removeStoredWeatherData(from: Location)
-    getEntriesForLocation(locationID: Int)
+        + storeFavorites(favorite: Favorite): Favorite
+        + readFavorites()
+        + getAllFavorites(): List<Favorite>
+        + storeWeatherData(weather: Weather?)
+        + removeStoredWeatherData(from: Location)
+        + getEntriesForLocation(locationID: Int): List<WeatherData>
 }
 
 interface Api {
-     fetchWeather(location: Location): Weather?
-     fetchLocations(searchText: String): MutableList<Location>
+        + fetchWeather(location: Location): Weather?
+        + getLocations(searchText: String): MutableList<Location>
 }
 
 interface Guilogic {
-    getLocations()
-    getCurrentWeather()
-    addFavorites(location: Location, weather: Weather)
-    removeFavorites()
-    checkForFavorites()
-    getFavoritesObservableList()
-    checkAccuracy()
-    updateFavoriteFile()
-    updateALLFavorites()
+        + getLocations(searchText: String): MutableList<Location>
+        + getCurrentWeather(location: Location): Weather?
+        + addFavorites(location: Location, weather: Weather): Boolean
+        + removeFavorites(location: Location): Boolean
+        + checkForFavorites(location: Int): Boolean
+        + getFavoritesObservableList(): ObservableList<Favorite>
+        + checkAccuracy(id: Int, currentWeather: Weather): Double?
+        + updateFavoriteFile()
+        + updateALLFavorites()
 }
 
 class Gui {
-    - manager: Guilogic
-    - scope: CoroutineScope
-    - locationsModel: observableArrayList<Location>
-    - resultList: ListView<Location>
-    - onHomeClick: Location
-    - hBoxBottom: HBox
-    - hBoxSearchAccuracy: HBox
-    - hBoxDayViewFavorites: HBox
-    start()
-    stop()
+        - manager: Guilogic
+        - scope: CoroutineScope
+        - locationsModel: ObservableList<Location>
+        {static} + selectedLocation: Location?
+        {static} + selectedLocationWeather: Weather?
+        + start(stage: Stage)
+        + stop()
+        + exit()
+        - fillInLocationData(location: Location?)
+        - fillInWeatherData(weather: Weather?)
+        - fillAccuracyBox(weather: Weather)
+        - fillDayView(weather: Weather)
+        - fillDetailsView(weather: Weather)
+        - fillPlotterView(weather: Weather)
+        - fillSearchResults(string: String)
+        - search(with: Button)
+        - searchTfl(field: TextField)
+        - useSearchbar(stage: Stage)
 }
 
 class WeatherData {
-    + timestamp: String
-    + latitude: Double
-    + longitude: Double
-    + id: Int
-    + temperature: Double
-    + hourlyForecast: MutableList<HourlyWrapper>
-    + weatherCode: Int
-    storeWeatherData(weather: Weather)
-    storeFavorites(favorite: Favorite)
-    readFavorites()
-    getAllFavorites()
-    removeStoredWeatherData(from: Location)
-    getEntriesForLocation(locationID: Int)
+        + timestamp: String
+        + latitude: Double
+        + longitude: Double
+        + id: Int
+        + temperature: Double
+        + hourlyForecasts: MutableList<HourlyWrapper>
+        + weatherCode: Int
+        + storeWeatherData(weather: Weather?)
+        + removeStoredWeatherData(from: Location)
+        + getEntriesForLocation(locationID: Int): List<WeatherData>
+        + storeFavorites(favorite: Favorite): Favorite
+        + readFavorites()
+        + getAllFavorites(): List<Favorite>
+        - getStorageFileReference(): File?
+        - loadHistory(file: File): FileWrapper
+        - getFavoritesStorageFile(): File
+        - loadFavorites(file: File): FavoriteWrapper
 }
 
 
 class APIHandler {
-    fetchWeather(location: Location): Weather?
-    fetchLocations(searchText: String): MutableList<Location>
-
+         + fetchWeather(location: Location): Weather?
+         + getLocations(searchText: String): MutableList<Location>
+         - parseDateTimeSafely(s: String?): LocalDateTime
 }
 
 class Weather {
-    - location: Location
-    - temperature: Double
-    - humidity: Int
-    - weatherCode: WeatherCodes
-    - precipitation: Int
-    - windSpeed: Int
-    - windDirection: Int
-    - apparentTemperature: Double
-    - hourlyList: List<HourlyWeather>
-    - dailyList: List<DailyWeather>
-    getTemperature()
-    getHumidity()
-    getWeatherCode()
-    getPrecipitation()
-    getWindSpeed()
-    getWindDirection()
-    getApparentTemperature()
-    getHourlyList()
-    getDailyList()
-    getLocationID()
-    getLongitude()
-    getLatitude()
-    getHourlyWeatherCodes()
-    getHourlyForecasts()
-    getDailyWeatherDataAll()
+        - location: Location
+        - temperature: Double
+        - humidity: Int
+        - weatherCode: WeatherCodes
+        - precipitation: Int
+        - windSpeed: Int
+        - windDirection: Int
+        - apparentTemperature: Double
+        - hourlyList: List<HourlyWeather>
+        - dailyList: List<DailyWeather>
+        + getTemperature(): Double
+        + getHumidity(): Int
+        + getWeatherCode(): WeatherCodes
+        + getPrecipitation(): Int
+        + getWindSpeed(): Int
+        + getWindDirection(): Int
+        + getApparentTemperature(): Double
+        + getDailyList(): List<DailyWeather>
+        + getLocationID(): Int
+        + getLatitude(): Double
+        + getLongitude(): Double
+        + getHourlyForecasts(): MutableList<HourlyWrapper>
+        + getDailyWeatherDataAll(): List<DailyWeather>
 }
 
 class HourlyWeather {
-    - times: LocalDateTime
-    - temperature2M: Double
-    - apparentTemperature2M: Double
-    - relativeHumidity2M: Int
-    - precipitation: Int
-    - windSpeed: Int
-    - windDirection: Int
-    - freezingLevel: Double
-    - weatherCode: Int
-    getWeatherCodes()
-    getTemperature2M()
+        - times: LocalDateTime
+        - temperature2M: Double
+        - apparentTemperature2M: Double
+        - relativeHumidity2M: Int
+        - precipitation: Double
+        - windSpeed: Double
+        - windDirection: Int
+        - freezingLevel: Double
+        - weatherCode: WeatherCodes
+        + getWeatherCodes(): WeatherCodes
+        + getTemperature2M(): Double
 }
 
 class DailyWeather {
-    - time: LocalDateTime
-    - temperatureMin: Double
-    - temperatureMax: Double
-    - apparentTemperatureMin: Double
-    - apparentTemperatureMax: Double
-    - sunrise: LocalDateTime
-    - sunset: LocalDateTime
-    - weatherCode: Int
-    getTime()
-    getTemperatureMin()
-    getTemperatureMax()
-    getApparentTemperatureMin()
-    getApparentTemperatureMax()
-    getSunset()
-    getSunrise()
-    getSunsetLocalDateTime()
-    getSunriseLocalDateTime()
-    getWeatherCode()
+        - time: LocalDate
+        - temperatureMin: Double
+        - temperatureMax: Double
+        - apparentTemperatureMin: Double
+        - apparentTemperatureMax: Double
+        - sunrise: LocalDateTime
+        - sunset: LocalDateTime
+        - weatherCode: WeatherCodes
+        + getTemperatureMin(): Double
+        + getTemperatureMax(): Double
+        + getSunrise(): LocalTime?
+        + getSunset(): LocalTime?
+        + getSunriseLocalDateTime(): LocalDateTime
+        + getSunsetLocalDateTime(): LocalDateTime
 }
 
 class Location {
-    - latitude: Double
-    - longitude: Double
-    - name: String
-    - kanton: String
-    - kreis: String
-    - gemeinde: String
-    - elevation: Double
-    - id: UInt
-    getLocationForSearchResult()
+        + latitude: Double
+        + longitude: Double
+        + name: String
+        + kanton: String
+        + bezirk: String
+        + gemeinde: String
+        + elevation: Double
+        + id: Int
+        + getLocationForSearchResult(): String
 }
 
 class Favorite {
-    + location: Location
-    + name: String
-    + temperature: Double
-    + iconFileName: String
+            + location: Location
+            + name: String
+            + temperature: Double
+            + iconFileName: String
+            + icon: Image
+            + Favorite()
+            + Favorite(location: Location, name: String)
 }
 
 enum WeatherCodes {
-    + code: Int
-    + description: String
-    + iconName: String
-     SONNIG
-     LEICHT_BEWOELKT
-     BEWOELKT
-     NEBEL
-     LEICHTER_REGEN
-     REGEN
-     SCHNEE
-     GEWITTER
-     KLAR
-     LEICHT_BEWOELKT_NACHT
-     BEWOELKT_NACHT
-     NEBEL_NACHT
-     LEICHTER_REGEN_NACHT
-     REGEN_NACHT
-     SCHNEE_NACHT
-     GEWITTER_NACHT
-     UNBEKANNT
-     icon: Image
-     fromCode(code: Int, weather: DailyWeather): WeatherCodes
+        SONNIG
+        LEICHT_BEWOELKT
+        BEWOELKT
+        NEBEL
+        LEICHTER_REGEN
+        REGEN
+        SCHNEE
+        GEWITTER
+        KLAR
+        LEICHT_BEWOELKT_NACHT
+        BEWOELKT_NACHT
+        NEBEL_NACHT
+        LEICHTER_REGEN_NACHT
+        REGEN_NACHT
+        SCHNEE_NACHT
+        GEWITTER_NACHT
+        UNBEKANNT
+        --
+        + code: Int
+        + description: String
+        + iconName: String
+        + icon: Image
+        + {static} fromCode(code: Int, weather: DailyWeather): WeatherCodes
 }
 
 
