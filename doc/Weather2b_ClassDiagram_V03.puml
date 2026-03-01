@@ -19,6 +19,7 @@ Weather --> HourlyWeather
 Weather --> DailyWeather
 Manager --> WeatherCodes
 Favorite --> Location
+Manager --> Location
 Manager --> Favorite
 FavoriteWrapper --> Favorite
 FileWrapper --> WeatherData

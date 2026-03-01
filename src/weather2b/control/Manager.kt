@@ -35,7 +35,6 @@ class Manager() : Guilogic {
         refreshFavorites()
     }
 
-
     private val weatherCodeCategories = listOf(
         listOf(0, 100), // klar
         (1..3).toList() + (101..103).toList(), // bewölkt

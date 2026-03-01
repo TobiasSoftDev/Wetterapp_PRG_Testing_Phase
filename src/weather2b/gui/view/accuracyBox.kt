@@ -137,10 +137,10 @@ object accuracyBox {
             font = appStyle.FONT_14_BOLD
         }
 
-        val exampleText = Text("Vor 24 Stunden wurden 20°C und 'klarer Himmel' vorhergesagt.\n\nTemperatur: Tatsächlich sind es 22°C.\n"+
+        val exampleText = Text("Vor 24 Stunden wurden 20°C und 'klarer Himmel' vorhergesagt.\n\nTEMPERATUR Tatsächlich sind es 22°C.\n"+
                 "Die Abweichung beträgt 2°C. Dies ergibt eine Genauigkeit von 80% (1℃ Abweichung ≙ 10% Abzug).\n\n"+
-                "Wetterzustand: Tatsächlich ist es 'Leicht bewölkt'.\nDa beide Zustände zur selben Kategorie gehören, ergibt dies 100%.\n\n"+
-                "Ergebnis: Der Durchschnitt aus 80% und 100% ergibt eine Prognosegüte von 90% für diesen Messpunkt.").apply {
+                "WETTERZUSTAND Tatsächlich ist es 'Leicht bewölkt'.\nDie beiden Zustände fallen in benachbarte Kategorien, was einen Abzug von 5% zur Folge hat (Güte: 95%).\n\n"+
+                "ERGEBNIS Der Durchschnitt aus 80% und 95% ergibt eine Prognosegüte von 87.5% für diesen Messpunkt.").apply {
             wrappingWidth = 345.0
             lineSpacing = 1.0
             font = appStyle.FONT_12
@@ -163,12 +163,12 @@ object accuracyBox {
     fun fillAccuracyLabel(score: Double?): String {
         score ?:  return "Die Prognosequalität kann nicht angezeigt werden."
         return when (score) {
-            in 99.00..100.0 -> "exzellent"
-            in 95.00..99.49  -> "sehr gut"
-            in 93.50..94.99 -> "gut"
-            in 60.00..93.49 -> "genügend"
-            in 20.00..59.99 -> "verbesserungswürdig"
-            in 0.00..19.99 -> "Ist etwas schief gelaufen?"
+            in 98.00..100.0 -> "exzellent"
+            in 90.00..97.99  -> "sehr gut"
+            in 70.00..89.99 -> "gut"
+            in 50.00..69.99 -> "genügend"
+            in 20.00..49.99 -> "verbesserungswürdig"
+            in 0.00..19.99 -> "prognostizierte Werte sind unbrauchbar"
             else -> "Wert ungültig"
         }
     }
